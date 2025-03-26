@@ -12,8 +12,7 @@ import org.springframework.data.annotation.Id;
 @Document(collection = "organizations")
 public class Organization {
     @Id
-    private String id;
-    private Long organizationID;
+    private String organizationID;
     private String organizationName;
     private String address;
     private String contact;
