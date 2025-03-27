@@ -19,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 import gr.atc.t4m.organization_management.dto.OrganizationDTO;
 import gr.atc.t4m.organization_management.exception.OrganizationAlreadyExistsException;
 import gr.atc.t4m.organization_management.exception.OrganizationNotFoundException;
+import gr.atc.t4m.organization_management.model.InformationMessage;
 import gr.atc.t4m.organization_management.model.Organization;
 import gr.atc.t4m.organization_management.service.OrganizationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -61,7 +62,7 @@ public class OrganizationController {
     @Operation(summary = "Create a new Organization")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Organization created successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid input - Organization name is required"),
+            @ApiResponse(responseCode = "400", description = "Invalid input value"),
             @ApiResponse(responseCode = "409", description = "Conflict - Organization already exists with the same name"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
@@ -85,9 +86,15 @@ public class OrganizationController {
      * Update an existing organization
     *  @param id
      * @return organization information
-     * @throws OrganizationAlreadyExistsException
+     * @throws OrganizationNotExists
+     * @throws IllegalArgumentException
      */
     @Operation(summary = "Update an existing Organization")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Organization updated."),
+        @ApiResponse(responseCode = "400", description = "Invalid input value."),
+
+})
     @PutMapping(value = "/updateOrganization/{id}")
     public ResponseEntity<Organization> updateOrganization(
             @PathVariable String id,
@@ -163,10 +170,11 @@ public class OrganizationController {
 
     })
     @DeleteMapping(value = "/deleteOrganization/{id}", produces = "application/json;charset=UTF-8")
-    public String deleteOrganization(@PathVariable String id, final HttpServletRequest request) {
+    public ResponseEntity<InformationMessage> deleteOrganization(@PathVariable String id, final HttpServletRequest request) {
         organizationService.deleteOrganizationById(id);
-
-        return "Organization with id: " + id + " deleted successfully";
+        InformationMessage informationMessage = new InformationMessage();
+        informationMessage.setMessage("Organization deleted successfully.");
+        return ResponseEntity.ok(informationMessage);
     }
 
 }

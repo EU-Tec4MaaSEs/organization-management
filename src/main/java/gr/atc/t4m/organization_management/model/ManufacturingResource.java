@@ -10,8 +10,7 @@ import java.util.List;
 @Document(collection = "manufacturingResources")
 public class ManufacturingResource {
     @Id
-    private String id;
-    private long manufacturingResourceID;
+    private Long manufacturingResourceID;
     private String manufacturingResourceCode;
     private String manufacturingResourceName;
     private long capabilityDatasetID;

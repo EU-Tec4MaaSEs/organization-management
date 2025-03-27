@@ -9,5 +9,6 @@ public class MaasProvider {
     private int minimumOrderQuantity;
     private int nominalRate;
     private String qualityStandard;
+    private List<ManufacturingServices> manufacturingServices;
     private List<ShippingCountry> shippingCountries;
 }

@@ -18,7 +18,7 @@ public class Organization {
     private String contact;
     private String dsConnectorURL;
     private double organizationRating;
-    private MaasRole maasRole;
+    private List<MaasRole> maasRole;
     private MaasConsumer maasConsumer;
     private MaasProvider maasProvider;
      @DBRef

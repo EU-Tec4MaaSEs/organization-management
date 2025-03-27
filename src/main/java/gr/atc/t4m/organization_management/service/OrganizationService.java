@@ -11,16 +11,22 @@ import org.springframework.stereotype.Service;
 import gr.atc.t4m.organization_management.dto.OrganizationDTO;
 import gr.atc.t4m.organization_management.exception.OrganizationAlreadyExistsException;
 import gr.atc.t4m.organization_management.exception.OrganizationNotFoundException;
+import gr.atc.t4m.organization_management.model.ManufacturingResource;
 import gr.atc.t4m.organization_management.model.Organization;
 import gr.atc.t4m.organization_management.repository.OrganizationRepository;
 
 @Service
 public class OrganizationService {
     private static final Logger LOGGER = LoggerFactory.getLogger(OrganizationService.class);
-    OrganizationRepository organizationRepository;
+    private static final String ORGANIZATION_WITH_ID = "Organization with id ";
 
-    public OrganizationService(OrganizationRepository organizationRepository) {
+    OrganizationRepository organizationRepository;
+    ManufacturingResourceService manufacturingResourceService;
+
+    public OrganizationService(OrganizationRepository organizationRepository,
+            ManufacturingResourceService manufacturingResourceService) {
         this.organizationRepository = organizationRepository;
+        this.manufacturingResourceService = manufacturingResourceService;
 
     }
 
@@ -31,6 +37,21 @@ public class OrganizationService {
                     "Organization with name " + organization.getOrganizationName() + " already exists");
 
         });
+        if (organization.getManufacturingResources() != null) {
+            organization.getManufacturingResources().forEach(mr -> {
+                mr.getManufacturingResourceID();
+                if (mr.getManufacturingResourceID() == null) {
+                    
+                    throw new OrganizationAlreadyExistsException("Manufacturing Resource ID is required");
+                }
+                else{
+                    Optional<ManufacturingResource> optManufacturingResource = manufacturingResourceService.findById(mr.getManufacturingResourceID());
+                    if (optManufacturingResource.isEmpty()) {
+                        manufacturingResourceService.save(mr);
+                    }
+                }
+            });
+        }
         organizationRepository.save(organization);
         return organization;
     }
@@ -38,7 +59,7 @@ public class OrganizationService {
     public Organization getOrganization(String id) throws OrganizationNotFoundException {
         Optional<Organization> optOrganization = organizationRepository.findById(id);
         if (optOrganization.isEmpty()) {
-            throw new OrganizationNotFoundException("Organization with id " + id + " not found");
+            throw new OrganizationNotFoundException(ORGANIZATION_WITH_ID + id + " not found");
         }
 
         return optOrganization.get();
@@ -47,7 +68,7 @@ public class OrganizationService {
     public void deleteOrganizationById(String id) {
         Optional<Organization> optOrganization = organizationRepository.findById(id);
         if (optOrganization.isEmpty()) {
-            throw new OrganizationNotFoundException("Organization with id " + id + " not found");
+            throw new OrganizationNotFoundException(ORGANIZATION_WITH_ID + id + " not found");
         }
         organizationRepository.delete(optOrganization.get());
 
@@ -61,7 +82,7 @@ public class OrganizationService {
     public Organization updateOrganization(String id, OrganizationDTO organizationDTO) {
         Optional<Organization> optOrganization = organizationRepository.findById(id);
         if (optOrganization.isEmpty()) {
-            throw new OrganizationNotFoundException("Organization with id " + id + " not found. Update is aborted");
+            throw new OrganizationNotFoundException(ORGANIZATION_WITH_ID + id + " not found. Update is aborted");
         }
         Organization existingOrganization = optOrganization.get();
         existingOrganization.setOrganizationName(organizationDTO.getOrganizationName());
