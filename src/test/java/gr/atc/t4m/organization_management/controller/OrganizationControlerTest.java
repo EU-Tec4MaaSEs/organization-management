@@ -17,9 +17,9 @@ import gr.atc.t4m.organization_management.service.OrganizationService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -30,9 +30,9 @@ import org.springframework.data.domain.Pageable;
 class OrganizationControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;  // Spring will inject MockMvc
+    private MockMvc mockMvc;
 
-    @MockBean  // This ensures the mock is injected into the controller
+    @MockitoBean
     private OrganizationService organizationService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();

@@ -93,6 +93,7 @@ public class OrganizationService {
         existingOrganization.setMaasRole(organizationDTO.getMaasRole());
         existingOrganization.setMaasConsumer(organizationDTO.getMaasConsumer());
         existingOrganization.setMaasProvider(organizationDTO.getMaasProvider());
+        existingOrganization.setManufacturingResources(organizationDTO.getManufacturingResources());
 
         return organizationRepository.save(existingOrganization);
     }
