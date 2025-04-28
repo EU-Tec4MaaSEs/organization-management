@@ -25,6 +25,8 @@ import gr.atc.t4m.organization_management.service.OrganizationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
@@ -34,6 +36,7 @@ import org.springframework.data.domain.Pageable;
 
 @RestController
 @RequestMapping("/api/organization")
+@Tag(name = "Organization manager Controller", description = "Handles the API requests for Organization Management")
 
 public class OrganizationController {
 
@@ -59,10 +62,11 @@ public class OrganizationController {
      * @return message of success or failure
      * @throws OrganizationAlreadyExistsException
      */
-    @Operation(summary = "Create a new Organization")
+    @Operation(summary = "Create a new Organization", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Organization created successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid input value"),
+            @ApiResponse(responseCode = "401", description = "Authentication process failed!"),
             @ApiResponse(responseCode = "409", description = "Conflict - Organization already exists with the same name"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
@@ -89,10 +93,11 @@ public class OrganizationController {
      * @throws OrganizationNotExists
      * @throws IllegalArgumentException
      */
-    @Operation(summary = "Update an existing Organization")
+    @Operation(summary = "Update an existing Organization", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Organization updated."),
         @ApiResponse(responseCode = "400", description = "Invalid input value."),
+        @ApiResponse(responseCode = "401", description = "Authentication process failed!")
 
 })
     @PutMapping(value = "/updateOrganization/{id}")
@@ -111,9 +116,10 @@ public class OrganizationController {
      * @throws OrganizationNotFoundException
      */
 
-    @Operation(summary = "Get Organization Information", description = "Returns the information of the organization")
+    @Operation(summary = "Get Organization Information", description = "Returns the information of the organization", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Organization information."),
+            @ApiResponse(responseCode = "401", description = "Authentication process failed!"),
             @ApiResponse(responseCode = "404", description = "Organization not found."),
 
     })
@@ -135,9 +141,10 @@ public class OrganizationController {
      * @throws OrganizationNotFoundException
      */
 
-    @Operation(summary = "Get Organizations Information", description = "Returns the information of the organizations")
+    @Operation(summary = "Get Organizations Information", description = "Returns the information of the organizations", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Organization information.")
+            @ApiResponse(responseCode = "200", description = "Organization information."),
+            @ApiResponse(responseCode = "401", description = "Authentication process failed!")
     })
     @GetMapping("/getOrganization/all")
     public ResponseEntity<Page<Organization>> getAllOrganizations(
@@ -163,9 +170,10 @@ public class OrganizationController {
      * @throws OrganizationNotFoundException
      */
 
-    @Operation(summary = "Delete Organization", description = "Delete organization by providing the id")
+    @Operation(summary = "Delete Organization", description = "Delete organization by providing the id", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful deletion."),
+            @ApiResponse(responseCode = "401", description = "Authentication process failed!"),
             @ApiResponse(responseCode = "404", description = "Organization not found. Nothing to delete."),
 
     })

@@ -4,17 +4,17 @@ import java.util.Arrays;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import gr.atc.t4m.organization_management.security.JwtAuthConverter;
 
 @Configuration
 @EnableWebSecurity
@@ -32,21 +32,21 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
-
+                // Convert Keycloak Roles with class to Spring Security Roles
+        JwtAuthConverter jwtAuthConverter = new JwtAuthConverter();
         http
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .cors(corsCustomizer -> corsCustomizer.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf.csrfTokenRequestHandler(requestHandler)
-                            .ignoringRequestMatchers("/api/organization/**","/organization/swagger-ui/**","/organization/v3/api-docs/**") // For now ignore all requests under api/organization
-                            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+                // Configure CSRF Token
+                .csrf(AbstractHttpConfigurer::disable)
                         
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/organization/**", "/organization/v3/api-docs/**",
+                        .requestMatchers( "/organization/v3/api-docs/**",
                          "/organization/swagger-ui/**").permitAll() // Allow all API requests for now
-                         .requestMatchers(HttpMethod.PUT, "/api/organization/updateOrganization/**").permitAll() 
-
-                        .anyRequest().authenticated() // Require authentication for other routes
+                        .anyRequest().authenticated()) // Require authentication for other routes
+                        // JWT Authentication Configuration to use with Keycloak
+                        .oauth2ResourceServer(oauth2ResourceServerCustomizer -> oauth2ResourceServerCustomizer
+                        .jwt(jwtCustomizer -> jwtCustomizer.jwtAuthenticationConverter(jwtAuthConverter))
                 );
 
         return http.build();
