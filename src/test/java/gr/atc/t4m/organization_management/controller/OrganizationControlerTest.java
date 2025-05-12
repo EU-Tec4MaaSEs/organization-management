@@ -13,12 +13,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gr.atc.t4m.organization_management.config.TestSecurityConfig;
 import gr.atc.t4m.organization_management.dto.OrganizationDTO;
 import gr.atc.t4m.organization_management.model.Organization;
+import gr.atc.t4m.organization_management.service.MinioService;
 import gr.atc.t4m.organization_management.service.OrganizationService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.data.domain.Page;
@@ -34,6 +36,9 @@ class OrganizationControllerTest {
 
     @MockitoBean
     private OrganizationService organizationService;
+
+    @MockitoBean
+    private MinioService minioService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -52,15 +57,23 @@ class OrganizationControllerTest {
         Organization organization = new Organization();
         organization.setOrganizationID("123");
         organization.setOrganizationName("Test Organization");
-
+        MockMultipartFile organizationPart = new MockMultipartFile(
+            "organization",
+            "",
+            "application/json",
+            objectMapper.writeValueAsBytes(organizationDTO)
+    );
         when(organizationService.createOrganization(any(Organization.class))).thenReturn(organization);
 
-        mockMvc.perform(post("/api/organization/createOrganization")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(organizationDTO)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.organizationID").value("123"))
-                .andExpect(jsonPath("$.organizationName").value("Test Organization"));
+
+        mockMvc.perform(multipart("/api/organization/createOrganization")
+        .file(organizationPart) // only the JSON part
+        .contentType(MediaType.MULTIPART_FORM_DATA)
+        .accept(MediaType.APPLICATION_JSON))
+          .andExpect(status().isOk())
+         .andExpect(jsonPath("$.organizationID").value("123"))
+        .andExpect(jsonPath("$.organizationName").value("Test Organization"));
+
     }
 
    @Test
@@ -149,7 +162,7 @@ void testCreateOrganization_WhenOrganizationNameIsNull_ShouldReturnBadRequest() 
 
     // When & Then: Perform POST request and expect Bad Request (400)
     mockMvc.perform(post("/api/organization/createOrganization")
-            .contentType(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.MULTIPART_FORM_DATA)
             .content(objectMapper.writeValueAsString(organizationDTO)))
             .andExpect(status().isBadRequest());
 }

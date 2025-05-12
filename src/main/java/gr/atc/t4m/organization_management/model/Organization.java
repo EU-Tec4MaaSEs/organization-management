@@ -21,6 +21,9 @@ public class Organization {
     private List<MaasRole> maasRole;
     private MaasConsumer maasConsumer;
     private MaasProvider maasProvider;
+    private String logoUrl;
+    private String phoneNumber;
+
      @DBRef
     private List<ManufacturingResource> manufacturingResources;
 }

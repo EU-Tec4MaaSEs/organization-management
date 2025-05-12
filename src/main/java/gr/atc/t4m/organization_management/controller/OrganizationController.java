@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import gr.atc.t4m.organization_management.dto.OrganizationDTO;
@@ -21,6 +23,7 @@ import gr.atc.t4m.organization_management.exception.OrganizationAlreadyExistsExc
 import gr.atc.t4m.organization_management.exception.OrganizationNotFoundException;
 import gr.atc.t4m.organization_management.model.InformationMessage;
 import gr.atc.t4m.organization_management.model.Organization;
+import gr.atc.t4m.organization_management.service.MinioService;
 import gr.atc.t4m.organization_management.service.OrganizationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -33,6 +36,7 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 
 @RestController
 @RequestMapping("/api/organization")
@@ -41,10 +45,14 @@ import org.springframework.data.domain.Pageable;
 public class OrganizationController {
 
     private final OrganizationService organizationService;
+    private final MinioService minioService;
+
 
     @Autowired
-    public OrganizationController(OrganizationService organizationService) {
+    public OrganizationController(OrganizationService organizationService, 
+             MinioService minioService) {
         this.organizationService = organizationService;
+        this.minioService = minioService;
     }
 
     @Operation(summary = "Health Check", description = "Returns a health check message for the Organization Management service")
@@ -62,7 +70,9 @@ public class OrganizationController {
      * @return message of success or failure
      * @throws OrganizationAlreadyExistsException
      */
-    @Operation(summary = "Create a new Organization", security = @SecurityRequirement(name = "bearerAuth"))
+    // @Operation(summary = "Create a new Organization", security = @SecurityRequirement(name = "bearerAuth"))
+
+    @Operation(summary = "Create a new Organization")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Organization created successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid input value"),
@@ -70,21 +80,33 @@ public class OrganizationController {
             @ApiResponse(responseCode = "409", description = "Conflict - Organization already exists with the same name"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PostMapping(value = "createOrganization", consumes = "application/json;charset=UTF-8", produces = "application/json;charset=UTF-8")
-    public ResponseEntity<Organization> createOrganization(@RequestBody OrganizationDTO organizationDTO)
-            throws OrganizationAlreadyExistsException {
+    @PostMapping(value = "createOrganization", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+public ResponseEntity<Organization> createOrganization(
+        @RequestPart("organization") @Valid OrganizationDTO organizationDTO,
+        @RequestPart(value = "logoFile", required = false) MultipartFile logoFile)
+        throws OrganizationAlreadyExistsException {
 
-        if (organizationDTO.getOrganizationName() == null || organizationDTO.getOrganizationName().trim().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Organization name is required");
-        }
-
-        Organization organization = new Organization();
-        BeanUtils.copyProperties(organizationDTO, organization);
-
-        Organization savedOrganization = organizationService.createOrganization(organization);
-
-        return ResponseEntity.ok(savedOrganization);
+    // Handle validations
+    if (organizationDTO.getOrganizationName() == null || organizationDTO.getOrganizationName().trim().isEmpty()) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Organization name is required");
     }
+
+    // Upload file (if present)
+    String logoUrl = null;
+    
+    if (logoFile != null && !logoFile.isEmpty()) {
+        logoUrl = minioService.uploadLogo(logoFile); // Store and return URL
+    }
+
+    // Copy data
+    Organization organization = new Organization();
+    BeanUtils.copyProperties(organizationDTO, organization);
+    organization.setLogoUrl(logoUrl); // Save logo location
+
+    Organization savedOrganization = organizationService.createOrganization(organization);
+    return ResponseEntity.ok(savedOrganization);
+}
+
 
     /**
      * Update an existing organization

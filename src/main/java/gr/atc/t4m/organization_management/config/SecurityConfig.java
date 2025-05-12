@@ -40,8 +40,8 @@ public class SecurityConfig {
                 // Configure CSRF Token
                 .csrf(AbstractHttpConfigurer::disable)
                         
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers( "/organization/v3/api-docs/**",
+                    .authorizeHttpRequests(auth -> auth
+                        .requestMatchers( "/organization/v3/api-docs/**","/api/organization/createOrganization",
                          "/organization/swagger-ui/**").permitAll() // Allow all API requests for now
                         .anyRequest().authenticated()) // Require authentication for other routes
                         // JWT Authentication Configuration to use with Keycloak

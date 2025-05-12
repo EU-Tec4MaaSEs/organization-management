@@ -17,6 +17,7 @@ public class OrganizationDTO {
     private String organizationName;
     private String address;
     private String contact;
+    private String phoneNumber;
     private String dsConnectorURL;
     private double organizationRating;
     private List<MaasRole> maasRole;
