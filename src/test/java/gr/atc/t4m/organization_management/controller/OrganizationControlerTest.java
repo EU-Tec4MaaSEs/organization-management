@@ -66,7 +66,7 @@ class OrganizationControllerTest {
         when(organizationService.createOrganization(any(Organization.class))).thenReturn(organization);
 
 
-        mockMvc.perform(multipart("/api/organization/createOrganization")
+        mockMvc.perform(multipart("/api/organization/create")
         .file(organizationPart) // only the JSON part
         .contentType(MediaType.MULTIPART_FORM_DATA)
         .accept(MediaType.APPLICATION_JSON))
@@ -101,7 +101,7 @@ class OrganizationControllerTest {
 
         when(organizationService.updateOrganization(eq("123"), any(OrganizationDTO.class))).thenReturn(updatedOrganization);
 
-        mockMvc.perform(put("/api/organization/updateOrganization/123")
+        mockMvc.perform(put("/api/organization/update/123")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(organizationDTO)))
                 .andExpect(status().isOk())
@@ -161,7 +161,7 @@ void testCreateOrganization_WhenOrganizationNameIsNull_ShouldReturnBadRequest() 
     organizationDTO.setOrganizationName(null); // Simulating missing name
 
     // When & Then: Perform POST request and expect Bad Request (400)
-    mockMvc.perform(post("/api/organization/createOrganization")
+    mockMvc.perform(post("/api/organization/create")
             .contentType(MediaType.MULTIPART_FORM_DATA)
             .content(objectMapper.writeValueAsString(organizationDTO)))
             .andExpect(status().isBadRequest());

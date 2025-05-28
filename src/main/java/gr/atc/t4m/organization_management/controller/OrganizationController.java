@@ -70,9 +70,7 @@ public class OrganizationController {
      * @return message of success or failure
      * @throws OrganizationAlreadyExistsException
      */
-    // @Operation(summary = "Create a new Organization", security = @SecurityRequirement(name = "bearerAuth"))
-
-    @Operation(summary = "Create a new Organization")
+     @Operation(summary = "Create a new Organization", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Organization created successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid input value"),
@@ -80,7 +78,7 @@ public class OrganizationController {
             @ApiResponse(responseCode = "409", description = "Conflict - Organization already exists with the same name"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PostMapping(value = "createOrganization", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 public ResponseEntity<Organization> createOrganization(
         @RequestPart("organization") @Valid OrganizationDTO organizationDTO,
         @RequestPart(value = "logoFile", required = false) MultipartFile logoFile)
@@ -122,7 +120,7 @@ public ResponseEntity<Organization> createOrganization(
         @ApiResponse(responseCode = "401", description = "Authentication process failed!")
 
 })
-    @PutMapping(value = "/updateOrganization/{id}")
+    @PutMapping(value = "/update/{id}")
     public ResponseEntity<Organization> updateOrganization(
             @PathVariable String id,
             @RequestBody @Valid OrganizationDTO organizationDTO) {
