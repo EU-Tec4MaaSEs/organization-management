@@ -17,8 +17,6 @@ import org.springframework.stereotype.Service;
 
 import gr.atc.t4m.organization_management.dto.EventDto;
 import gr.atc.t4m.organization_management.dto.NotificationDto;
-import gr.atc.t4m.organization_management.model.NotificationStatus;
-import gr.atc.t4m.organization_management.model.NotificationType;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -69,8 +67,6 @@ public class KafkaMessageHandler {
      */
     private NotificationDto generateNotificationFromEvent(EventDto event){
         return  NotificationDto.builder()
-                .notificationType(NotificationType.Event.toString())
-                .notificationStatus(NotificationStatus.Unread.toString())
                 .sourceComponent(event.getSourceComponent())
                 .productionModule(event.getProductionModule())
                 .relatedEvent(event.getId())

@@ -2,6 +2,7 @@ package gr.atc.t4m.organization_management.service;
 
 import java.util.Optional;
 
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -22,11 +23,13 @@ public class OrganizationService {
 
     OrganizationRepository organizationRepository;
     ManufacturingResourceService manufacturingResourceService;
+    ModelMapper modelMapper;
 
     public OrganizationService(OrganizationRepository organizationRepository,
-            ManufacturingResourceService manufacturingResourceService) {
+            ManufacturingResourceService manufacturingResourceService, ModelMapper modelMapper) {
         this.organizationRepository = organizationRepository;
         this.manufacturingResourceService = manufacturingResourceService;
+        this.modelMapper = modelMapper;
 
     }
 
@@ -80,22 +83,13 @@ public class OrganizationService {
     }
 
     public Organization updateOrganization(String id, OrganizationDTO organizationDTO) {
-        Optional<Organization> optOrganization = organizationRepository.findById(id);
-        if (optOrganization.isEmpty()) {
-            throw new OrganizationNotFoundException(ORGANIZATION_WITH_ID + id + " not found. Update is aborted");
-        }
-        Organization existingOrganization = optOrganization.get();
-        existingOrganization.setOrganizationName(organizationDTO.getOrganizationName());
-        existingOrganization.setAddress(organizationDTO.getAddress());
-        existingOrganization.setContact(organizationDTO.getContact());
-        existingOrganization.setDsConnectorURL(organizationDTO.getDsConnectorURL());
-        existingOrganization.setOrganizationRating(organizationDTO.getOrganizationRating());
-        existingOrganization.setMaasRole(organizationDTO.getMaasRole());
-        existingOrganization.setMaasConsumer(organizationDTO.getMaasConsumer());
-        existingOrganization.setMaasProvider(organizationDTO.getMaasProvider());
-        existingOrganization.setManufacturingResources(organizationDTO.getManufacturingResources());
+        Organization existing = organizationRepository.findById(id)
+                .orElseThrow(() -> new OrganizationNotFoundException(
+                        ORGANIZATION_WITH_ID + id + " not found. Update is aborted"));
 
-        return organizationRepository.save(existingOrganization);
+        modelMapper.map(organizationDTO, existing);
+
+        return organizationRepository.save(existing);
     }
 
 }

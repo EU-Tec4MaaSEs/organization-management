@@ -2,6 +2,7 @@
 package gr.atc.t4m.organization_management.service;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
@@ -12,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -27,15 +30,20 @@ class OrganizationServiceTest {
     @Mock
     private OrganizationRepository organizationRepository;
 
+    private ModelMapper modelMapper;
+
+
     @Mock
     private ManufacturingResourceService manufacturingResourceService;
 
-    @InjectMocks
     private OrganizationService organizationService;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+      MockitoAnnotations.openMocks(this);
+      modelMapper = new ModelMapper();
+      organizationService = new OrganizationService(organizationRepository, manufacturingResourceService, modelMapper);
+
     }
 
     @Test

@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import gr.atc.t4m.organization_management.validation.ValidNotificationStatus;
 import gr.atc.t4m.organization_management.validation.ValidPriority;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -36,9 +35,6 @@ public class NotificationDto{
     @JsonProperty("relatedAssignment")
     private String relatedAssignment;
 
-    @ValidNotificationStatus
-    @JsonProperty("notificationStatus")
-    private String notificationStatus;
 
     @JsonProperty("sourceComponent")
     private String sourceComponent;
