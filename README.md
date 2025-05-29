@@ -25,9 +25,7 @@ It is based on Java Spring Boot framework utilizing Java 17.
     mvn install
 
 
-
-4. If deployed through Docker Compose file the following Environmental Variables must be defined:
-
+3. If deployed through Docker Compose file the following Environmental Variables must be defined:
     
 
 ### Usage
@@ -57,7 +55,7 @@ For local deployment Docker containers can be utilized to deploy the microservic
 3. Build the Docker container:
 
     ```sh
-    docker build -t organization-manager .
+    docker build -t organization-manager:latest .
     ```
 
 4. Run the Docker container including the environmental variables:
@@ -65,7 +63,22 @@ For local deployment Docker containers can be utilized to deploy the microservic
     ```sh
     docker run -d -p 8090:8090 --name organization-manager organization-manager
     ```
+   ``NOTE``: The following environmental variable should be configured:
 
+    CORS_DOMAINS=.. 
+    APP_PORT=..
+    APP_URL=..
+
+    MINIO_URL=..
+    MINIO_ACCESS_KEY=..
+    MINIO_SECRET_KEY=..
+    MINIO_BUCKET_NAME=..
+
+    KAFKA_GROUP=..
+
+    KEYCLOAK_REALM_URL=..
+    KEYCLOAK_CLIENT=..
+    KEYCLOAK_CLIENT_SECRET=..
 5. To stop container run:
 
     ```sh
