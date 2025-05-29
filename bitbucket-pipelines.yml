@@ -11,7 +11,7 @@ definitions:
         script:
           - mvn clean package
           - mvn install jacoco:report -Pcoverage
-          - mvn sonar:sonar -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml  -Dsonar.projectKey=atc-code_$BITBUCKET_REPO_SLUG -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.token=${SONAR_TOKEN} -Dsonar.qualitygate.wait=true
+          - mvn sonar:sonar -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml  -Dsonar.projectKey=atc-code_ilab-tec4maases-organisation-manager_AZcbpqMuhPrqIBhKHooE -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.token=${SONAR_TOKEN} -Dsonar.qualitygate.wait=true
         after-script:
           # Collect checkstyle results, if any, and convert to Bitbucket Code Insights.
           - pipe: atlassian/checkstyle-report:0.3.0
