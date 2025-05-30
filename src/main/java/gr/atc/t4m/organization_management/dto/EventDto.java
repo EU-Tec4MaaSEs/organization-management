@@ -42,5 +42,5 @@ public class EventDTO {
     private String sourceComponent;
 
     @JsonProperty("data")
-    private JsonNode results;
+    private JsonNode data;
 }
