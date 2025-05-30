@@ -1,7 +1,6 @@
 package gr.atc.t4m.organization_management.kafka;
 
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.apache.kafka.clients.admin.NewTopic;
@@ -15,8 +14,7 @@ import org.springframework.stereotype.Service;
 
 
 
-import gr.atc.t4m.organization_management.dto.EventDto;
-import gr.atc.t4m.organization_management.dto.NotificationDto;
+import gr.atc.t4m.organization_management.dto.EventDTO;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -45,7 +43,7 @@ public class KafkaMessageHandler {
      * @param event: Event occurred in T4M
      */
     @KafkaListener(topics = "#{'${kafka.topics}'.split(',')}", groupId = "${spring.kafka.consumer.group-id}")
-    public void consume(EventDto event, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic, @Header(value = KafkaHeaders.RECEIVED_KEY, required = false) String messageKey){
+    public void consume(EventDTO event, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic, @Header(value = KafkaHeaders.RECEIVED_KEY, required = false) String messageKey){
         // Validate that same essential variables are present
         if (!isValidEvent(event)){
             log.error("Kafka message error - Either priority or production module or Topic are missing from the event. Message is discarded! Data: {}",event);
@@ -55,31 +53,13 @@ public class KafkaMessageHandler {
         log.info("Event Description: {}", event.getDescription());
         log.info("Event Type: {}", event.getEventType());
 
-        // Create and store the notification
-        NotificationDto eventNotification = generateNotificationFromEvent(event);
-        log.info("Notification created: {}", eventNotification);
              
 
     }
 
-   /*
-     * Helper method to generate a Notification from Event
-     */
-    private NotificationDto generateNotificationFromEvent(EventDto event){
-        return  NotificationDto.builder()
-                .sourceComponent(event.getSourceComponent())
-                .productionModule(event.getProductionModule())
-                .relatedEvent(event.getId())
-                .relatedAssignment(null)
-                .timestamp(LocalDateTime.now().withNano(0))
-                .priority(event.getPriority())
-                .description(event.getDescription())
-                .build();
-    }
-    private boolean isValidEvent(EventDto event) {
-        return event.getPriority() != null &&
-                event.getProductionModule() != null &&
-                event.getTopic() != null;
+
+    private boolean isValidEvent(EventDTO event) {
+        return event.getPriority() != null;
     }
 
     /**

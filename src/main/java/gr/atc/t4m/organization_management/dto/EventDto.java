@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import gr.atc.t4m.organization_management.validation.ValidPriority;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 @Data
@@ -21,16 +20,11 @@ import jakarta.validation.constraints.NotNull;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Schema(description = "Event Object Representation", title = "Event")
-public class EventDto {
-    @JsonProperty("eventId")
-    private String id;
+public class EventDTO {
 
     @JsonProperty("description")
     private String description;
 
-    @NotEmpty(message = "Production Module cannot be empty")
-    @JsonProperty("productionModule")
-    private String productionModule;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @JsonProperty("timestamp")
@@ -47,10 +41,6 @@ public class EventDto {
     @JsonProperty("sourceComponent")
     private String sourceComponent;
 
-    @NotNull(message = "Topic cannot be empty")
-    @JsonProperty("topic")
-    private String topic;
-
-    @JsonProperty("results")
+    @JsonProperty("data")
     private JsonNode results;
 }

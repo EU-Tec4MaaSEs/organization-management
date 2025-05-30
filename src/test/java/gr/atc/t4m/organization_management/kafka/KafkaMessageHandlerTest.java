@@ -1,12 +1,11 @@
 package gr.atc.t4m.organization_management.kafka;
 
-import gr.atc.t4m.organization_management.dto.EventDto;
+import gr.atc.t4m.organization_management.dto.EventDTO;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.kafka.core.KafkaAdmin;
 
-import java.util.UUID;
 
 import static org.mockito.Mockito.*;
 
@@ -23,14 +22,11 @@ class KafkaMessageHandlerTest {
 
     @Test
     void testValidEventCreatesNotification() {
-        EventDto event = EventDto.builder()
-                .id(UUID.randomUUID().toString())
+        EventDTO event = EventDTO.builder()
                 .description("Test Event")
                 .eventType("INFO")
                 .priority("HIGH")
-                .productionModule("MOD1")
                 .sourceComponent("ComponentA")
-                .topic("event.topic")
                 .build();
 
         handler.consume(event, "event.topic", "some-key");
@@ -39,8 +35,7 @@ class KafkaMessageHandlerTest {
 
     @Test
     void testInvalidEventDoesNotCreateNotification() {
-        EventDto event = EventDto.builder()
-                .id(UUID.randomUUID().toString())
+        EventDTO event = EventDTO.builder()
                 .description("Bad Event")
                 .eventType("ERROR")
                 // Missing priority, productionModule, topic
