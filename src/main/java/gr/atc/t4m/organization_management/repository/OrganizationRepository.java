@@ -1,5 +1,6 @@
 package gr.atc.t4m.organization_management.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -11,6 +12,7 @@ public interface OrganizationRepository extends MongoRepository<Organization, St
     Optional<Organization> findByOrganizationName(String organizationName);
 
     Optional<Organization> findById(String organizationId);
+    List<Organization> findByMaasRoleContaining(String role);
 
 }
 

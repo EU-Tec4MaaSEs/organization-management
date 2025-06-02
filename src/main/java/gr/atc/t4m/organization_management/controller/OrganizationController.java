@@ -1,5 +1,7 @@
 package gr.atc.t4m.organization_management.controller;
 
+import java.util.List;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -182,6 +184,26 @@ public ResponseEntity<Organization> createOrganization(
         return ResponseEntity.ok(organizations);
     }
 
+    /**
+     * Get All providers
+     * 
+     * @return message of success or failure
+     * @throws OrganizationNotFoundException
+     */
+
+    @Operation(summary = "Get All providers Information", description = "Returns a list of all providers", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Information for all providers."),
+            @ApiResponse(responseCode = "401", description = "Authentication process failed!")
+    })
+    @GetMapping("/getAllProviders")
+    public ResponseEntity<List<Organization>> getAllProviders(
+            final HttpServletRequest request) {
+
+        List<Organization> providers = organizationService.getAllProviders();
+
+        return ResponseEntity.ok(providers);
+    }
     /**
      * Delete organization by providing the id
      * 
