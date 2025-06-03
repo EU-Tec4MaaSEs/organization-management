@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gr.atc.t4m.organization_management.config.TestSecurityConfig;
 import gr.atc.t4m.organization_management.dto.OrganizationDTO;
+import gr.atc.t4m.organization_management.model.MaasRole;
 import gr.atc.t4m.organization_management.model.Organization;
 import gr.atc.t4m.organization_management.service.MinioService;
 import gr.atc.t4m.organization_management.service.OrganizationService;
@@ -166,6 +167,33 @@ void testCreateOrganization_WhenOrganizationNameIsNull_ShouldReturnBadRequest() 
             .content(objectMapper.writeValueAsString(organizationDTO)))
             .andExpect(status().isBadRequest());
 }
+
+    @Test
+    void testGetAllProviders_ReturnsListOfProviders() throws Exception {
+        // Arrange
+        Organization org1 = new Organization();
+        org1.setOrganizationName("Provider One");
+        org1.setMaasRole(List.of(MaasRole.PROVIDER));
+
+
+        Organization org2 = new Organization();
+        org2.setOrganizationName("Provider Two");
+        org2.setMaasRole(List.of(MaasRole.PROVIDER));
+        Organization org3 = new Organization();
+        org3.setOrganizationName("Provider Three");
+        org3.setMaasRole(List.of(MaasRole.CONSUMER));
+
+
+        when(organizationService.getAllProviders()).thenReturn(List.of(org1, org2));
+
+        // Act & Assert
+        mockMvc.perform(get("/api/organization/getAllProviders")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].organizationName").value("Provider One"))
+                .andExpect(jsonPath("$[1].organizationName").value("Provider Two"));
+    }
 
 }
 
