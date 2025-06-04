@@ -10,18 +10,18 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import gr.atc.t4m.organization_management.dto.OrganizationDTO;
+import gr.atc.t4m.organization_management.dto.ProviderSearchDTO;
 import gr.atc.t4m.organization_management.exception.OrganizationAlreadyExistsException;
 import gr.atc.t4m.organization_management.exception.OrganizationNotFoundException;
+import gr.atc.t4m.organization_management.model.MaasRole;
 import gr.atc.t4m.organization_management.model.Organization;
 import gr.atc.t4m.organization_management.repository.OrganizationRepository;
 
@@ -148,6 +148,47 @@ class OrganizationServiceTest {
         when(organizationRepository.findById("123")).thenReturn(Optional.empty());
 
         assertThrows(OrganizationNotFoundException.class, () -> organizationService.updateOrganization("123", organizationDTO));
+    }
+
+     @Test
+    void testGetAllProviders_ReturnsProviderOrganizations() {
+        // Arrange
+        Organization org1 = new Organization();
+        org1.setOrganizationName("Provider 1");
+
+        when(organizationRepository.findByMaasRoleContaining(MaasRole.PROVIDER.getName()))
+                .thenReturn(List.of(org1));
+
+        // Act
+        List<Organization> result = organizationService.getAllProviders();
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals("Provider 1", result.get(0).getOrganizationName());
+        verify(organizationRepository, times(1)).findByMaasRoleContaining(MaasRole.PROVIDER.getName());
+    }
+
+    @Test
+    void testSearchProviders_WithValidFilter_ReturnsFilteredOrganizations() {
+        // Arrange
+        ProviderSearchDTO filter = new ProviderSearchDTO();
+        filter.setCountryCodes(List.of("GR"));
+        filter.setManufacturingServices(List.of("AM"));
+
+        Organization org = new Organization();
+        org.setOrganizationName("Greek Provider for AM services");
+
+        when(organizationRepository.filterProviders(filter)).thenReturn(List.of(org));
+
+        // Act
+        List<Organization> result = organizationService.searchProviders(filter);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals("Greek Provider for AM services", result.get(0).getOrganizationName());
+        verify(organizationRepository, times(1)).filterProviders(filter);
     }
 }
 

@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gr.atc.t4m.organization_management.config.TestSecurityConfig;
 import gr.atc.t4m.organization_management.dto.OrganizationDTO;
+import gr.atc.t4m.organization_management.dto.ProviderSearchDTO;
 import gr.atc.t4m.organization_management.model.MaasRole;
 import gr.atc.t4m.organization_management.model.Organization;
 import gr.atc.t4m.organization_management.service.MinioService;
@@ -193,6 +194,27 @@ void testCreateOrganization_WhenOrganizationNameIsNull_ShouldReturnBadRequest() 
                 .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[0].organizationName").value("Provider One"))
                 .andExpect(jsonPath("$[1].organizationName").value("Provider Two"));
+    }
+
+     @Test
+    void testFilterProviders_ReturnsFilteredOrganizations() throws Exception {
+        // Arrange
+        ProviderSearchDTO filter = new ProviderSearchDTO();
+        filter.setCountryCodes(List.of("GR", "DE"));
+        filter.setManufacturingServices(List.of("AM"));
+
+        Organization org1 = new Organization();
+        org1.setOrganizationName("ATC Provider");
+
+        when(organizationService.searchProviders(filter))
+                .thenReturn(List.of(org1));
+
+        // Act & Assert
+        mockMvc.perform(post("/api/organization/searchProviders")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(filter)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].organizationName").value("ATC Provider"));
     }
 
 }
