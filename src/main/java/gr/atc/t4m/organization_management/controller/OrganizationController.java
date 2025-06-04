@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import gr.atc.t4m.organization_management.dto.OrganizationDTO;
+import gr.atc.t4m.organization_management.dto.ProviderSearchDTO;
 import gr.atc.t4m.organization_management.exception.OrganizationAlreadyExistsException;
 import gr.atc.t4m.organization_management.exception.OrganizationNotFoundException;
 import gr.atc.t4m.organization_management.model.InformationMessage;
@@ -202,6 +203,24 @@ public ResponseEntity<Organization> createOrganization(
 
         List<Organization> providers = organizationService.getAllProviders();
 
+        return ResponseEntity.ok(providers);
+    }
+
+    /**
+     * Search for providers by location,manufacturing service
+     * 
+     * @return message of success or failure
+     * @throws OrganizationNotFoundException
+     */
+
+    @Operation(summary = "Search for providers by location,manufacturing service", description = "Returns a list of all providers for specified criteria", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Information for providers for specified criteria."),
+            @ApiResponse(responseCode = "401", description = "Authentication process failed!")
+    })
+    @PostMapping("/searchProviders")
+    public ResponseEntity<List<Organization>> filterProviders(@RequestBody ProviderSearchDTO filter) {
+        List<Organization> providers = organizationService.searchProviders(filter);
         return ResponseEntity.ok(providers);
     }
     /**
