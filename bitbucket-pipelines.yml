@@ -1,0 +1,41 @@
+# Pipeline for building and analyzing source code
+
+image: atlassian/default-image:3
+
+definitions:
+  steps:
+    - step: &Build-step
+        image:
+          name: jelastic/maven:3.9.5-openjdk-21
+        name: Build and Test
+        script:
+          - mvn clean package
+          - mvn install jacoco:report -Pcoverage
+          - mvn sonar:sonar -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml  -Dsonar.projectKey=atc-code_ilab-tec4maases-organisation-manager_AZcbpqMuhPrqIBhKHooE -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.token=${SONAR_TOKEN} -Dsonar.qualitygate.wait=true
+        after-script:
+          # Collect checkstyle results, if any, and convert to Bitbucket Code Insights.
+          - pipe: atlassian/checkstyle-report:0.3.0
+        runs-on:
+          - atc.k8s.runner
+    - step: &SecurityScan-step
+        name: Security Scan
+        script:
+          # Run a security scan for sensitive data.
+          # See more security tools at https://bitbucket.org/product/features/pipelines/integrations?&category=security
+          - pipe: atlassian/git-secrets-scan:0.5.1
+        runs-on:
+          - atc.k8s.runner
+
+    
+pipelines:
+  branches:
+    develop:
+      - step: *Build-step
+      - step: *SecurityScan-step
+    main:
+      - step: *Build-step
+      - step: *SecurityScan-step
+  pull-requests:
+    '**':
+      - step: *Build-step
+      - step: *SecurityScan-step
