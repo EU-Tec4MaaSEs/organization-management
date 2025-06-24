@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import gr.atc.t4m.organization_management.dto.OrganizationDTO;
+import gr.atc.t4m.organization_management.dto.ProviderSearchDTO;
 import gr.atc.t4m.organization_management.exception.OrganizationAlreadyExistsException;
 import gr.atc.t4m.organization_management.exception.OrganizationNotFoundException;
 import gr.atc.t4m.organization_management.model.MaasRole;
@@ -96,6 +97,11 @@ public class OrganizationService {
 
     public List<Organization> getAllProviders() {
     return organizationRepository.findByMaasRoleContaining(MaasRole.PROVIDER.getName());
+    }
+
+    public List<Organization> searchProviders(ProviderSearchDTO filter) {  
+               return organizationRepository.filterProviders(filter);
+
     }
 
 }
