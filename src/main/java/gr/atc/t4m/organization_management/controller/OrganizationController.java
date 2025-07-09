@@ -153,6 +153,27 @@ public ResponseEntity<Organization> createOrganization(
         return ResponseEntity.ok(organization);
     }
 
+     /**
+     * Get organization information by name
+     *
+     * @return message of success or failure
+     * @throws OrganizationNotFoundException
+     */
+
+    @Operation(summary = "Get Organization Information by name", description = "Returns the information of the organization", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Organization information."),
+            @ApiResponse(responseCode = "401", description = "Authentication process failed!"),
+            @ApiResponse(responseCode = "404", description = "Organization not found."),
+
+    })
+
+    @GetMapping("/getOrganizationByName/{name}")
+    public ResponseEntity<Organization> getOrganizationByName(@PathVariable String name) throws OrganizationNotFoundException {
+        Organization organization = organizationService.getOrganizationByName(name);
+        return ResponseEntity.ok(organization);
+    }
+
     /**
      * Get organizations information
      * 

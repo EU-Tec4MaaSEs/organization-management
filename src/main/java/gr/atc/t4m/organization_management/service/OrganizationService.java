@@ -104,4 +104,9 @@ public class OrganizationService {
 
     }
 
+    public Organization getOrganizationByName(String name) {
+        return organizationRepository.findByOrganizationName(name)
+                .orElseThrow(() -> new OrganizationNotFoundException("Organization with name " + name + " not found"));
+    }
+
 }
