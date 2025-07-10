@@ -38,7 +38,7 @@ It is based on Java Spring Boot framework utilizing Java 17.
 
 2. The application will start on `http://localhost:8090`.
 
-3. Access the OpenAPI documentation at `http://localhost:8090/api/organization/swagger-ui/index.html`.
+3. Access the OpenAPI documentation at `http://localhost:8090/organization/swagger-ui/index.html`.
 
 ### Deployment
 
@@ -79,6 +79,8 @@ For local deployment Docker containers can be utilized to deploy the microservic
     KEYCLOAK_REALM_URL=..
     KEYCLOAK_CLIENT=..
     KEYCLOAK_CLIENT_SECRET=..
+    MONGO_HOST=...
+    MONGO_PORT=...
 5. To stop container run:
 
     ```sh

@@ -5,6 +5,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.context.ApplicationContext;
 @SpringBootTest
+
 class OrganizationApplicationTests {
 
 	@Test

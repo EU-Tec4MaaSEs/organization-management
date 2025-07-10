@@ -217,5 +217,19 @@ void testCreateOrganization_WhenOrganizationNameIsNull_ShouldReturnBadRequest() 
                 .andExpect(jsonPath("$[0].organizationName").value("ATC Provider"));
     }
 
+    @Test
+    void testGetOrganizationByName() throws Exception {
+        Organization organization = new Organization();
+        organization.setOrganizationID("123");
+        organization.setOrganizationName("Test Organization");
+
+        when(organizationService.getOrganizationByName("Test Organization")).thenReturn(organization);
+
+        mockMvc.perform(get("/api/organization/getOrganizationByName/Test Organization"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.organizationID").value("123"))
+                .andExpect(jsonPath("$.organizationName").value("Test Organization"));
+    }
+
 }
 
