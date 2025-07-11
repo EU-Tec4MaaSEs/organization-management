@@ -35,6 +35,7 @@ import org.springframework.beans.factory.annotation.Value;
 public class OrganizationService {
     private static final Logger LOGGER = LoggerFactory.getLogger(OrganizationService.class);
     private static final String ORGANIZATION_WITH_ID = "Organization with id ";
+    private static final String NOT_FOUND = " not found";
 
     OrganizationRepository organizationRepository;
     ManufacturingResourceService manufacturingResourceService;
@@ -82,7 +83,7 @@ public class OrganizationService {
     public Organization getOrganization(String id) throws OrganizationNotFoundException {
         Optional<Organization> optOrganization = organizationRepository.findById(id);
         if (optOrganization.isEmpty()) {
-            throw new OrganizationNotFoundException(ORGANIZATION_WITH_ID + id + " not found");
+            throw new OrganizationNotFoundException(ORGANIZATION_WITH_ID + id + NOT_FOUND);
         }
 
         return optOrganization.get();
@@ -91,7 +92,7 @@ public class OrganizationService {
     public void deleteOrganizationById(String id) {
         Optional<Organization> optOrganization = organizationRepository.findById(id);
         if (optOrganization.isEmpty()) {
-            throw new OrganizationNotFoundException(ORGANIZATION_WITH_ID + id + " not found");
+            throw new OrganizationNotFoundException(ORGANIZATION_WITH_ID + id + NOT_FOUND);
         }
         organizationRepository.delete(optOrganization.get());
 
@@ -123,7 +124,7 @@ public class OrganizationService {
 
     public Organization getOrganizationByName(String name) {
         return organizationRepository.findByOrganizationName(name)
-                .orElseThrow(() -> new OrganizationNotFoundException("Organization with name " + name + " not found"));
+                .orElseThrow(() -> new OrganizationNotFoundException("Organization with name " + name + NOT_FOUND));
     }
 
 

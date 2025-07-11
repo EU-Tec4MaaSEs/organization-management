@@ -2,13 +2,9 @@ package gr.atc.t4m.organization_management.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import gr.atc.t4m.organization_management.validation.ValidPriority;
