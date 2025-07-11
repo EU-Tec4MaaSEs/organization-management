@@ -51,9 +51,7 @@ public class KafkaMessageHandler {
         }
 
         log.info("Event Description: {}", event.getDescription());
-        log.info("Event Type: {}", event.getEventType());
-
-             
+        log.info("Event Type: {}", event.getType());
 
     }
 

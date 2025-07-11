@@ -16,7 +16,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.kafka.core.KafkaTemplate;
 
+import gr.atc.t4m.organization_management.dto.EventDTO;
 import gr.atc.t4m.organization_management.dto.OrganizationDTO;
 import gr.atc.t4m.organization_management.dto.ProviderSearchDTO;
 import gr.atc.t4m.organization_management.exception.OrganizationAlreadyExistsException;
@@ -42,7 +44,8 @@ class OrganizationServiceTest {
     void setUp() {
       MockitoAnnotations.openMocks(this);
       modelMapper = new ModelMapper();
-      organizationService = new OrganizationService(organizationRepository, manufacturingResourceService, modelMapper);
+      KafkaTemplate<String, EventDTO> kafkaTemplate = mock(KafkaTemplate.class);
+     organizationService = new OrganizationService(organizationRepository, manufacturingResourceService, modelMapper, kafkaTemplate);
 
     }
 
