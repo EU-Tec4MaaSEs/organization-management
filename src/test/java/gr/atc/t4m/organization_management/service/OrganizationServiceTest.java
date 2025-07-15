@@ -3,20 +3,24 @@ package gr.atc.t4m.organization_management.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.kafka.core.KafkaTemplate;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import gr.atc.t4m.organization_management.dto.EventDTO;
 import gr.atc.t4m.organization_management.dto.OrganizationDTO;
 import gr.atc.t4m.organization_management.dto.ProviderSearchDTO;
 import gr.atc.t4m.organization_management.exception.OrganizationAlreadyExistsException;
@@ -25,6 +29,15 @@ import gr.atc.t4m.organization_management.model.MaasRole;
 import gr.atc.t4m.organization_management.model.Organization;
 import gr.atc.t4m.organization_management.repository.OrganizationRepository;
 
+import org.apache.kafka.clients.producer.RecordMetadata;
+
+import org.mockito.*;
+import org.springframework.kafka.support.SendResult;
+
+
+import java.lang.reflect.Field;
+
+
 class OrganizationServiceTest {
 
     @Mock
@@ -32,18 +45,26 @@ class OrganizationServiceTest {
 
     private ModelMapper modelMapper;
 
+    @Mock
+    private KafkaTemplate<String, EventDTO> kafkaTemplate;
+    @Captor
+    private ArgumentCaptor<EventDTO> eventCaptor;
 
     @Mock
     private ManufacturingResourceService manufacturingResourceService;
 
     private OrganizationService organizationService;
+    private static final String TOPIC = "dataspace-organization-onboarding";
+
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
       MockitoAnnotations.openMocks(this);
       modelMapper = new ModelMapper();
-      organizationService = new OrganizationService(organizationRepository, manufacturingResourceService, modelMapper);
-
+     organizationService = new OrganizationService(organizationRepository, manufacturingResourceService, modelMapper, kafkaTemplate);
+        Field topicField = OrganizationService.class.getDeclaredField("organizationRegistrationTopic");
+        topicField.setAccessible(true);
+        topicField.set(organizationService, TOPIC);
     }
 
     @Test
@@ -189,6 +210,88 @@ class OrganizationServiceTest {
         assertEquals(1, result.size());
         assertEquals("Greek Provider for AM services", result.get(0).getOrganizationName());
         verify(organizationRepository, times(1)).filterProviders(filter);
+    }
+
+     @Test
+    void testGetOrganizationByName_Success() {
+        // Arrange
+        Organization org = new Organization();
+        org.setOrganizationName("Test Org");
+
+        when(organizationRepository.findByOrganizationName("Test Org"))
+            .thenReturn(Optional.of(org));
+
+        // Act
+        Organization result = organizationService.getOrganizationByName("Test Org");
+
+        // Assert
+        assertNotNull(result);
+        assertEquals("Test Org", result.getOrganizationName());
+    }
+
+    @Test
+    void testGetOrganizationByName_NotFound() {
+        // Arrange
+        when(organizationRepository.findByOrganizationName("Missing Org"))
+            .thenReturn(Optional.empty());
+
+        // Act & Assert
+        Exception exception = assertThrows(OrganizationNotFoundException.class, () -> {
+            organizationService.getOrganizationByName("Missing Org");
+        });
+
+        assertEquals("Organization with name Missing Org not found", exception.getMessage());
+    }
+
+
+       @Test
+    void testCreateKafkaMessage_Success() throws Exception {
+        // Arrange
+        Organization organization = new Organization();
+        organization.setOrganizationID("org-123");
+        organization.setOrganizationName("Test Org");
+        organization.setContact("email@example.com");
+        organization.setDsConnectorURL("http://ds.example.com");
+
+        String userId = "user123";
+
+        SendResult<String, EventDTO> sendResult = mock(SendResult.class);
+        RecordMetadata metadata = mock(RecordMetadata.class);
+        when(metadata.partition()).thenReturn(1);
+        when(metadata.offset()).thenReturn(100L);
+        when(sendResult.getRecordMetadata()).thenReturn(metadata);
+        CompletableFuture<SendResult<String, EventDTO>> future = CompletableFuture.completedFuture(sendResult);
+
+        when(kafkaTemplate.send(eq(TOPIC), any(EventDTO.class))).thenReturn(future);
+
+        // Act
+        organizationService.createKafkaMessage(organization, userId);
+
+        // Assert
+        verify(kafkaTemplate).send(eq(TOPIC), eventCaptor.capture());
+        EventDTO sentEvent = eventCaptor.getValue();
+        assertEquals("Organization_Onboarding", sentEvent.getType());
+        assertTrue(sentEvent.getDescription().contains("Test Org"));
+    }
+
+    @Test
+    void testCreateKafkaMessage_Failure() throws Exception {
+        // Arrange
+        Organization organization = new Organization();
+        String userId = "user123";
+
+        CompletableFuture<SendResult<String, EventDTO>> future = new CompletableFuture<>();
+        future.completeExceptionally(new RuntimeException("Kafka down"));
+
+        when(kafkaTemplate.send(eq(TOPIC), any(EventDTO.class))).thenReturn(future);
+
+        // Act
+        organizationService.createKafkaMessage(organization, userId);
+
+        // Assert
+        verify(kafkaTemplate).send(eq(TOPIC), any(EventDTO.class));
+        // Optional: verify logs or interruption flag
+        assertTrue(Thread.currentThread().isInterrupted());
     }
 }
 

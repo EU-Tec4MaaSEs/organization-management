@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,6 +42,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+
 
 @RestController
 @RequestMapping("/api/organization")
@@ -84,8 +87,12 @@ public class OrganizationController {
     @PostMapping(value = "create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 public ResponseEntity<Organization> createOrganization(
         @RequestPart("organization") @Valid OrganizationDTO organizationDTO,
-        @RequestPart(value = "logoFile", required = false) MultipartFile logoFile)
+        @RequestPart(value = "logoFile", required = false) MultipartFile logoFile,
+        final HttpServletRequest request)
         throws OrganizationAlreadyExistsException {
+        
+        JwtAuthenticationToken jwtToken = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        String userId = jwtToken.getToken().getClaim("sub"); // or any custom claim
 
     // Handle validations
     if (organizationDTO.getOrganizationName() == null || organizationDTO.getOrganizationName().trim().isEmpty()) {
@@ -105,6 +112,9 @@ public ResponseEntity<Organization> createOrganization(
     organization.setLogoUrl(logoUrl); // Save logo location
 
     Organization savedOrganization = organizationService.createOrganization(organization);
+    
+    // Trigger Kafka event for organization registration
+    organizationService.createKafkaMessage(organization, userId);
     return ResponseEntity.ok(savedOrganization);
 }
 
