@@ -24,9 +24,9 @@ class KafkaMessageHandlerTest {
     void testValidEventCreatesNotification() {
         EventDTO event = EventDTO.builder()
                 .description("Test Event")
-                .eventType("INFO")
+                .type("INFO")
                 .priority("HIGH")
-                .sourceComponent("ComponentA")
+                .sourceComponent("Organization Management")
                 .build();
 
         handler.consume(event, "event.topic", "some-key");
@@ -37,7 +37,7 @@ class KafkaMessageHandlerTest {
     void testInvalidEventDoesNotCreateNotification() {
         EventDTO event = EventDTO.builder()
                 .description("Bad Event")
-                .eventType("ERROR")
+                .type("ERROR")
                 // Missing priority, productionModule, topic
                 .build();
 

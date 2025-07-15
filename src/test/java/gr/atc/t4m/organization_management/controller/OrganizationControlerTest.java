@@ -17,6 +17,8 @@ import gr.atc.t4m.organization_management.model.MaasRole;
 import gr.atc.t4m.organization_management.model.Organization;
 import gr.atc.t4m.organization_management.service.MinioService;
 import gr.atc.t4m.organization_management.service.OrganizationService;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -28,6 +30,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
+
 
 @WebMvcTest(OrganizationController.class)
 @Import(TestSecurityConfig.class)
@@ -43,6 +50,17 @@ class OrganizationControllerTest {
     private MinioService minioService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @BeforeEach
+void setupSecurityContext() {
+    Jwt jwt = Jwt.withTokenValue("token")
+        .header("alg", "none")
+        .claim("sub", "test-user-id") // or any userId you want to simulate
+        .build();
+
+    Authentication auth = new JwtAuthenticationToken(jwt);
+    SecurityContextHolder.getContext().setAuthentication(auth);
+}
 
     @Test
     void testHealthCheck() throws Exception {
@@ -215,6 +233,20 @@ void testCreateOrganization_WhenOrganizationNameIsNull_ShouldReturnBadRequest() 
                         .content(objectMapper.writeValueAsString(filter)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].organizationName").value("ATC Provider"));
+    }
+
+    @Test
+    void testGetOrganizationByName() throws Exception {
+        Organization organization = new Organization();
+        organization.setOrganizationID("123");
+        organization.setOrganizationName("Test Organization");
+
+        when(organizationService.getOrganizationByName("Test Organization")).thenReturn(organization);
+
+        mockMvc.perform(get("/api/organization/getOrganizationByName/Test Organization"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.organizationID").value("123"))
+                .andExpect(jsonPath("$.organizationName").value("Test Organization"));
     }
 
 }
