@@ -1,7 +1,10 @@
 package gr.atc.t4m.organization_management.controller;
 
+import java.io.IOException;
 import java.util.List;
 
+import gr.atc.t4m.organization_management.model.CapabilityEntry;
+import gr.atc.t4m.organization_management.service.CapabilityService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -52,13 +55,15 @@ public class OrganizationController {
 
     private final OrganizationService organizationService;
     private final MinioService minioService;
+    private final CapabilityService capabilityService;
 
 
     @Autowired
-    public OrganizationController(OrganizationService organizationService, 
-             MinioService minioService) {
+    public OrganizationController(OrganizationService organizationService,
+                                  MinioService minioService, CapabilityService capabilityService) {
         this.organizationService = organizationService;
         this.minioService = minioService;
+        this.capabilityService = capabilityService;
     }
 
     @Operation(summary = "Health Check", description = "Returns a health check message for the Organization Management service")
@@ -76,7 +81,7 @@ public class OrganizationController {
      * @return message of success or failure
      * @throws OrganizationAlreadyExistsException
      */
-     @Operation(summary = "Create a new Organization", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Create a new Organization", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Organization created successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid input value"),
@@ -85,54 +90,54 @@ public class OrganizationController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @PostMapping(value = "create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-public ResponseEntity<Organization> createOrganization(
-        @RequestPart("organization") @Valid OrganizationDTO organizationDTO,
-        @RequestPart(value = "logoFile", required = false) MultipartFile logoFile,
-        final HttpServletRequest request)
-        throws OrganizationAlreadyExistsException {
-        
+    public ResponseEntity<Organization> createOrganization(
+            @RequestPart("organization") @Valid OrganizationDTO organizationDTO,
+            @RequestPart(value = "logoFile", required = false) MultipartFile logoFile,
+            final HttpServletRequest request)
+            throws OrganizationAlreadyExistsException {
+
         JwtAuthenticationToken jwtToken = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         String userId = jwtToken.getToken().getClaim("sub"); // or any custom claim
 
-    // Handle validations
-    if (organizationDTO.getOrganizationName() == null || organizationDTO.getOrganizationName().trim().isEmpty()) {
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Organization name is required");
+        // Handle validations
+        if (organizationDTO.getOrganizationName() == null || organizationDTO.getOrganizationName().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Organization name is required");
+        }
+
+        // Upload file (if present)
+        String logoUrl = null;
+
+        if (logoFile != null && !logoFile.isEmpty()) {
+            logoUrl = minioService.uploadLogo(logoFile); // Store and return URL
+        }
+
+        // Copy data
+        Organization organization = new Organization();
+        BeanUtils.copyProperties(organizationDTO, organization);
+        organization.setLogoUrl(logoUrl); // Save logo location
+
+        Organization savedOrganization = organizationService.createOrganization(organization);
+
+        // Trigger Kafka event for organization registration
+        organizationService.createKafkaMessage(organization, userId);
+        return ResponseEntity.ok(savedOrganization);
     }
-
-    // Upload file (if present)
-    String logoUrl = null;
-    
-    if (logoFile != null && !logoFile.isEmpty()) {
-        logoUrl = minioService.uploadLogo(logoFile); // Store and return URL
-    }
-
-    // Copy data
-    Organization organization = new Organization();
-    BeanUtils.copyProperties(organizationDTO, organization);
-    organization.setLogoUrl(logoUrl); // Save logo location
-
-    Organization savedOrganization = organizationService.createOrganization(organization);
-    
-    // Trigger Kafka event for organization registration
-    organizationService.createKafkaMessage(organization, userId);
-    return ResponseEntity.ok(savedOrganization);
-}
 
 
     /**
      * Update an existing organization
-    *  @param id
+     *
+     * @param id
      * @return organization information
-     * @throws OrganizationNotExists
      * @throws IllegalArgumentException
      */
     @Operation(summary = "Update an existing Organization", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Organization updated."),
-        @ApiResponse(responseCode = "400", description = "Invalid input value."),
-        @ApiResponse(responseCode = "401", description = "Authentication process failed!")
+            @ApiResponse(responseCode = "200", description = "Organization updated."),
+            @ApiResponse(responseCode = "400", description = "Invalid input value."),
+            @ApiResponse(responseCode = "401", description = "Authentication process failed!")
 
-})
+    })
     @PutMapping(value = "/update/{id}")
     public ResponseEntity<Organization> updateOrganization(
             @PathVariable String id,
@@ -163,7 +168,7 @@ public ResponseEntity<Organization> createOrganization(
         return ResponseEntity.ok(organization);
     }
 
-     /**
+    /**
      * Get organization information by name
      *
      * @return message of success or failure
@@ -186,7 +191,7 @@ public ResponseEntity<Organization> createOrganization(
 
     /**
      * Get organizations information
-     * 
+     *
      * @param page
      * @param size
      * @param sortBy
@@ -218,7 +223,7 @@ public ResponseEntity<Organization> createOrganization(
 
     /**
      * Get All providers
-     * 
+     *
      * @return message of success or failure
      * @throws OrganizationNotFoundException
      */
@@ -239,7 +244,7 @@ public ResponseEntity<Organization> createOrganization(
 
     /**
      * Search for providers by location,manufacturing service
-     * 
+     *
      * @return message of success or failure
      * @throws OrganizationNotFoundException
      */
@@ -254,9 +259,10 @@ public ResponseEntity<Organization> createOrganization(
         List<Organization> providers = organizationService.searchProviders(filter);
         return ResponseEntity.ok(providers);
     }
+
     /**
      * Delete organization by providing the id
-     * 
+     *
      * @param id
      * @return message of successful deletion
      * @throws OrganizationNotFoundException
@@ -275,6 +281,21 @@ public ResponseEntity<Organization> createOrganization(
         InformationMessage informationMessage = new InformationMessage();
         informationMessage.setMessage("Organization deleted successfully.");
         return ResponseEntity.ok(informationMessage);
+    }
+
+    /**
+     * Parse static capabilities
+     */
+    @Operation(summary = "Parse static capabilities", description = "Parse static capabilities", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful parsing."),
+            @ApiResponse(responseCode = "401", description = "Authentication process failed!"),
+
+    })
+    @GetMapping("/parseStaticCapabilities")
+    public ResponseEntity<List<CapabilityEntry>> parseStaticCapabilities() throws IOException {
+
+        return ResponseEntity.ok(capabilityService.parseAASCapabilities());
     }
 
 }
