@@ -84,7 +84,7 @@ public class OrganizationController {
             @ApiResponse(responseCode = "409", description = "Conflict - Organization already exists with the same name"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    @PostMapping(value = "create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "create")
 public ResponseEntity<Organization> createOrganization(
         @RequestPart("organization") @Valid OrganizationDTO organizationDTO,
         @RequestPart(value = "logoFile", required = false) MultipartFile logoFile,
