@@ -1,18 +1,5 @@
 {
-  "modelType": "Submodel",
-  "kind": "Instance",
-  "semanticId": {
-    "keys": [
-      {
-        "type": "GlobalReference",
-        "value": "https://admin-shell.io/idta/CapabilityDescription/1/0/Submodel"
-      }
-    ],
-    "type": "ExternalReference"
-  },
-  "id": "https://example.com/ids/sm/4573_1130_6052_7692",
-  "idShort": "CapabilityDescription",
-  "submodelElements": [
+  "result": [
     {
       "modelType": "SubmodelElementCollection",
       "semanticId": {
@@ -9820,6 +9807,6 @@
         }
       ]
     }
-  ]
+  ],
+  "paging_metadata": {}
 }
-
