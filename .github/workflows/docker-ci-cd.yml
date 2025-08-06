@@ -1,4 +1,4 @@
-name: Docker Image CI - Organization Manager
+name: Docker Image CI/CD - Organization Manager
 env:
   DOCKER_IMAGE: organization-manager
   DEPLOYMENT_FILE: organization-management-deployment
