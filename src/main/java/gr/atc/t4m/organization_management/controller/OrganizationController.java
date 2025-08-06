@@ -86,8 +86,7 @@ public class OrganizationController {
     })
    @PostMapping(value = "create", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
 public ResponseEntity<Organization> createOrganization(
-        @RequestBody(required = false) OrganizationDTO organizationDTOJson,  // For JSON Input
-        @RequestPart(value = "organization", required = false) OrganizationDTO organizationDTOPart,  // For multipart if logo is present
+        @RequestPart("organization") @Valid OrganizationDTO organizationDTO,
         @RequestPart(value = "logoFile", required = false) MultipartFile logoFile,
         final HttpServletRequest request)
         throws OrganizationAlreadyExistsException {
@@ -95,14 +94,11 @@ public ResponseEntity<Organization> createOrganization(
         JwtAuthenticationToken jwtToken = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         String userId = jwtToken.getToken().getClaim("sub"); // or any custom claim
 
-    OrganizationDTO organizationDTO = (organizationDTOJson != null) ? organizationDTOJson : organizationDTOPart;
-    if (organizationDTO == null) {
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Organization data is required");
-    }
     // Handle validations
     if (organizationDTO.getOrganizationName() == null || organizationDTO.getOrganizationName().trim().isEmpty()) {
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Organization name is required");
     }
+
 
     // Upload file (if present)
     String logoUrl = null;
