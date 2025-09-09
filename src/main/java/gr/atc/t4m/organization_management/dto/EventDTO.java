@@ -26,4 +26,5 @@ public class EventDTO {
     private String type;
     private String sourceComponent;
     private JsonNode data;
+    private String organization;
 }

@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum ManufacturingServices {
-    AM(1, "AM"),
-    MACH(2, "MACH"),
-    PIM(3, "PIM");
+    AMS(1, "AMS"), // Additive Manufacturing services
+    MACH(2, "MACH"), // Machining services
+    PIMS(3, "PIMS"), // Plastic Injection Molding services
+    EB(4, "EB"), // Electronic Boards
+    FM(5, "FM"); // Flow meter
 
     private final int value;
     private final String name;

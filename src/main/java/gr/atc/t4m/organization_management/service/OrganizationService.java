@@ -150,7 +150,8 @@ public class OrganizationService {
             event.setSourceComponent("Organization Management");
             OffsetDateTime zonedDateTime = OffsetDateTime.now(ZoneOffset.UTC);
             event.setTimestamp(zonedDateTime);
-            event.setPriority("MID");
+            event.setPriority("Mid");
+            event.setOrganization(organization.getOrganizationName());
 
             try {
                 SendResult<String, EventDTO> result = kafkaTemplate.send(organizationRegistrationTopic, event)

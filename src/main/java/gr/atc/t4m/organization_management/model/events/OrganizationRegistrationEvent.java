@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 public class OrganizationRegistrationEvent {
     private String id; //same as organization ID
     private String name;
-    private String email;
     private String contact;
     private List<MaasRole> role;
     private String dataSpaceConnectorUrl;
