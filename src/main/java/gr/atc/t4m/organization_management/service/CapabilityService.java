@@ -1,14 +1,16 @@
 package gr.atc.t4m.organization_management.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gr.atc.t4m.organization_management.model.*;
 import gr.atc.t4m.organization_management.model.SubmodelWrapper.*;
-import org.springframework.core.io.ClassPathResource;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 
 /**
@@ -20,6 +22,9 @@ public class CapabilityService {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(CapabilityService.class);
+
+
     /**
      * Entry point for parsing capabilities from the static AAS JSON file.
      * The static file is a temporary solution.
@@ -28,9 +33,9 @@ public class CapabilityService {
      * @return List of CapabilityEntry parsed from the JSON file.
      * @throws IOException if the JSON file cannot be read.
      */
-    public List<CapabilityEntry> parseAASCapabilities() throws IOException {
-        InputStream inputStream = new ClassPathResource("static/capabilities_with_metadata.json").getInputStream();
-        SubmodelWrapper wrapper = mapper.readValue(inputStream, SubmodelWrapper.class);
+public List<CapabilityEntry> parseAASCapabilities(String jsonResponse) throws IOException {
+    // Parse JSON string directly instead of reading from file
+    SubmodelWrapper wrapper = mapper.readValue(jsonResponse, SubmodelWrapper.class);
 
         // Extract the first-level container (assumed to contain all capability sets)
         List<SubmodelElement> capabilitySets = mapper.convertValue(
@@ -45,8 +50,9 @@ public class CapabilityService {
             results.add(entry);
         }
 
-        // Optional: print for debugging
-        System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(results));
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info("Parsed AAS Capabilities: {}", mapper.writerWithDefaultPrettyPrinter().writeValueAsString(results));
+        }
         return results;
     }
 
@@ -102,6 +108,9 @@ public class CapabilityService {
                 switch (Type.valueOf(qualifier.getType())) {
                     case CapabilityType -> entry.setType(qualifier.getValue());
                     case Offered -> entry.setOffered(Boolean.parseBoolean(qualifier.getValue()));
+                    default -> {
+                        LOGGER.info("Unknown qualifier type: {}", qualifier.getType());
+                    }
                 }
             } catch (IllegalArgumentException ignored) {
                 // Skip unknown qualifier types (robustness for future-proofing)
@@ -156,6 +165,7 @@ public class CapabilityService {
                                 prop.setComment(extractComment(valueElement));
                             }
                         }
+                        default -> LOGGER.info("Other property type: {}", valueElement.getModelType());
                     }
                 } catch (IllegalArgumentException ignored) {
                     // Skip unknown or unsupported value types
@@ -198,4 +208,28 @@ public class CapabilityService {
 
         return new GeneralizationRelation(first, second);
     }
+
+    public List<DatasetEntry> retrieveCapabilitiesInformation(String body) throws IOException {
+        List<DatasetEntry> datasets = parseDatasets(body);
+
+        if (datasets.isEmpty()) {
+            throw new IOException("No datasets found in the response.");
+        }
+        return datasets;
+    }
+
+    public List<DatasetEntry> parseDatasets(String json) throws IOException {
+    JsonNode root = mapper.readTree(json);
+    JsonNode datasetsNode = root.path("data").path("dcat:dataset");
+
+    List<DatasetEntry> datasets = new ArrayList<>();
+    if (datasetsNode.isArray()) {
+        for (JsonNode node : datasetsNode) {
+            DatasetEntry entry = mapper.treeToValue(node, DatasetEntry.class);
+            datasets.add(entry);
+        }
+    }
+
+    return datasets;
+}
 }

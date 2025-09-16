@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CatalogDTO {
+    private String organizationName;
     private String providerUrl;
     private Integer page = 1;
     private Integer size = 10;

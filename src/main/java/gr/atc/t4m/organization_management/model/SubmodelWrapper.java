@@ -15,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SubmodelWrapper {
+    @JsonProperty("result")
     private List<SubmodelElement> submodelElements;
 
     @Data

@@ -1,9 +1,7 @@
 package gr.atc.t4m.organization_management.controller;
 
-import java.io.IOException;
 import java.util.List;
 
-import gr.atc.t4m.organization_management.model.CapabilityEntry;
 import gr.atc.t4m.organization_management.service.CapabilityService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +53,6 @@ public class OrganizationController {
 
     private final OrganizationService organizationService;
     private final MinioService minioService;
-    private final CapabilityService capabilityService;
 
 
     @Autowired
@@ -63,7 +60,6 @@ public class OrganizationController {
                                   MinioService minioService, CapabilityService capabilityService) {
         this.organizationService = organizationService;
         this.minioService = minioService;
-        this.capabilityService = capabilityService;
     }
 
     @Operation(summary = "Health Check", description = "Returns a health check message for the Organization Management service")
@@ -283,19 +279,5 @@ public class OrganizationController {
         return ResponseEntity.ok(informationMessage);
     }
 
-    /**
-     * Parse static capabilities
-     */
-    @Operation(summary = "Parse static capabilities", description = "Parse static capabilities", security = @SecurityRequirement(name = "bearerAuth"))
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful parsing."),
-            @ApiResponse(responseCode = "401", description = "Authentication process failed!"),
-
-    })
-    @GetMapping("/parseStaticCapabilities")
-    public ResponseEntity<List<CapabilityEntry>> parseStaticCapabilities() throws IOException {
-
-        return ResponseEntity.ok(capabilityService.parseAASCapabilities());
-    }
-
+    
 }

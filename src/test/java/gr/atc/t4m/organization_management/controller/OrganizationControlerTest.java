@@ -15,6 +15,7 @@ import gr.atc.t4m.organization_management.dto.OrganizationDTO;
 import gr.atc.t4m.organization_management.dto.ProviderSearchDTO;
 import gr.atc.t4m.organization_management.model.MaasRole;
 import gr.atc.t4m.organization_management.model.Organization;
+import gr.atc.t4m.organization_management.service.CapabilityService;
 import gr.atc.t4m.organization_management.service.MinioService;
 import gr.atc.t4m.organization_management.service.OrganizationService;
 
@@ -48,6 +49,10 @@ class OrganizationControllerTest {
 
     @MockitoBean
     private MinioService minioService;
+
+    @MockitoBean
+    private CapabilityService capabilityService;
+
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 

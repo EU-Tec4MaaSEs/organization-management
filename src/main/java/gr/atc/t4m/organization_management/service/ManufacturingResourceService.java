@@ -20,7 +20,7 @@ public class ManufacturingResourceService {
 
     }
 
-    public Optional<ManufacturingResource> findById(Long manufacturingResourceID) {
+    public Optional<ManufacturingResource> findById(String manufacturingResourceID) {
         LOGGER.info("Finding Manufacturing Resource by ID {}" , manufacturingResourceID);
     return manufacturingResourceRepo.findByManufacturingResourceID(manufacturingResourceID);
     }
@@ -29,5 +29,10 @@ public class ManufacturingResourceService {
         LOGGER.info("Saving Manufacturing Resource");
         
         manufacturingResourceRepo.save(mr);
+    }
+
+    public void delete(String manufacturingResourceID) {
+        LOGGER.info("Deleting Manufacturing Resource");
+        manufacturingResourceRepo.deleteById(manufacturingResourceID);
     }
 }
