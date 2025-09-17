@@ -250,10 +250,8 @@ String json = """
 }
 
 
-
-    @Test
-    void parseAASCapabilities_shouldHandleEmptyQualifiersAndComments() throws IOException {
-        
+@Test
+void parseAASCapabilities_shouldParseCapabilityEntriesWithProperties() throws IOException {
 String json = """
 {
   "result": [
@@ -262,117 +260,46 @@ String json = """
       "modelType": "SubmodelElementCollection",
       "value": [
         {
-          "idShort": "Milling",
-          "modelType": "Capability",
-          "qualifiers": [
+          "idShort": "MillingPropertySet",
+          "modelType": "SubmodelElementCollection",
+          "value": [
             {
-              "type": "Offered",
-              "value": "true"
-            },
-            {
-              "type": "CapabilityType",
-              "value": "Primary"
-            }
-          ],
-         "value": [
-              {
-              "modelType": "Capability",
-              "semanticId": {
-                "keys": [
-                  {
-                    "type": "GlobalReference",
-                    "value": "https://admin-shell.io/idta/CapabilityDescription/Capability/1/0"
-                  }
-                ],
-                "type": "ExternalReference"
-              },
-              "supplementalSemanticIds": [
-                {
-                  "keys": [
-                    {
-                      "type": "GlobalReference",
-                      "value": "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Milling"
-                    }
-                  ],
-                  "type": "ExternalReference"
-                }
-              ],
-              "qualifiers": [
-                {
-                  "semanticId": {
-                    "keys": [
-                      {
-                        "type": "GlobalReference",
-                        "value": "https://admin-shell.io/idta/CapabilityDescription/CapabilityRoleQualifiers/Offered/1/0"
-                      }
-                    ],
-                    "type": "ExternalReference"
-                  },
-                  "kind": "ValueQualifier",
-                  "type": "Offered",
-                  "value": "true",
-                  "valueType": "xs:boolean"
-                },
-                {
-                  "kind": "ConceptQualifier",
-                  "type": "CapabilityType",
-                  "value": "Primary",
-                  "valueType": "xs:string"
-                }
-              ],
-              "idShort": "Milling"
-            },
-            {
-              "modelType": "MultiLanguageProperty",
-              "semanticId": {
-                "keys": [
-                  {
-                    "type": "GlobalReference",
-                    "value": "https://admin-shell.io/idta/CapabilityDescription/CapabilityComment/1/0"
-                  }
-                ],
-                "type": "ExternalReference"
-              },
+              "idShort": "MillingPropertySet",
+              "modelType": "SubmodelElementCollection",
               "value": [
                 {
-                  "language": "en",
-                  "text": "Machining is manufacturing process that involves the removal of material from a workpiece to achieve the desired shape, size, and surface finish. It is a subtractive manufacturing method, meaning that material is removed from the workpiece to create the final product. The machine could be controlled by an operator (i.e., manual) or  by a Computer Numerical Control (i. e., CNC) system that can execute the instruction contained in a CAM program."
+                  "idShort": "NumberOfAxesContainer",
+                  "modelType": "SubmodelElementCollection",
+                  "value": [
+                    {
+                      "idShort": "NumberOfAxes",
+                      "modelType": "Property",
+                      "value": "5",
+                      "valueType": "xs:int"
+                    }
+                  ]
                 }
-              ],
-              "qualifiers": [
-                {
-                  "semanticId": {
-                    "keys": [
-                      {
-                        "type": "GlobalReference",
-                        "value": "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
-                      }
-                    ],
-                    "type": "ExternalReference"
-                  },
-                  "kind": "ConceptQualifier",
-                  "type": "Cardinality",
-                  "value": "ZeroToOne",
-                  "valueType": "xs:string"
-                }
-              ],
-              "idShort": "CapabilityComment"
+              ]
             }
-         ]
-       }
-
+          ]
+        }
       ]
     }
   ]
 }
+
 """;
+
+
+
                                             
 
         List<CapabilityEntry> entries = capabilityService.parseAASCapabilities(json);
         CapabilityEntry entry = entries.get(0);
 
-        assertEquals("Milling", entry.getName());
-        assertEquals("Machining is manufacturing process that involves the removal of material from a workpiece to achieve the desired shape, size, and surface finish. It is a subtractive manufacturing method, meaning that material is removed from the workpiece to create the final product. The machine could be controlled by an operator (i.e., manual) or  by a Computer Numerical Control (i. e., CNC) system that can execute the instruction contained in a CAM program.", entry.getComment());
+        assertEquals("MillingPropertySet", entry.getName());
+        assertEquals(entry.getProperties().size(),1);
+        assertEquals("NumberOfAxes", entry.getProperties().get(0).getName());
     }
 
     @Test
