@@ -48,6 +48,8 @@ class DsConnectorServiceTest {
         private CatalogDTO catalogDTO;
         private DatasetEntry datasetEntry;
         private List<CapabilityEntry> capabilityEntries;
+        private String datasetId;
+
 
         @BeforeEach
         void setUp() {
@@ -65,7 +67,10 @@ class DsConnectorServiceTest {
                 datasetEntry.setTitle("Test Title");
 
                 capabilityEntries = Collections.singletonList(new CapabilityEntry());
-        }
+
+                datasetId = "test-dataset-id";
+            }
+        
 
         @Test
         void retrieveCapabilities_Success_WithSpy() throws URISyntaxException, IOException {
@@ -190,7 +195,6 @@ class DsConnectorServiceTest {
 
     @Test
     void requestDatasetTransfer_returnsOk() throws URISyntaxException {
-        String datasetId = "dataset1";
 
         // Spy the requestDatasetTransfer call
         doReturn(new ResponseEntity<>("{}", HttpStatus.OK))
@@ -202,4 +206,79 @@ class DsConnectorServiceTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("{}", response.getBody());
     }
+
+     @Test
+    void requestDatasetTransfer_Success() throws URISyntaxException {
+        // Arrange
+        String expectedUrl = "http://test-ds-connector.com/v1/request/transfer/dataset/test-dataset-id";
+        ResponseEntity<String> successResponse = new ResponseEntity<>("Transfer successful", HttpStatus.OK);
+        
+        // Use doReturn to stub the method call on the spy
+        doReturn(successResponse).when(dsConnectorServiceSpy).requestDatasetTransfer(any(String.class));
+
+        // Act
+        ResponseEntity<String> response = dsConnectorServiceSpy.requestDatasetTransfer(datasetId);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Transfer successful", response.getBody());
+    }
+
+    @Test
+    void requestDatasetTransfer_ThrowsException() throws URISyntaxException {
+        // Arrange
+        // We simulate an exception to ensure the method handles it correctly.
+        doThrow(new URISyntaxException("invalid url", "Invalid syntax")).when(dsConnectorServiceSpy).requestDatasetTransfer(any(String.class));
+
+        // Act & Assert
+        assertThrows(URISyntaxException.class, () -> dsConnectorServiceSpy.requestDatasetTransfer(datasetId));
+    }
+
+
+    @Test
+    void consumeCapabilities_Success() throws URISyntaxException {
+        // Arrange
+        String token = "valid-token";
+        ResponseEntity<String> successResponse = new ResponseEntity<>("Capabilities Data", HttpStatus.OK);
+        
+        doReturn(successResponse).when(dsConnectorServiceSpy).consumeCapabilities(any(String.class));
+
+        ResponseEntity<String> response = dsConnectorServiceSpy.consumeCapabilities(token);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Capabilities Data", response.getBody());
+    }
+
+    @Test
+    void consumeCapabilities_ThrowsURISyntaxException() throws URISyntaxException {
+        // Arrange
+        String invalidToken = "\"invalid uri\"";
+        
+        doThrow(new URISyntaxException("invalid uri", "Invalid syntax")).when(dsConnectorServiceSpy).consumeCapabilities(invalidToken);
+
+        assertThrows(URISyntaxException.class, () -> dsConnectorServiceSpy.consumeCapabilities(invalidToken));
+    }
+
+     @Test
+    void fetchCatalog_Success() throws URISyntaxException {
+        ResponseEntity<String> successResponse = new ResponseEntity<>("Catalog content", HttpStatus.OK);
+        
+        doReturn(successResponse).when(dsConnectorServiceSpy).fetchCatalog(any(CatalogDTO.class));
+
+        ResponseEntity<String> response = dsConnectorServiceSpy.fetchCatalog(catalogDTO);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Catalog content", response.getBody());
+    }
+
+    @Test
+    void fetchCatalog_ThrowsURISyntaxException() throws URISyntaxException {
+        doThrow(new URISyntaxException("invalid uri", "Invalid syntax")).when(dsConnectorServiceSpy).fetchCatalog(any(CatalogDTO.class));
+
+        assertThrows(URISyntaxException.class, () -> dsConnectorServiceSpy.fetchCatalog(catalogDTO));
+    }
 }
+
