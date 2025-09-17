@@ -119,7 +119,7 @@ public class DsConnectorService {
         }
     }
 
-    private ResponseEntity<String> consumeCapabilities(String token) throws URISyntaxException {
+    public ResponseEntity<String> consumeCapabilities(String token) throws URISyntaxException {
      String baseUrl = "https://dsc.t4m.atc.gr/api/data-plane/";
 
     String sanitizedToken = token.replace("\"", "");

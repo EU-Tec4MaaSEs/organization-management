@@ -37,6 +37,11 @@ public List<CapabilityEntry> parseAASCapabilities(String jsonResponse) throws IO
     // Parse JSON string directly instead of reading from file
     SubmodelWrapper wrapper = mapper.readValue(jsonResponse, SubmodelWrapper.class);
 
+      List<SubmodelElement> submodelElements = wrapper.getSubmodelElements();
+      if (submodelElements == null || submodelElements.isEmpty()) {
+        return Collections.emptyList();
+    }
+
         // Extract the first-level container (assumed to contain all capability sets)
         List<SubmodelElement> capabilitySets = mapper.convertValue(
                 wrapper.getSubmodelElements().get(0).getValue(),
