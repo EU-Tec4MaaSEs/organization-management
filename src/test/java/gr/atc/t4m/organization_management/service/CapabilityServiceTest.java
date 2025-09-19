@@ -11,6 +11,9 @@ import java.io.IOException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 
 class CapabilityServiceTest {
 
@@ -312,5 +315,27 @@ String json = """
     void parseDatasets_shouldHandleInvalidJson() {
         String invalidJson = "{ invalid }";
         assertThrows(IOException.class, () -> capabilityService.parseDatasets(invalidJson));
+    }
+
+
+    @Test
+    void parseDatasets_shouldTestTeknikerOutcome() throws IOException {
+          String json = Files.readString(Paths.get("src/test/resources/DSTecnikerResponse.json"));
+                  List<CapabilityEntry> entries = capabilityService.parseAASCapabilities(json);
+                        CapabilityEntry entry = entries.get(0);
+
+        assertEquals("Milling", entry.getName());
+        assertEquals(entry.getProperties().size(),11);
+        assertEquals("machining operation which consists of removing material by means of a rotary tool called a \"milling cutter\" of which there are several different types. Note 1 to entry: The typical milling operations mostly involve face milling or end milling. The tools are mounted either in the spindle taper or on the spindle front face. (ISO 8636-1:2000)", entry.getComment());
+        assertEquals("Primary",entry.getType());
+
+        assertEquals("NumberOfAxis", entry.getProperties().get(0).getName());
+        assertEquals("5", entry.getProperties().get(0).getValue());
+        assertEquals("xs:int", entry.getProperties().get(0).getValueType());
+        assertEquals("Number of axes. It refers to the degrees of freedom or directions in which the machine can move its tool or workpiece.", entry.getProperties().get(0).getComment());
+
+
+
+
     }
 }
