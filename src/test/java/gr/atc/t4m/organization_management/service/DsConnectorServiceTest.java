@@ -9,8 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedConstruction;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -20,7 +18,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
@@ -29,256 +26,146 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class DsConnectorServiceTest {
 
-        @Mock
-        private CapabilityService capabilityService;
+    @Mock
+    private RestTemplate restTemplate;
 
-        @InjectMocks
-        @Spy
-        private DsConnectorService dsConnectorServiceSpy;
+    @Mock
+    private CapabilityService capabilityService;
 
-        private CatalogDTO catalogDTO;
-        private DatasetEntry datasetEntry;
-        private List<CapabilityEntry> capabilityEntries;
-        private String datasetId;
+    @InjectMocks
+    private DsConnectorService dsConnectorService;
 
+    private CatalogDTO catalogDTO;
+    private DatasetEntry datasetEntry;
 
-        @BeforeEach
-        void setUp() {
-
-                ReflectionTestUtils.setField(dsConnectorServiceSpy, "dsConnectorUrl", "http://test-ds-connector.com");
-
-                catalogDTO = new CatalogDTO();
-                catalogDTO.setProviderUrl("http://test-provider.com");
-                catalogDTO.setPage(0);
-                catalogDTO.setSize(10);
-                catalogDTO.setRefresh(false);
-
-                datasetEntry = new DatasetEntry();
-                datasetEntry.setId("test-dataset-id");
-                datasetEntry.setTitle("Test Title");
-
-                capabilityEntries = Collections.singletonList(new CapabilityEntry());
-
-                datasetId = "test-dataset-id";
-            }
-        
-
-        @Test
-        void retrieveCapabilities_Success_WithSpy() throws URISyntaxException, IOException {
-                // Arrange
-                ResponseEntity<String> catalogResponse = new ResponseEntity<>("catalog data", HttpStatus.OK);
-                ResponseEntity<String> transferResponse = new ResponseEntity<>("transfer data", HttpStatus.OK);
-                ResponseEntity<String> capabilitiesResponse = new ResponseEntity<>("capabilities data", HttpStatus.OK);
-
-                // Stub the private methods to return our mock responses
-                doReturn(catalogResponse).when(dsConnectorServiceSpy).fetchCatalog(any(CatalogDTO.class));
-                doReturn(transferResponse).when(dsConnectorServiceSpy).requestDatasetTransfer(anyString());
-                doReturn(capabilitiesResponse).when(dsConnectorServiceSpy).consumeCapabilities(anyString());
-
-                // Mock the CapabilityService calls as usual
-                when(capabilityService.retrieveCapabilitiesInformation(catalogResponse.getBody()))
-                                .thenReturn(Collections.singletonList(datasetEntry));
-                when(capabilityService.parseAASCapabilities(capabilitiesResponse.getBody()))
-                                .thenReturn(capabilityEntries);
-
-                // Act
-                ManufacturingResource result = dsConnectorServiceSpy.retrieveCapabilities(catalogDTO);
-
-                // Assert
-                assertNotNull(result);
-                assertEquals("test-dataset-id", result.getCapabilityDatasetID());
-                assertEquals("Test Title", result.getManufacturingResourceTitle());
-                assertEquals(capabilityEntries, result.getCapabilities());
-        }
-
-        @Test
-        void validateOrganization_validResponse_returnsHttpStatus() {
-   
-
-                ResponseEntity<String> mockResponse = new ResponseEntity<>("OK", HttpStatus.OK);
-
-                // Mock construction of RestTemplate
-                try (MockedConstruction<RestTemplate> mocked = mockConstruction(RestTemplate.class,
-                                (mock, context) -> {
-                                        when(mock.exchange(any(URI.class), eq(HttpMethod.POST), any(HttpEntity.class),
-                                                        eq(String.class)))
-                                                        .thenReturn(mockResponse);
-                                })) {
-
-                        HttpStatus status = dsConnectorServiceSpy.validateOrganization(catalogDTO);
-                        assertEquals(HttpStatus.OK, status);
-
-                        // Verify that exchange was called once
-                        RestTemplate mockRestTemplate = mocked.constructed().get(0);
-                        verify(mockRestTemplate, times(1))
-                                        .exchange(any(URI.class), eq(HttpMethod.POST), any(HttpEntity.class),
-                                                        eq(String.class));
-                }
-        }
-
-        @Test
-        void validateOrganization_invalidUri_throwsBadRequest() {
-                catalogDTO.setProviderUrl("http://example.com");
-
-                // Inject an invalid dsConnectorUrl to trigger URISyntaxException
-                ReflectionTestUtils.setField(dsConnectorServiceSpy, "dsConnectorUrl", "::invalid::url");
-
-                ResponseStatusException ex = assertThrows(ResponseStatusException.class,
-                                () -> dsConnectorServiceSpy.validateOrganization(catalogDTO));
-
-                assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
-                assertTrue(ex.getReason().contains("Invalid base URI"));
-        }
-
-        @Test
-        void validateOrganization_httpError_throwsInternalServerError() {
-                CatalogDTO dto = new CatalogDTO();
-                dto.setProviderUrl("http://test.url");
-
-                // Mock RestTemplate to throw exception
-                try (MockedConstruction<RestTemplate> mocked = mockConstruction(RestTemplate.class,
-                                (mock, context) -> {
-                                        when(mock.exchange(any(URI.class), eq(HttpMethod.POST), any(HttpEntity.class),
-                                                        eq(String.class)))
-                                                        .thenThrow(new RuntimeException("Connection failed"));
-                                })) {
-
-                        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
-                                        () -> dsConnectorServiceSpy.validateOrganization(dto));
-                        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, ex.getStatusCode());
-                        assertTrue(ex.getReason().contains("Validation failed"));
-                }
-        }
-
-
-
-        @Test
-    void consumeCapabilities_returnsOk() throws URISyntaxException {
-        // Mock the private RestTemplate call by spying the public method
-        doReturn(new ResponseEntity<>("{}", HttpStatus.OK))
-                .when(dsConnectorServiceSpy).consumeCapabilities(anyString());
-
-        ResponseEntity<String> response = dsConnectorServiceSpy.consumeCapabilities("token123");
-
-        assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("{}", response.getBody());
-    }
-
-    @Test
-    void fetchCatalog_returnsOk() throws URISyntaxException {
-        catalogDTO.setProviderUrl("http://test.url");
+    @BeforeEach
+    void setUp() {
+        ReflectionTestUtils.setField(dsConnectorService, "dsConnectorUrl", "http://test-ds-connector.com/");
+        catalogDTO = new CatalogDTO();
+        catalogDTO.setProviderUrl("http://test-provider.com");
         catalogDTO.setPage(0);
         catalogDTO.setSize(10);
-        catalogDTO.setRefresh(false);
-        catalogDTO.setTitle("Test");
 
-        // Spy the fetchCatalog call
-        doReturn(new ResponseEntity<>("{}", HttpStatus.OK))
-                .when(dsConnectorServiceSpy).fetchCatalog(any(CatalogDTO.class));
-
-        ResponseEntity<String> response = dsConnectorServiceSpy.fetchCatalog(catalogDTO);
-
-        assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("{}", response.getBody());
+        datasetEntry = new DatasetEntry();
+        datasetEntry.setId("test-dataset-id");
+        datasetEntry.setTitle("Test Title");
     }
 
     @Test
-    void requestDatasetTransfer_returnsOk() throws URISyntaxException {
+    void fetchCatalog_Success() throws Exception {
+        ResponseEntity<String> expected = new ResponseEntity<>("Catalog content", HttpStatus.OK);
 
-        // Spy the requestDatasetTransfer call
-        doReturn(new ResponseEntity<>("{}", HttpStatus.OK))
-                .when(dsConnectorServiceSpy).requestDatasetTransfer(datasetId);
+        when(restTemplate.exchange(any(URI.class), eq(HttpMethod.POST), any(HttpEntity.class), eq(String.class)))
+                .thenReturn(expected);
 
-        ResponseEntity<String> response = dsConnectorServiceSpy.requestDatasetTransfer(datasetId);
+        ResponseEntity<String> result = dsConnectorService.fetchCatalog(catalogDTO);
 
-        assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("{}", response.getBody());
-    }
-
-     @Test
-    void requestDatasetTransfer_Success() throws URISyntaxException {
-        // Arrange
-        String expectedUrl = "http://test-ds-connector.com/v1/request/transfer/dataset/test-dataset-id";
-        ResponseEntity<String> successResponse = new ResponseEntity<>("Transfer successful", HttpStatus.OK);
-        
-        // Use doReturn to stub the method call on the spy
-        doReturn(successResponse).when(dsConnectorServiceSpy).requestDatasetTransfer(any(String.class));
-
-        // Act
-        ResponseEntity<String> response = dsConnectorServiceSpy.requestDatasetTransfer(datasetId);
-
-        // Assert
-        assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Transfer successful", response.getBody());
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals("Catalog content", result.getBody());
     }
 
     @Test
-    void requestDatasetTransfer_ThrowsException() throws URISyntaxException {
-        // Arrange
-        // We simulate an exception to ensure the method handles it correctly.
-        doThrow(new URISyntaxException("invalid url", "Invalid syntax")).when(dsConnectorServiceSpy).requestDatasetTransfer(any(String.class));
+    void requestDatasetTransfer_Success() throws Exception {
 
-        // Act & Assert
-        assertThrows(URISyntaxException.class, () -> dsConnectorServiceSpy.requestDatasetTransfer(datasetId));
-    }
+        when(restTemplate.exchange(
+                any(URI.class),
+                any(HttpMethod.class),
+                any(HttpEntity.class),
+                eq(String.class))).thenReturn(new ResponseEntity<>("Transfer OK", HttpStatus.OK));
 
+        ResponseEntity<String> result = dsConnectorService.requestDatasetTransfer("test-dataset-id");
 
-    @Test
-    void consumeCapabilities_Success() throws URISyntaxException {
-        // Arrange
-        String token = "valid-token";
-        ResponseEntity<String> successResponse = new ResponseEntity<>("Capabilities Data", HttpStatus.OK);
-        
-        doReturn(successResponse).when(dsConnectorServiceSpy).consumeCapabilities(any(String.class));
-
-        ResponseEntity<String> response = dsConnectorServiceSpy.consumeCapabilities(token);
-
-        assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Capabilities Data", response.getBody());
+        assertEquals("Transfer OK", result.getBody());
     }
 
     @Test
-    void consumeCapabilities_ThrowsURISyntaxException() throws URISyntaxException {
-        // Arrange
-        String invalidToken = "\"invalid uri\"";
-        
-        doThrow(new URISyntaxException("invalid uri", "Invalid syntax")).when(dsConnectorServiceSpy).consumeCapabilities(invalidToken);
+    void consumeCapabilities_Success() throws Exception {
+        ResponseEntity<String> expected = new ResponseEntity<>("Capabilities Data", HttpStatus.OK);
 
-        assertThrows(URISyntaxException.class, () -> dsConnectorServiceSpy.consumeCapabilities(invalidToken));
-    }
+        when(restTemplate.exchange(any(URI.class), eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class)))
+                .thenReturn(expected);
 
-     @Test
-    void fetchCatalog_Success() throws URISyntaxException {
-        ResponseEntity<String> successResponse = new ResponseEntity<>("Catalog content", HttpStatus.OK);
-        
-        doReturn(successResponse).when(dsConnectorServiceSpy).fetchCatalog(any(CatalogDTO.class));
+        ResponseEntity<String> result = dsConnectorService.consumeCapabilities("valid-token");
 
-        ResponseEntity<String> response = dsConnectorServiceSpy.fetchCatalog(catalogDTO);
-
-        assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Catalog content", response.getBody());
+        assertEquals("Capabilities Data", result.getBody());
     }
 
     @Test
-    void fetchCatalog_ThrowsURISyntaxException() throws URISyntaxException {
-        doThrow(new URISyntaxException("invalid uri", "Invalid syntax")).when(dsConnectorServiceSpy).fetchCatalog(any(CatalogDTO.class));
-
-        assertThrows(URISyntaxException.class, () -> dsConnectorServiceSpy.fetchCatalog(catalogDTO));
+    void consumeCapabilities_InvalidToken_ThrowsURISyntaxException() {
+        assertThrows(URISyntaxException.class,
+                () -> dsConnectorService.consumeCapabilities("\"bad uri\""));
     }
+
+    @Test
+    void validateOrganization_Success() {
+        ResponseEntity<String> mockResponse = new ResponseEntity<>("OK", HttpStatus.OK);
+
+        when(restTemplate.exchange(any(URI.class), eq(HttpMethod.POST), any(HttpEntity.class), eq(String.class)))
+                .thenReturn(mockResponse);
+
+        HttpStatus status = dsConnectorService.validateOrganization(catalogDTO);
+
+        assertEquals(HttpStatus.OK, status);
+    }
+
+    @Test
+    void validateOrganization_InvalidUri_ThrowsBadRequest() {
+        ReflectionTestUtils.setField(dsConnectorService, "dsConnectorUrl", "::invalid::url");
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> dsConnectorService.validateOrganization(catalogDTO));
+
+        assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
+    }
+
+    @Test
+    void validateOrganization_HttpError_ThrowsInternalServerError() {
+        when(restTemplate.exchange(any(URI.class), eq(HttpMethod.POST), any(HttpEntity.class), eq(String.class)))
+                .thenThrow(new RuntimeException("Connection failed"));
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> dsConnectorService.validateOrganization(catalogDTO));
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, ex.getStatusCode());
+    }
+
+    @Test
+    void retrieveCapabilities_Success() throws Exception {
+        ResponseEntity<String> catalogResponse = new ResponseEntity<>("catalog", HttpStatus.OK);
+        ResponseEntity<String> capabilitiesResponse = new ResponseEntity<>("capabilities", HttpStatus.OK);
+
+        // Step 1: fetchCatalog (POST)
+        when(restTemplate.exchange(
+                any(URI.class),
+                eq(HttpMethod.POST),
+                any(HttpEntity.class),
+                eq(String.class))).thenReturn(catalogResponse);
+
+        when(restTemplate.exchange(
+                argThat(uri -> uri != null && uri.toString().contains("/v1/consumer/")),
+                eq(HttpMethod.GET),
+                any(HttpEntity.class),
+                eq(String.class))).thenReturn(capabilitiesResponse);
+
+        when(capabilityService.retrieveCapabilitiesInformation("catalog"))
+                .thenReturn(Collections.singletonList(datasetEntry));
+        List<CapabilityEntry> capabilities = Collections.singletonList(new CapabilityEntry());
+        when(capabilityService.parseAASCapabilities("capabilities")).thenReturn(capabilities);
+
+        ManufacturingResource result = dsConnectorService.retrieveCapabilities(catalogDTO);
+
+        assertNotNull(result);
+        assertEquals("test-dataset-id", result.getCapabilityDatasetID());
+        assertEquals("Test Title", result.getManufacturingResourceTitle());
+        assertEquals(capabilities, result.getCapabilities());
+    }
+
 }
-

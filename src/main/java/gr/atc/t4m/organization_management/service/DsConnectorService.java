@@ -31,11 +31,13 @@ public class DsConnectorService {
     @Value("${ds.connector.url}")
     private String dsConnectorUrl;
     private final CapabilityService capabilityService;
+    private final RestTemplate restTemplate;
 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DsConnectorService.class);
-        public DsConnectorService(CapabilityService capabilityService) {
+    public DsConnectorService(CapabilityService capabilityService, RestTemplate restTemplate) {
         this.capabilityService = capabilityService;
+        this.restTemplate = restTemplate;
     }
 
 
@@ -60,7 +62,6 @@ public class DsConnectorService {
                     .build()
                     .toUri();
 
-            RestTemplate restTemplate = new RestTemplate();
 
             HttpHeaders headers = new HttpHeaders();
             headers.set("accept", "application/json");
@@ -126,8 +127,6 @@ public class DsConnectorService {
 
     URI baseUri = new URI(baseUrl + "v1/consumer/" + sanitizedToken);
 
-    RestTemplate restTemplate = new RestTemplate();
-
     HttpHeaders headers = new HttpHeaders();
     headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
     headers.setContentType(MediaType.APPLICATION_JSON);
@@ -159,7 +158,6 @@ public class DsConnectorService {
             .build()
             .toUri();
 
-    RestTemplate restTemplate = new RestTemplate();
 
     HttpHeaders headers = new HttpHeaders();
     headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
@@ -182,8 +180,6 @@ public class DsConnectorService {
         String baseUrl = dsConnectorUrl.endsWith("/") ? dsConnectorUrl : dsConnectorUrl + "/";
         URI baseUri = new URI(baseUrl + "v1/request/transfer/dataset/" + datasetId);
 
-
-    RestTemplate restTemplate = new RestTemplate();
 
     HttpHeaders headers = new HttpHeaders();
     headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
