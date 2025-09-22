@@ -30,9 +30,14 @@ public class DsConnectorService {
 
     @Value("${ds.connector.url}")
     private String dsConnectorUrl;
+    @Value("${ds.connector.dataplane.url}")
+    private String dsConnectorDataPlaneUrl;
     private final CapabilityService capabilityService;
     private final RestTemplate restTemplate;
 
+    private static final String V1_REQUEST_CATALOGUE = "v1/request/catalog";
+    private static final String V1_REQUEST_TRANSFER_DATASET = "v1/request/transfer/dataset/";
+    private static final String V1_CONSUMER = "v1/consumer/";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DsConnectorService.class);
     public DsConnectorService(CapabilityService capabilityService, RestTemplate restTemplate) {
@@ -52,7 +57,7 @@ public class DsConnectorService {
 
         try {
             String baseUrl = dsConnectorUrl.endsWith("/") ? dsConnectorUrl : dsConnectorUrl + "/";
-            URI baseUri = new URI(baseUrl + "v1/request/catalog");
+            URI baseUri = new URI(baseUrl + V1_REQUEST_CATALOGUE);
 
             URI finalUri = UriComponentsBuilder.newInstance()
                     .uri(baseUri)
@@ -121,11 +126,11 @@ public class DsConnectorService {
     }
 
     public ResponseEntity<String> consumeCapabilities(String token) throws URISyntaxException {
-     String baseUrl = "https://dsc.t4m.atc.gr/api/data-plane/";
+     String baseUrl = dsConnectorDataPlaneUrl;
 
     String sanitizedToken = token.replace("\"", "");
 
-    URI baseUri = new URI(baseUrl + "v1/consumer/" + sanitizedToken);
+    URI baseUri = new URI(baseUrl + V1_CONSUMER + sanitizedToken);
 
     HttpHeaders headers = new HttpHeaders();
     headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
@@ -147,7 +152,7 @@ public class DsConnectorService {
 
     public ResponseEntity<String> fetchCatalog(CatalogDTO catalogDTO) throws URISyntaxException {
         String baseUrl = dsConnectorUrl.endsWith("/") ? dsConnectorUrl : dsConnectorUrl + "/";
-        URI baseUri = new URI(baseUrl + "v1/request/catalog");
+        URI baseUri = new URI(baseUrl + V1_REQUEST_CATALOGUE);
 
     URI finalUri = UriComponentsBuilder.newInstance()
             .uri(baseUri)
@@ -178,7 +183,7 @@ public class DsConnectorService {
 
  public ResponseEntity<String> requestDatasetTransfer(String datasetId) throws URISyntaxException {
         String baseUrl = dsConnectorUrl.endsWith("/") ? dsConnectorUrl : dsConnectorUrl + "/";
-        URI baseUri = new URI(baseUrl + "v1/request/transfer/dataset/" + datasetId);
+        URI baseUri = new URI(baseUrl + V1_REQUEST_TRANSFER_DATASET + datasetId);
 
 
     HttpHeaders headers = new HttpHeaders();

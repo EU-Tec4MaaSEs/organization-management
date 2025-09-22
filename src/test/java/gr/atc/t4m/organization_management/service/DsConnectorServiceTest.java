@@ -49,6 +49,8 @@ class DsConnectorServiceTest {
     @BeforeEach
     void setUp() {
         ReflectionTestUtils.setField(dsConnectorService, "dsConnectorUrl", "http://test-ds-connector.com/");
+        ReflectionTestUtils.setField(dsConnectorService, "dsConnectorDataPlaneUrl", "https://test-ds-connector.com/api/data-plane/");
+
         catalogDTO = new CatalogDTO();
         catalogDTO.setProviderUrl("http://test-provider.com");
         catalogDTO.setPage(0);
