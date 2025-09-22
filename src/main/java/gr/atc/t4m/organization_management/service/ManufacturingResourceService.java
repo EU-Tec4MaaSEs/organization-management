@@ -1,11 +1,13 @@
 package gr.atc.t4m.organization_management.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import gr.atc.t4m.organization_management.model.CapabilityEntry;
 import gr.atc.t4m.organization_management.model.ManufacturingResource;
 import gr.atc.t4m.organization_management.repository.ManufacturingResourceRepository;
 
@@ -34,5 +36,18 @@ public class ManufacturingResourceService {
     public void delete(String manufacturingResourceID) {
         LOGGER.info("Deleting Manufacturing Resource");
         manufacturingResourceRepo.deleteById(manufacturingResourceID);
+    }
+
+    public List<CapabilityEntry> getAllCapabilities() {
+        List<ManufacturingResource> resources = manufacturingResourceRepo.findAll();
+
+    return resources.stream()
+            .filter(mr -> mr.getCapabilities() != null && !mr.getCapabilities().isEmpty())
+            .flatMap(mr -> mr.getCapabilities().stream())
+            .toList();
+    }
+
+    public List<ManufacturingResource> getAllManufacturingResources() {
+        return manufacturingResourceRepo.findAll();
     }
 }

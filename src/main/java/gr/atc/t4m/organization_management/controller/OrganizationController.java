@@ -27,6 +27,7 @@ import gr.atc.t4m.organization_management.dto.OrganizationDTO;
 import gr.atc.t4m.organization_management.dto.ProviderSearchDTO;
 import gr.atc.t4m.organization_management.exception.OrganizationAlreadyExistsException;
 import gr.atc.t4m.organization_management.exception.OrganizationNotFoundException;
+import gr.atc.t4m.organization_management.model.CapabilityEntry;
 import gr.atc.t4m.organization_management.model.InformationMessage;
 import gr.atc.t4m.organization_management.model.Organization;
 import gr.atc.t4m.organization_management.service.MinioService;
@@ -279,5 +280,35 @@ public class OrganizationController {
         return ResponseEntity.ok(informationMessage);
     }
 
+    @Operation(summary = "Retrieves the stored capabilities for an organization", description = "Returns a list of capabilities related to an organization", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "List of capabilities for the organization."),
+            @ApiResponse(responseCode = "401", description = "Authentication process failed!"),
+            @ApiResponse(responseCode = "404", description = "Organization not found or no capabilities found."),
+    })
+
+    @GetMapping("/{orgName}/capabilities")
+    public ResponseEntity<List<CapabilityEntry>> getOrganizationCapabilities(
+            @PathVariable String orgName) throws OrganizationNotFoundException {
+
+        Organization organization = organizationService.getOrganizationByName(orgName);
+
+        if (organization.getManufacturingResources() == null || organization.getManufacturingResources().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "No manufacturing resources found for organization: " + orgName);
+        }
+
+        List<CapabilityEntry> capabilities = organization.getManufacturingResources().stream()
+                .filter(mr -> mr.getCapabilities() != null && !mr.getCapabilities().isEmpty())
+                .flatMap(mr -> mr.getCapabilities().stream())
+                .toList();
+
+        if (capabilities.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "No capabilities found for organization: " + orgName);
+        }
+
+        return ResponseEntity.ok(capabilities);
+    }
     
 }
