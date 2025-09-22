@@ -101,9 +101,9 @@ public class OrganizationService {
             optOrganization.get().getManufacturingResources().forEach(mr -> {
                 if (mr.getManufacturingResourceID() != null) {
                     Optional<ManufacturingResource> optManufacturingResource = manufacturingResourceService.findById(mr.getManufacturingResourceID());
-                    optManufacturingResource.ifPresent(manufacturingResource -> {
-                        manufacturingResourceService.delete(mr.getManufacturingResourceID());
-                    });
+                    optManufacturingResource.ifPresent(manufacturingResource ->
+                        manufacturingResourceService.delete(mr.getManufacturingResourceID())
+                    );
                 }
             });
         }

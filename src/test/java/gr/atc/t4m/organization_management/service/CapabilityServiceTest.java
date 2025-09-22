@@ -325,7 +325,7 @@ String json = """
                         CapabilityEntry entry = entries.get(0);
 
         assertEquals("Milling", entry.getName());
-        assertEquals(entry.getProperties().size(),11);
+        assertEquals(11,entry.getProperties().size());
         assertEquals("machining operation which consists of removing material by means of a rotary tool called a \"milling cutter\" of which there are several different types. Note 1 to entry: The typical milling operations mostly involve face milling or end milling. The tools are mounted either in the spindle taper or on the spindle front face. (ISO 8636-1:2000)", entry.getComment());
         assertEquals("Primary",entry.getType());
 
