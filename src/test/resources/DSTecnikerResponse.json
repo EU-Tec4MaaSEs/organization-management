@@ -1,0 +1,7342 @@
+{
+"result" : [ {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/CapabilitySet/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "SMT/Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "GoratuGDynamicCapabilitySet",
+"value" : [ {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/CapabilityContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "MillingContainer",
+"value" : [ {
+"modelType" : "Capability",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/Capability/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Milling"
+} ],
+"type" : "ExternalReference"
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/CapabilityRoleQualifiers/Offered/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ValueQualifier",
+"type" : "Offered",
+"value" : "true",
+"valueType" : "xs:boolean"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "CapabilityType",
+"value" : "Primary",
+"valueType" : "xs:string"
+} ],
+"idShort" : "Milling"
+}, {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/CapabilityComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "machining operation which consists of removing material by means of a rotary tool called a \"milling cutter\" of which there are several different types. Note 1 to entry: The typical milling operations mostly involve face milling or end milling. The tools are mounted either in the spindle taper or on the spindle front face. (ISO 8636-1:2000)"
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "CapabilityComment"
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertySet/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "MillingPropertySet",
+"value" : [ {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "NumberOfAxisContainer",
+"value" : [ {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "Number of axes. It refers to the degrees of freedom or directions in which the machine can move its tool or workpiece."
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "PropertyComment"
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#NumberOfAxes"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "5",
+"valueType" : "xs:int",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "NumberOfAxes"
+} ]
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "TravelDistanceXContainer",
+"value" : [ {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "It refers to the maximum distance that the machine's tool or nozzle can move along each axis of motion (X). This parameter is important for determining the size and scale of the parts that can be produced using the machine."
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "PropertyComment"
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "ConceptDescription",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ModelReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#TravelDistanceX"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "700",
+"valueType" : "xs:int",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "TravelDistanceX"
+} ]
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "TravelDistanceYContainer",
+"value" : [ {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "It refers to the maximum distance that the machine's tool or nozzle can move along each axis of motion (X). This parameter is important for determining the size and scale of the parts that can be produced using the machine."
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "PropertyComment"
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "ConceptDescription",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ModelReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#TravelDistanceY"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "600",
+"valueType" : "xs:int",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "TravelDistanceY"
+} ]
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "TravelDistanceZContainer",
+"value" : [ {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "It refers to the maximum distance that the machine's tool or nozzle can move along each axis of motion (X). This parameter is important for determining the size and scale of the parts that can be produced using the machine."
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "PropertyComment"
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "ConceptDescription",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ModelReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#TravelDistanceZ"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "500",
+"valueType" : "xs:int",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "TravelDistanceZ"
+} ]
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "MaximumSpeedContainer",
+"value" : [ {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "Maximum speed refers to the maximum rotational speed of the machine's spindle or cutting tool."
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "PropertyComment"
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "ConceptDescription",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ModelReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#MaximumSpeed"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "18000.0",
+"valueType" : "xs:float",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "MaximumSpeed"
+} ]
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "ToleranceContainer",
+"value" : [ {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "Measure of how closely the machine can achieve the desired dimensions and tolerances in its machining operations."
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "PropertyComment"
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "ConceptDescription",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ModelReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Tolerance"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "0.01",
+"valueType" : "xs:float",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "Tolerance"
+} ]
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "WorkpieceWeightContainer",
+"value" : [ {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "Workpiece weight is the maximum weight of the material or part that the machine can handle during machining operations."
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "PropertyComment"
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "ConceptDescription",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ModelReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#WorkpieceWeight"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "1450.0",
+"valueType" : "xs:float",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "WorkpieceWeight"
+} ]
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "EnvironmentContainer",
+"value" : [ {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "It refers to whether or not the machine operates in an inert environment. Potential values are: Yes/No"
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "PropertyComment"
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#InnertEnvironmentRequiered"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "false",
+"valueType" : "xs:boolean",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "InertEnvironmentRequired"
+} ]
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "ExplosiveMaterialHandlingContainer",
+"value" : [ {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "It refers to whether or not the machine can machine explosive material. Potential values are: Yes/No"
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "PropertyComment"
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#ExplosiveHandling"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "false",
+"valueType" : "xs:boolean",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "ExplosiveHandling"
+} ]
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "MaterialCompatibilityContainer",
+"value" : [ {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "It refers to the raw material or stock from which a can be manufactured. "
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "PropertyComment"
+}, {
+"modelType" : "SubmodelElementList",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/SubmodelElementList/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+}, {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Recursion/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "Recursive",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "MaterialCompatibilityList",
+"orderRelevant" : true,
+"typeValueListElement" : "Property",
+"value" : [ {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "P",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "P1",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "P2",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "P3",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "P4",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "P5",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "P6",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "M",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "M1",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "M2",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "M3",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "M4",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "M5",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "K",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "K1",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "K2",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "K3",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "K4",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "N",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "N1",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "N2",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "N3",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "N4",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "N5",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "N6",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "S",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "S1",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "S2",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "S3",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "S4",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "S5",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "H",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "H1",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "H2",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "H3",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "H4",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "H5",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+} ],
+"valueTypeListElement" : "xs:string"
+} ]
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "AvailableToolsContainer",
+"value" : [ {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "Number of axes. It refers to the degrees of freedom or directions in which the machine can move its tool or workpiece."
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "PropertyComment"
+}, {
+"modelType" : "Range",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Range/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#AvailableTools"
+} ],
+"type" : "ExternalReference"
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "SMT/Cardinality",
+"value" : "One",
+"valueType" : "xs:string"
+} ],
+"max" : "105",
+"min" : "6",
+"valueType" : "xs:int",
+"idShort" : "AvailableTools"
+} ]
+} ]
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/CapabilityRelations/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "SMT/Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "CapabilityRelations",
+"value" : [ {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/GeneralizedBySet/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "SMT/Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "MillingGeneralizedBySet",
+"value" : [ {
+"modelType" : "RelationshipElement",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/CapabilityGeneralizedBy/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "SMT/Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "MillingGeneralizedBy",
+"first" : {
+"keys" : [ {
+"type" : "Submodel",
+"value" : "https://example.com/ids/sm/4573_1130_6052_7692"
+}, {
+"type" : "SubmodelElementCollection",
+"value" : "GoratuGDynamicCapabilitySet"
+}, {
+"type" : "SubmodelElementCollection",
+"value" : "MillingContainer"
+}, {
+"type" : "Capability",
+"value" : "Milling"
+} ],
+"type" : "ModelReference"
+},
+"second" : {
+"keys" : [ {
+"type" : "Submodel",
+"value" : "https://example.com/ids/sm/4573_1130_6052_7692"
+}, {
+"type" : "SubmodelElementCollection",
+"value" : "GoratuGDynamicCapabilitySet"
+}, {
+"type" : "SubmodelElementCollection",
+"value" : "MachiningContainer"
+}, {
+"type" : "Capability",
+"value" : "Machining"
+} ],
+"type" : "ModelReference"
+}
+} ]
+} ]
+} ]
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/CapabilityContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "DrillingContainer",
+"value" : [ {
+"modelType" : "Capability",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/Capability/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Drilling"
+} ],
+"type" : "ExternalReference"
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/CapabilityRoleQualifiers/Offered/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ValueQualifier",
+"type" : "Offered",
+"value" : "true",
+"valueType" : "xs:boolean"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "CapabilityType",
+"value" : "Secondary ",
+"valueType" : "xs:string"
+} ],
+"idShort" : "Drilling"
+}, {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/CapabilityComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "operation which consist of drilling blind or through holes (ISO 8636-1:2000)"
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "CapabilityComment"
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertySet/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "DrillingPropertySet",
+"value" : [ {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "NumberOfAxisContainer",
+"value" : [ {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "Number of axes. It refers to the degrees of freedom or directions in which the machine can move its tool or workpiece."
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "PropertyComment"
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#NumberOfAxes"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "5",
+"valueType" : "xs:int",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "NumberOfAxes"
+} ]
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "TravelDistanceXContainer",
+"value" : [ {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "It refers to the maximum distance that the machine's tool or nozzle can move along each axis of motion (X). This parameter is important for determining the size and scale of the parts that can be produced using the machine."
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "PropertyComment"
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "ConceptDescription",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ModelReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#TravelDistanceX"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "700",
+"valueType" : "xs:int",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "TravelDistanceX"
+} ]
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "TravelDistanceYContainer",
+"value" : [ {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "It refers to the maximum distance that the machine's tool or nozzle can move along each axis of motion (X). This parameter is important for determining the size and scale of the parts that can be produced using the machine."
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "PropertyComment"
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "ConceptDescription",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ModelReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#TravelDistanceY"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "600",
+"valueType" : "xs:int",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "TravelDistanceY"
+} ]
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "TravelDistanceZContainer",
+"value" : [ {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "It refers to the maximum distance that the machine's tool or nozzle can move along each axis of motion (X). This parameter is important for determining the size and scale of the parts that can be produced using the machine."
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "PropertyComment"
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "ConceptDescription",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ModelReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#TravelDistanceZ"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "500",
+"valueType" : "xs:int",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "TravelDistanceZ"
+} ]
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "MaximumSpeedContainer",
+"value" : [ {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "Maximum speed refers to the maximum rotational speed of the machine's spindle or cutting tool."
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "PropertyComment"
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "ConceptDescription",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ModelReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#MaximumSpeed"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "18000.0",
+"valueType" : "xs:float",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "MaximumSpeed"
+} ]
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "ToleranceContainer",
+"value" : [ {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "Measure of how closely the machine can achieve the desired dimensions and tolerances in its machining operations."
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "PropertyComment"
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "ConceptDescription",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ModelReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Tolerance"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "0.01",
+"valueType" : "xs:float",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "Tolerance"
+} ]
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "WorkpieceWeightContainer",
+"value" : [ {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "Workpiece weight is the maximum weight of the material or part that the machine can handle during machining operations."
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "PropertyComment"
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "ConceptDescription",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ModelReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#WorkpieceWeight"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "1450.0",
+"valueType" : "xs:float",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "WorkpieceWeight"
+} ]
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "EnvironmentContainer",
+"value" : [ {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "It refers to whether or not the machine operates in an inert environment. Potential values are: Yes/No"
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "PropertyComment"
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#InnertEnvironmentRequiered"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "false",
+"valueType" : "xs:boolean",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "InertEnvironmentRequired"
+} ]
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "ExplosiveMaterialHandlingContainer",
+"value" : [ {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "It refers to whether or not the machine can machine explosive material. Potential values are: Yes/No"
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "PropertyComment"
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#ExplosiveHandling"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "false",
+"valueType" : "xs:boolean",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "ExplosiveHandling"
+} ]
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "MaterialCompatibilityContainer",
+"value" : [ {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "It refers to the raw material or stock from which a can be manufactured. "
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "PropertyComment"
+}, {
+"modelType" : "SubmodelElementList",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/SubmodelElementList/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+}, {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Recursion/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "Recursive",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "MaterialCompatibilityList",
+"orderRelevant" : true,
+"typeValueListElement" : "Property",
+"value" : [ {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "P",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "P1",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "P2",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "P3",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "P4",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "P5",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "P6",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "M",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "M1",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "M2",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "M3",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "M4",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "M5",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "K",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "K1",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "K2",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "K3",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "K4",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "N",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "N1",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "N2",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "N3",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "N4",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "N5",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "N6",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "S",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "S1",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "S2",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "S3",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "S4",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "S5",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "H",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "H1",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "H2",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "H3",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "H4",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "H5",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+} ],
+"valueTypeListElement" : "xs:string"
+} ]
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "AvailableToolsContainer",
+"value" : [ {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "Number of axes. It refers to the degrees of freedom or directions in which the machine can move its tool or workpiece."
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "PropertyComment"
+}, {
+"modelType" : "Range",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Range/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#AvailableTools"
+} ],
+"type" : "ExternalReference"
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "SMT/Cardinality",
+"value" : "One",
+"valueType" : "xs:string"
+} ],
+"max" : "105",
+"min" : "6",
+"valueType" : "xs:int",
+"idShort" : "AvailableTools"
+} ]
+} ]
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/CapabilityRelations/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "SMT/Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "CapabilityRelations",
+"value" : [ {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/GeneralizedBySet/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "SMT/Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "DrillingGeneralizedBySet",
+"value" : [ {
+"modelType" : "RelationshipElement",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/CapabilityGeneralizedBy/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "SMT/Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "DrillingGeneralizedBy",
+"first" : {
+"keys" : [ {
+"type" : "Submodel",
+"value" : "https://example.com/ids/sm/4573_1130_6052_7692"
+}, {
+"type" : "SubmodelElementCollection",
+"value" : "GoratuGDynamicCapabilitySet"
+}, {
+"type" : "SubmodelElementCollection",
+"value" : "DrillingContainer"
+}, {
+"type" : "Capability",
+"value" : "Drilling"
+} ],
+"type" : "ModelReference"
+},
+"second" : {
+"keys" : [ {
+"type" : "Submodel",
+"value" : "https://example.com/ids/sm/4573_1130_6052_7692"
+}, {
+"type" : "SubmodelElementCollection",
+"value" : "GoratuGDynamicCapabilitySet"
+}, {
+"type" : "SubmodelElementCollection",
+"value" : "MachiningContainer"
+}, {
+"type" : "Capability",
+"value" : "Machining"
+} ],
+"type" : "ModelReference"
+}
+} ]
+} ]
+} ]
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/CapabilityContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "ThreadingContainer",
+"value" : [ {
+"modelType" : "Capability",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/Capability/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Threading"
+} ],
+"type" : "ExternalReference"
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/CapabilityRoleQualifiers/Offered/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ValueQualifier",
+"type" : "Offered",
+"value" : "true",
+"valueType" : "xs:boolean"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "CapabilityType",
+"value" : " Secondary",
+"valueType" : "xs:string"
+} ],
+"idShort" : "Threading"
+}, {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/CapabilityComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "Threads of given pitches are machined on external or internal cylindrical surfaces by means of special thread form cutting tools. (ISO 3655)"
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "CapabilityComment"
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertySet/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "ThreadingPropertySet",
+"value" : [ {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "NumberOfAxisContainer",
+"value" : [ {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "Number of axes. It refers to the degrees of freedom or directions in which the machine can move its tool or workpiece."
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "PropertyComment"
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#NumberOfAxes"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "5",
+"valueType" : "xs:int",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "NumberOfAxes"
+} ]
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "TravelDistanceXContainer",
+"value" : [ {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "It refers to the maximum distance that the machine's tool or nozzle can move along each axis of motion (X). This parameter is important for determining the size and scale of the parts that can be produced using the machine."
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "PropertyComment"
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "ConceptDescription",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ModelReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#TravelDistanceX"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "700",
+"valueType" : "xs:int",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "TravelDistanceX"
+} ]
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "TravelDistanceYContainer",
+"value" : [ {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "It refers to the maximum distance that the machine's tool or nozzle can move along each axis of motion (X). This parameter is important for determining the size and scale of the parts that can be produced using the machine."
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "PropertyComment"
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "ConceptDescription",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ModelReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#TravelDistanceY"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "600",
+"valueType" : "xs:int",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "TravelDistanceY"
+} ]
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "TravelDistanceZContainer",
+"value" : [ {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "It refers to the maximum distance that the machine's tool or nozzle can move along each axis of motion (X). This parameter is important for determining the size and scale of the parts that can be produced using the machine."
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "PropertyComment"
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "ConceptDescription",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ModelReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#TravelDistanceZ"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "500",
+"valueType" : "xs:int",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "TravelDistanceZ"
+} ]
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "MaximumSpeedContainer",
+"value" : [ {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "Maximum speed refers to the maximum rotational speed of the machine's spindle or cutting tool."
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "PropertyComment"
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "ConceptDescription",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ModelReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#MaximumSpeed"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "18000.0",
+"valueType" : "xs:float",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "MaximumSpeed"
+} ]
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "ToleranceContainer",
+"value" : [ {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "Measure of how closely the machine can achieve the desired dimensions and tolerances in its machining operations."
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "PropertyComment"
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "ConceptDescription",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ModelReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Tolerance"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "0.01",
+"valueType" : "xs:float",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "Tolerance"
+} ]
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "WorkpieceWeightContainer",
+"value" : [ {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "Workpiece weight is the maximum weight of the material or part that the machine can handle during machining operations."
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "PropertyComment"
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "ConceptDescription",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ModelReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#WorkpieceWeight"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "1450.0",
+"valueType" : "xs:float",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "WorkpieceWeight"
+} ]
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "EnvironmentContainer",
+"value" : [ {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "It refers to whether or not the machine operates in an inert environment. Potential values are: Yes/No"
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "PropertyComment"
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#InnertEnvironmentRequiered"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "false",
+"valueType" : "xs:boolean",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "InertEnvironmentRequired"
+} ]
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "ExplosiveMaterialHandlingContainer",
+"value" : [ {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "It refers to whether or not the machine can machine explosive material. Potential values are: Yes/No"
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "PropertyComment"
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#ExplosiveHandling"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "false",
+"valueType" : "xs:boolean",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "ExplosiveHandling"
+} ]
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "MaterialCompatibilityContainer",
+"value" : [ {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "It refers to the raw material or stock from which a can be manufactured. "
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "PropertyComment"
+}, {
+"modelType" : "SubmodelElementList",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/SubmodelElementList/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+}, {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Recursion/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "Recursive",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "MaterialCompatibilityList",
+"orderRelevant" : true,
+"typeValueListElement" : "Property",
+"value" : [ {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "P",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "P1",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "P2",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "P3",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "P4",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "P5",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "P6",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "M",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "M1",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "M2",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "M3",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "M4",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "M5",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "K",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "K1",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "K2",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "K3",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "K4",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "N",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "N1",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "N2",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "N3",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "N4",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "N5",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "N6",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "S",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "S1",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "S2",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "S3",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "S4",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "S5",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "H",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "H1",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "H2",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "H3",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "H4",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+}, {
+"modelType" : "Property",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Property/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Material"
+} ],
+"type" : "ExternalReference"
+} ],
+"value" : "H5",
+"valueType" : "xs:string",
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+} ]
+} ],
+"valueTypeListElement" : "xs:string"
+} ]
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "AvailableToolsContainer",
+"value" : [ {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/PropertyComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "Number of tools available for machine operations."
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "PropertyComment"
+}, {
+"modelType" : "Range",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityPropertyEnumType/Range/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#AvailableTools"
+} ],
+"type" : "ExternalReference"
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "SMT/Cardinality",
+"value" : "One",
+"valueType" : "xs:string"
+} ],
+"max" : "105",
+"min" : "6",
+"valueType" : "xs:int",
+"idShort" : "AvailableTools"
+} ]
+} ]
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/CapabilityRelations/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "SMT/Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "CapabilityRelations",
+"value" : [ {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/GeneralizedBySet/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "SMT/Cardinality",
+"value" : "ZeroToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "ThreadingGeneralizedBySet",
+"value" : [ {
+"modelType" : "RelationshipElement",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/CapabilityGeneralizedBy/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "SMT/Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "ThreadingGeneralizedBy",
+"first" : {
+"keys" : [ {
+"type" : "Submodel",
+"value" : "https://example.com/ids/sm/4573_1130_6052_7692"
+}, {
+"type" : "SubmodelElementCollection",
+"value" : "GoratuGDynamicCapabilitySet"
+}, {
+"type" : "SubmodelElementCollection",
+"value" : "ThreadingContainer"
+}, {
+"type" : "Capability",
+"value" : "Threading"
+} ],
+"type" : "ModelReference"
+},
+"second" : {
+"keys" : [ {
+"type" : "Submodel",
+"value" : "https://example.com/ids/sm/4573_1130_6052_7692"
+}, {
+"type" : "SubmodelElementCollection",
+"value" : "GoratuGDynamicCapabilitySet"
+}, {
+"type" : "SubmodelElementCollection",
+"value" : "MachiningContainer"
+}, {
+"type" : "Capability",
+"value" : "Machining"
+} ],
+"type" : "ModelReference"
+}
+} ]
+} ]
+} ]
+}, {
+"modelType" : "SubmodelElementCollection",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/CapabilityContainer/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "OneToMany",
+"valueType" : "xs:string"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "EditIdShort",
+"value" : "True",
+"valueType" : "xs:string"
+} ],
+"idShort" : "MachiningContainer",
+"value" : [ {
+"modelType" : "Capability",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/Capability/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"supplementalSemanticIds" : [ {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "http://www.semanticweb.org/mar94321/ontologies/2025/3/CAPT4M#Machining"
+} ],
+"type" : "ExternalReference"
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/CapabilityRoleQualifiers/Offered/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ValueQualifier",
+"type" : "Offered",
+"value" : "true",
+"valueType" : "xs:boolean"
+}, {
+"kind" : "ConceptQualifier",
+"type" : "CapabilityType",
+"value" : "Abstract",
+"valueType" : "xs:string"
+} ],
+"idShort" : "Machining"
+}, {
+"modelType" : "MultiLanguageProperty",
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/idta/CapabilityDescription/CapabilityComment/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"value" : [ {
+"language" : "en",
+"text" : "Machining is manufacturing process that involves the removal of material from a workpiece to achieve the desired shape, size, and surface finish. It is a subtractive manufacturing method, meaning that material is removed from the workpiece to create the final product. The machine could be controlled by an operator (i.e., manual) or  by a Computer Numerical Control (i. e., CNC) system that can execute the instruction contained in a CAM program."
+} ],
+"qualifiers" : [ {
+"semanticId" : {
+"keys" : [ {
+"type" : "GlobalReference",
+"value" : "https://admin-shell.io/SubmodelTemplates/Cardinality/1/0"
+} ],
+"type" : "ExternalReference"
+},
+"kind" : "ConceptQualifier",
+"type" : "Cardinality",
+"value" : "ZeroToOne",
+"valueType" : "xs:string"
+} ],
+"idShort" : "CapabilityComment"
+} ]
+} ]
+} ],
+"paging_metadata" : { }
+}

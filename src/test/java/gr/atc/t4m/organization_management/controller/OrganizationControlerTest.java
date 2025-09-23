@@ -13,8 +13,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gr.atc.t4m.organization_management.config.TestSecurityConfig;
 import gr.atc.t4m.organization_management.dto.OrganizationDTO;
 import gr.atc.t4m.organization_management.dto.ProviderSearchDTO;
+import gr.atc.t4m.organization_management.exception.OrganizationNotFoundException;
+import gr.atc.t4m.organization_management.model.CapabilityEntry;
 import gr.atc.t4m.organization_management.model.MaasRole;
+import gr.atc.t4m.organization_management.model.ManufacturingResource;
 import gr.atc.t4m.organization_management.model.Organization;
+import gr.atc.t4m.organization_management.service.CapabilityService;
 import gr.atc.t4m.organization_management.service.MinioService;
 import gr.atc.t4m.organization_management.service.OrganizationService;
 
@@ -48,6 +52,10 @@ class OrganizationControllerTest {
 
     @MockitoBean
     private MinioService minioService;
+
+    @MockitoBean
+    private CapabilityService capabilityService;
+
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -249,5 +257,63 @@ void testCreateOrganization_WhenOrganizationNameIsNull_ShouldReturnBadRequest() 
                 .andExpect(jsonPath("$.organizationName").value("Test Organization"));
     }
 
+
+    @Test
+    void testGetOrganizationCapabilities_success() throws Exception {
+        CapabilityEntry cap1 = new CapabilityEntry("Cutting", "Primary", true, "High precision", List.of(), null);
+        CapabilityEntry cap2 = new CapabilityEntry("Welding", "Secondary", true, "Automated", List.of(), null);
+
+        ManufacturingResource resource = new ManufacturingResource();
+        resource.setManufacturingResourceID("MR1");
+        resource.setCapabilities(List.of(cap1, cap2));
+
+        Organization org = new Organization();
+        org.setOrganizationName("TestOrg");
+        org.setManufacturingResources(List.of(resource));
+
+        when(organizationService.getOrganizationByName("TestOrg")).thenReturn(org);
+
+        mockMvc.perform(get("/api/organization/TestOrg/capabilities").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].name").value("Cutting"))
+                .andExpect(jsonPath("$[1].name").value("Welding"));
+    }
+
+    @Test
+    void testGetOrganizationCapabilities_noResources() throws Exception {
+        Organization org = new Organization();
+        org.setOrganizationName("TestOrg");
+        org.setManufacturingResources(List.of()); // empty
+
+        when(organizationService.getOrganizationByName("TestOrg")).thenReturn(org);
+
+        mockMvc.perform(get("/api/organization/TestOrg/capabilities").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testGetOrganizationCapabilities_noCapabilities() throws Exception {
+        ManufacturingResource resource = new ManufacturingResource();
+        resource.setManufacturingResourceID("MR1");
+        resource.setCapabilities(List.of()); // no capabilities
+
+        Organization org = new Organization();
+        org.setOrganizationName("TestOrg");
+        org.setManufacturingResources(List.of(resource));
+
+        when(organizationService.getOrganizationByName("TestOrg")).thenReturn(org);
+
+        mockMvc.perform(get("/api/organization/TestOrg/capabilities").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testGetOrganizationCapabilities_orgNotFound() throws Exception {
+        when(organizationService.getOrganizationByName("UnknownOrg"))
+                .thenThrow(new OrganizationNotFoundException("Organization not found"));
+
+        mockMvc.perform(get("/api/organization/UnknownOrg/capabilities").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
 }
 
