@@ -301,7 +301,7 @@ String json = """
         CapabilityEntry entry = entries.get(0);
 
         assertEquals("MillingPropertySet", entry.getName());
-        assertEquals(entry.getProperties().size(),1);
+        assertEquals(1, entry.getProperties().size());
         assertEquals("NumberOfAxes", entry.getProperties().get(0).getName());
     }
 

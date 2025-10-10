@@ -261,7 +261,7 @@ class OrganizationServiceTest {
 
 
        @Test
-    void testCreateKafkaMessage_Success() throws Exception {
+    void testCreateKafkaMessage_Success() {
         // Arrange
         Organization organization = new Organization();
         organization.setOrganizationID("org-123");
