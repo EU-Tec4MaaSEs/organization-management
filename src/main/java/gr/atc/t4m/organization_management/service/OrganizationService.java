@@ -29,7 +29,9 @@ import gr.atc.t4m.organization_management.repository.OrganizationRepository;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.Base64;
+
 import org.springframework.beans.factory.annotation.Value;
 @Service
 public class OrganizationService {
@@ -93,6 +95,17 @@ public class OrganizationService {
         Optional<Organization> optOrganization = organizationRepository.findById(id);
         if (optOrganization.isEmpty()) {
             throw new OrganizationNotFoundException(ORGANIZATION_WITH_ID + id + NOT_FOUND);
+        }
+        //remove associated manufacturing resources
+        if (optOrganization.get().getManufacturingResources() != null) {
+            optOrganization.get().getManufacturingResources().forEach(mr -> {
+                if (mr.getManufacturingResourceID() != null) {
+                    Optional<ManufacturingResource> optManufacturingResource = manufacturingResourceService.findById(mr.getManufacturingResourceID());
+                    optManufacturingResource.ifPresent(manufacturingResource ->
+                        manufacturingResourceService.delete(mr.getManufacturingResourceID())
+                    );
+                }
+            });
         }
         organizationRepository.delete(optOrganization.get());
 
@@ -164,5 +177,17 @@ public class OrganizationService {
 
             }
 
+        }
+
+
+        public void addManufacturingResource(Organization organization, ManufacturingResource manufacturingResource) {
+
+            if (organization.getManufacturingResources() == null) {
+                organization.setManufacturingResources(new ArrayList<>());
+            }
+
+            organization.getManufacturingResources().add(manufacturingResource);
+
+            organizationRepository.save(organization);
         }
 }

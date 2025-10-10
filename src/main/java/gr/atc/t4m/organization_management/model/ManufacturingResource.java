@@ -1,7 +1,6 @@
 package gr.atc.t4m.organization_management.model;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
@@ -10,15 +9,11 @@ import java.util.List;
 @Document(collection = "manufacturingResources")
 public class ManufacturingResource {
     @Id
-    private Long manufacturingResourceID;
+    private String manufacturingResourceID;
     private String manufacturingResourceCode;
-    private String manufacturingResourceName;
-    private long capabilityDatasetID;
-    @DBRef
-    private List<Capability> primaryCapabilities;
-    
-    @DBRef
-    private List<Capability> secondaryCapabilities;
+    private String manufacturingResourceTitle;
+    private String capabilityDatasetID;
+    private List<CapabilityEntry> capabilities;
 
     private List<ResourceProperty> resourceProperties; 
 

@@ -1,5 +1,6 @@
 package gr.atc.t4m.organization_management.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import gr.atc.t4m.organization_management.model.MaasConsumer;
@@ -23,6 +24,7 @@ public class OrganizationDTO {
     private List<MaasRole> maasRole;
     private MaasConsumer maasConsumer;
     private MaasProvider maasProvider;
-    private List<ManufacturingResource> manufacturingResources;
+    private List<ManufacturingResource> manufacturingResources = new ArrayList<>();
+
 
 }

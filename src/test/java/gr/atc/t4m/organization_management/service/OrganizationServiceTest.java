@@ -18,8 +18,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import gr.atc.t4m.organization_management.dto.EventDTO;
 import gr.atc.t4m.organization_management.dto.OrganizationDTO;
 import gr.atc.t4m.organization_management.dto.ProviderSearchDTO;
@@ -275,7 +273,7 @@ class OrganizationServiceTest {
     }
 
     @Test
-    void testCreateKafkaMessage_Failure() throws Exception {
+    void testCreateKafkaMessage_Failure() {
         // Arrange
         Organization organization = new Organization();
         String userId = "user123";

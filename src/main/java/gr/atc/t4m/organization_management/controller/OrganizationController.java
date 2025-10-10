@@ -2,6 +2,7 @@ package gr.atc.t4m.organization_management.controller;
 
 import java.util.List;
 
+import gr.atc.t4m.organization_management.service.CapabilityService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,6 +27,7 @@ import gr.atc.t4m.organization_management.dto.OrganizationDTO;
 import gr.atc.t4m.organization_management.dto.ProviderSearchDTO;
 import gr.atc.t4m.organization_management.exception.OrganizationAlreadyExistsException;
 import gr.atc.t4m.organization_management.exception.OrganizationNotFoundException;
+import gr.atc.t4m.organization_management.model.CapabilityEntry;
 import gr.atc.t4m.organization_management.model.InformationMessage;
 import gr.atc.t4m.organization_management.model.Organization;
 import gr.atc.t4m.organization_management.service.MinioService;
@@ -55,8 +57,8 @@ public class OrganizationController {
 
 
     @Autowired
-    public OrganizationController(OrganizationService organizationService, 
-             MinioService minioService) {
+    public OrganizationController(OrganizationService organizationService,
+                                  MinioService minioService, CapabilityService capabilityService) {
         this.organizationService = organizationService;
         this.minioService = minioService;
     }
@@ -76,7 +78,7 @@ public class OrganizationController {
      * @return message of success or failure
      * @throws OrganizationAlreadyExistsException
      */
-     @Operation(summary = "Create a new Organization", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Create a new Organization", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Organization created successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid input value"),
@@ -84,56 +86,55 @@ public class OrganizationController {
             @ApiResponse(responseCode = "409", description = "Conflict - Organization already exists with the same name"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-   @PostMapping(value = "create", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-public ResponseEntity<Organization> createOrganization(
-        @RequestPart("organization") @Valid OrganizationDTO organizationDTO,
-        @RequestPart(value = "logoFile", required = false) MultipartFile logoFile,
-        final HttpServletRequest request)
-        throws OrganizationAlreadyExistsException {
-        
+    @PostMapping(value = "create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Organization> createOrganization(
+            @RequestPart("organization") @Valid OrganizationDTO organizationDTO,
+            @RequestPart(value = "logoFile", required = false) MultipartFile logoFile,
+            final HttpServletRequest request)
+            throws OrganizationAlreadyExistsException {
+
         JwtAuthenticationToken jwtToken = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         String userId = jwtToken.getToken().getClaim("sub"); // or any custom claim
 
-    // Handle validations
-    if (organizationDTO.getOrganizationName() == null || organizationDTO.getOrganizationName().trim().isEmpty()) {
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Organization name is required");
+        // Handle validations
+        if (organizationDTO.getOrganizationName() == null || organizationDTO.getOrganizationName().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Organization name is required");
+        }
+
+        // Upload file (if present)
+        String logoUrl = null;
+
+        if (logoFile != null && !logoFile.isEmpty()) {
+            logoUrl = minioService.uploadLogo(logoFile); // Store and return URL
+        }
+
+        // Copy data
+        Organization organization = new Organization();
+        BeanUtils.copyProperties(organizationDTO, organization);
+        organization.setLogoUrl(logoUrl); // Save logo location
+
+        Organization savedOrganization = organizationService.createOrganization(organization);
+
+        // Trigger Kafka event for organization registration
+        organizationService.createKafkaMessage(organization, userId);
+        return ResponseEntity.ok(savedOrganization);
     }
-
-
-    // Upload file (if present)
-    String logoUrl = null;
-    
-    if (logoFile != null && !logoFile.isEmpty()) {
-        logoUrl = minioService.uploadLogo(logoFile); // Store and return URL
-    }
-
-    // Copy data
-    Organization organization = new Organization();
-    BeanUtils.copyProperties(organizationDTO, organization);
-    organization.setLogoUrl(logoUrl); // Save logo location
-
-    Organization savedOrganization = organizationService.createOrganization(organization);
-    
-    // Trigger Kafka event for organization registration
-    organizationService.createKafkaMessage(organization, userId);
-    return ResponseEntity.ok(savedOrganization);
-}
 
 
     /**
      * Update an existing organization
-    *  @param id
+     *
+     * @param id
      * @return organization information
-     * @throws OrganizationNotExists
      * @throws IllegalArgumentException
      */
     @Operation(summary = "Update an existing Organization", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Organization updated."),
-        @ApiResponse(responseCode = "400", description = "Invalid input value."),
-        @ApiResponse(responseCode = "401", description = "Authentication process failed!")
+            @ApiResponse(responseCode = "200", description = "Organization updated."),
+            @ApiResponse(responseCode = "400", description = "Invalid input value."),
+            @ApiResponse(responseCode = "401", description = "Authentication process failed!")
 
-})
+    })
     @PutMapping(value = "/update/{id}")
     public ResponseEntity<Organization> updateOrganization(
             @PathVariable String id,
@@ -164,7 +165,7 @@ public ResponseEntity<Organization> createOrganization(
         return ResponseEntity.ok(organization);
     }
 
-     /**
+    /**
      * Get organization information by name
      *
      * @return message of success or failure
@@ -187,7 +188,7 @@ public ResponseEntity<Organization> createOrganization(
 
     /**
      * Get organizations information
-     * 
+     *
      * @param page
      * @param size
      * @param sortBy
@@ -219,7 +220,7 @@ public ResponseEntity<Organization> createOrganization(
 
     /**
      * Get All providers
-     * 
+     *
      * @return message of success or failure
      * @throws OrganizationNotFoundException
      */
@@ -240,7 +241,7 @@ public ResponseEntity<Organization> createOrganization(
 
     /**
      * Search for providers by location,manufacturing service
-     * 
+     *
      * @return message of success or failure
      * @throws OrganizationNotFoundException
      */
@@ -255,9 +256,10 @@ public ResponseEntity<Organization> createOrganization(
         List<Organization> providers = organizationService.searchProviders(filter);
         return ResponseEntity.ok(providers);
     }
+
     /**
      * Delete organization by providing the id
-     * 
+     *
      * @param id
      * @return message of successful deletion
      * @throws OrganizationNotFoundException
@@ -278,4 +280,35 @@ public ResponseEntity<Organization> createOrganization(
         return ResponseEntity.ok(informationMessage);
     }
 
+    @Operation(summary = "Retrieves the stored capabilities for an organization", description = "Returns a list of capabilities related to an organization", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "List of capabilities for the organization."),
+            @ApiResponse(responseCode = "401", description = "Authentication process failed!"),
+            @ApiResponse(responseCode = "404", description = "Organization not found or no capabilities found."),
+    })
+
+    @GetMapping("/{orgName}/capabilities")
+    public ResponseEntity<List<CapabilityEntry>> getOrganizationCapabilities(
+            @PathVariable String orgName) throws OrganizationNotFoundException {
+
+        Organization organization = organizationService.getOrganizationByName(orgName);
+
+        if (organization.getManufacturingResources() == null || organization.getManufacturingResources().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "No manufacturing resources found for organization: " + orgName);
+        }
+
+        List<CapabilityEntry> capabilities = organization.getManufacturingResources().stream()
+                .filter(mr -> mr.getCapabilities() != null && !mr.getCapabilities().isEmpty())
+                .flatMap(mr -> mr.getCapabilities().stream())
+                .toList();
+
+        if (capabilities.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "No capabilities found for organization: " + orgName);
+        }
+
+        return ResponseEntity.ok(capabilities);
+    }
+    
 }
