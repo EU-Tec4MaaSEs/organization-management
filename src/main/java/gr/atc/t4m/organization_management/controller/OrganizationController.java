@@ -28,6 +28,7 @@ import gr.atc.t4m.organization_management.dto.ProviderSearchDTO;
 import gr.atc.t4m.organization_management.exception.OrganizationAlreadyExistsException;
 import gr.atc.t4m.organization_management.exception.OrganizationNotFoundException;
 import gr.atc.t4m.organization_management.model.CapabilityEntry;
+import gr.atc.t4m.organization_management.model.EventType;
 import gr.atc.t4m.organization_management.model.InformationMessage;
 import gr.atc.t4m.organization_management.model.Organization;
 import gr.atc.t4m.organization_management.service.MinioService;
@@ -116,7 +117,7 @@ public class OrganizationController {
         Organization savedOrganization = organizationService.createOrganization(organization);
 
         // Trigger Kafka event for organization registration
-        organizationService.createKafkaMessage(organization, userId);
+        organizationService.createKafkaMessage(organization, userId, EventType.CREATE);
         return ResponseEntity.ok(savedOrganization);
     }
 
@@ -140,7 +141,11 @@ public class OrganizationController {
             @PathVariable String id,
             @RequestBody @Valid OrganizationDTO organizationDTO) {
 
+        JwtAuthenticationToken jwtToken = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        String userId = jwtToken.getToken().getClaim("sub"); // or any custom claim
         Organization updatedOrganization = organizationService.updateOrganization(id, organizationDTO);
+        // Trigger Kafka event for organization update
+        organizationService.createKafkaMessage(updatedOrganization, userId, EventType.UPDATE);
         return ResponseEntity.ok(updatedOrganization);
     }
 
@@ -274,9 +279,18 @@ public class OrganizationController {
     })
     @DeleteMapping(value = "/deleteOrganization/{id}", produces = "application/json;charset=UTF-8")
     public ResponseEntity<InformationMessage> deleteOrganization(@PathVariable String id, final HttpServletRequest request) {
+        JwtAuthenticationToken jwtToken = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        String userId = jwtToken.getToken().getClaim("sub"); // or any custom claim
+           
+        Organization organizationToBeDeleted = organizationService.getOrganization(id);
+
         organizationService.deleteOrganizationById(id);
+
+
         InformationMessage informationMessage = new InformationMessage();
         informationMessage.setMessage("Organization deleted successfully.");
+        // Trigger Kafka event for organization deletion
+        organizationService.createKafkaMessage(organizationToBeDeleted, userId, EventType.DELETE);
         return ResponseEntity.ok(informationMessage);
     }
 

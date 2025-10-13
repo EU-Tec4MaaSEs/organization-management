@@ -2,6 +2,7 @@ package gr.atc.t4m.organization_management.service;
 
 import java.util.List;
 import java.util.Optional;
+import gr.atc.t4m.organization_management.model.EventType;
 
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.modelmapper.ModelMapper;
@@ -141,30 +142,21 @@ public class OrganizationService {
     }
 
 
-        public void createKafkaMessage(Organization organization, String userId) {
+        public void createKafkaMessage(Organization organization, String userId, EventType eventType) {
     
             OrganizationRegistrationEvent data = new OrganizationRegistrationEvent();
             data.setId(organization.getOrganizationID());
             data.setUserId(userId);
             data.setName(organization.getOrganizationName());
-            //The verifiable credential is set to a dummy value for demonstration purposes.
-            data.setVerifiableCredential(Base64.getEncoder().encodeToString("Hello World".getBytes()));
-            data.setContact(organization.getContact());
-            data.setRole(organization.getMaasRole());
-            data.setDataSpaceConnectorUrl(organization.getDsConnectorURL());
-            data.setUserId(userId);
+            if (eventType != EventType.DELETE) {
+                //The verifiable credential is set to a dummy value for demonstration purposes.
+               data.setVerifiableCredential(Base64.getEncoder().encodeToString("Hello World".getBytes()));
+               data.setContact(organization.getContact());
+               data.setRole(organization.getMaasRole());
+               data.setDataSpaceConnectorUrl(organization.getDsConnectorURL());
+            }
 
-            EventDTO event = new EventDTO();
-            event.setType("Organization_Onboarding");
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonData = objectMapper.valueToTree(data);
-            event.setData(jsonData);
-            event.setDescription("Organization registration event for " + organization.getOrganizationName());
-            event.setSourceComponent("Organization Management");
-            OffsetDateTime zonedDateTime = OffsetDateTime.now(ZoneOffset.UTC);
-            event.setTimestamp(zonedDateTime);
-            event.setPriority("Mid");
-            event.setOrganization(organization.getOrganizationName());
+            EventDTO event = setEventInformation(eventType, organization, data);
 
             try {
                 SendResult<String, EventDTO> result = kafkaTemplate.send(organizationRegistrationTopic, event)
@@ -179,6 +171,39 @@ public class OrganizationService {
 
         }
 
+
+        private EventDTO setEventInformation(EventType eventType, Organization organization, OrganizationRegistrationEvent data) {
+            EventDTO event = new EventDTO();
+
+            switch (eventType) {
+                case CREATE:
+                   event.setType( "Organization_Onboarding");
+                   event.setDescription("Organization registration event for " + organization.getOrganizationName());
+
+                    break;
+                case UPDATE:
+                    event.setType( "Organization_Updated");
+                    event.setDescription("Organization update event for " + organization.getOrganizationName());
+                    break;
+                case DELETE:
+                    event.setType("Organization_Deleted");
+                    event.setDescription("Organization deletion event for " + organization.getOrganizationName());
+
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unknown event type: " + eventType);
+            }
+
+             ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonData = objectMapper.valueToTree(data);
+            event.setData(jsonData);
+            event.setSourceComponent("Organization Management");
+            OffsetDateTime zonedDateTime = OffsetDateTime.now(ZoneOffset.UTC);
+            event.setTimestamp(zonedDateTime);
+            event.setPriority("Mid");
+            event.setOrganization(organization.getOrganizationName());
+            return event;
+        }
 
         public void addManufacturingResource(Organization organization, ManufacturingResource manufacturingResource) {
 

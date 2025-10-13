@@ -4,7 +4,6 @@ import gr.atc.t4m.organization_management.config.TestSecurityConfig;
 import gr.atc.t4m.organization_management.dto.CatalogDTO;
 import gr.atc.t4m.organization_management.exception.OrganizationNotFoundException;
 import gr.atc.t4m.organization_management.model.ManufacturingResource;
-import gr.atc.t4m.organization_management.model.ManufacturingServices;
 import gr.atc.t4m.organization_management.model.Organization;
 import gr.atc.t4m.organization_management.service.DsConnectorService;
 import gr.atc.t4m.organization_management.service.ManufacturingResourceService;
@@ -18,7 +17,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 

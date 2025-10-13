@@ -23,6 +23,7 @@ import gr.atc.t4m.organization_management.dto.OrganizationDTO;
 import gr.atc.t4m.organization_management.dto.ProviderSearchDTO;
 import gr.atc.t4m.organization_management.exception.OrganizationAlreadyExistsException;
 import gr.atc.t4m.organization_management.exception.OrganizationNotFoundException;
+import gr.atc.t4m.organization_management.model.EventType;
 import gr.atc.t4m.organization_management.model.MaasRole;
 import gr.atc.t4m.organization_management.model.Organization;
 import gr.atc.t4m.organization_management.repository.OrganizationRepository;
@@ -115,12 +116,21 @@ class OrganizationServiceTest {
     void testDeleteOrganizationById_WhenExists_ShouldDeleteOrganization() {
         Organization organization = new Organization();
         organization.setOrganizationID("123");
+        organization.setOrganizationName("Test Org");
+        String userId = "user123";
 
         when(organizationRepository.findById("123")).thenReturn(Optional.of(organization));
 
         organizationService.deleteOrganizationById("123");
 
         verify(organizationRepository).delete(organization);
+
+        organizationService.createKafkaMessage(organization, userId, EventType.DELETE);
+
+        verify(kafkaTemplate).send(eq(TOPIC), eventCaptor.capture());
+        EventDTO sentEvent = eventCaptor.getValue();
+        assertEquals("Organization_Deleted", sentEvent.getType());
+        assertTrue(sentEvent.getDescription().contains("Test Org"));
     }
 
     @Test
@@ -146,6 +156,7 @@ class OrganizationServiceTest {
     @Test
     void testUpdateOrganization_WhenExists_ShouldUpdateAndReturnOrganization() {
         Organization existingOrganization = new Organization();
+        String userId = "user123";
         existingOrganization.setOrganizationID("123");
         existingOrganization.setOrganizationName("ORG_OLD");
 
@@ -159,6 +170,13 @@ class OrganizationServiceTest {
 
         assertNotNull(updatedOrganization);
         assertEquals("ORG_NEW", updatedOrganization.getOrganizationName());
+
+        organizationService.createKafkaMessage(updatedOrganization, userId, EventType.UPDATE);
+
+        verify(kafkaTemplate).send(eq(TOPIC), eventCaptor.capture());
+        EventDTO sentEvent = eventCaptor.getValue();
+        assertEquals("Organization_Updated", sentEvent.getType());
+        assertTrue(sentEvent.getDescription().contains("ORG_NEW"));
     }
 
     @Test
@@ -243,7 +261,7 @@ class OrganizationServiceTest {
 
 
        @Test
-    void testCreateKafkaMessage_Success() throws Exception {
+    void testCreateKafkaMessage_Success() {
         // Arrange
         Organization organization = new Organization();
         organization.setOrganizationID("org-123");
@@ -263,7 +281,7 @@ class OrganizationServiceTest {
         when(kafkaTemplate.send(eq(TOPIC), any(EventDTO.class))).thenReturn(future);
 
         // Act
-        organizationService.createKafkaMessage(organization, userId);
+        organizationService.createKafkaMessage(organization, userId, EventType.CREATE);
 
         // Assert
         verify(kafkaTemplate).send(eq(TOPIC), eventCaptor.capture());
@@ -284,7 +302,7 @@ class OrganizationServiceTest {
         when(kafkaTemplate.send(eq(TOPIC), any(EventDTO.class))).thenReturn(future);
 
         // Act
-        organizationService.createKafkaMessage(organization, userId);
+        organizationService.createKafkaMessage(organization, userId, EventType.CREATE);
 
         // Assert
         verify(kafkaTemplate).send(eq(TOPIC), any(EventDTO.class));
