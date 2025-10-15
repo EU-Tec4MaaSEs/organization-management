@@ -1,6 +1,7 @@
 package gr.atc.t4m.organization_management.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import gr.atc.t4m.organization_management.service.CapabilityService;
 import org.springframework.beans.BeanUtils;
@@ -324,5 +325,33 @@ public class OrganizationController {
 
         return ResponseEntity.ok(capabilities);
     }
+  
+    @Operation(summary = "Retrieves the list of organizations by capability", description = "Returns a list of organizations related to a specific capability", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "List of organizations for the specified capability."),
+            @ApiResponse(responseCode = "400", description = "Bad request."),
+            @ApiResponse(responseCode = "401", description = "Authentication process failed!"),
+    })
+@GetMapping(value = "/by-capability", produces = "application/json;charset=UTF-8")
+public ResponseEntity<List<OrganizationDTO>> getOrganizationsByCapabilities(
+        @RequestParam Optional<String> primaryCapability,
+        @RequestParam Optional<String> secondaryCapability) {
+
+    if (primaryCapability.isEmpty() && secondaryCapability.isEmpty()) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                "At least one of primaryCapability or secondaryCapability must be provided.");
+    }
+
+    List<OrganizationDTO> organizations =
+            organizationService.getOrganizationsByCapabilities(
+                    primaryCapability.orElse(null),
+                    secondaryCapability.orElse(null));
+                    
+
+    return organizations == null || organizations.isEmpty()
+            ? ResponseEntity.noContent().build()
+            : ResponseEntity.ok(organizations);
+}
+
     
 }

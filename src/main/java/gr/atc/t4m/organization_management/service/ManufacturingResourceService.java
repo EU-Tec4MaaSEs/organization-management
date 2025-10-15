@@ -50,4 +50,19 @@ public class ManufacturingResourceService {
     public List<ManufacturingResource> getAllManufacturingResources() {
         return manufacturingResourceRepo.findAll();
     }
+
+    public List<ManufacturingResource> findByCapabilities(
+        String primaryCapability, String secondaryCapability) {
+
+    if (primaryCapability != null && secondaryCapability != null) {
+        return manufacturingResourceRepo
+            .findByPrimaryAndSecondaryCapabilities(primaryCapability, secondaryCapability);
+    } else if (primaryCapability != null) {
+        return manufacturingResourceRepo.findByCapability(primaryCapability, "Primary");
+    } else if (secondaryCapability != null) {
+        return manufacturingResourceRepo.findByCapability(secondaryCapability, "Secondary");
+    }
+    return List.of();
+}
+
 }
