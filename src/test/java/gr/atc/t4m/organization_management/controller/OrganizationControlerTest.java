@@ -315,5 +315,59 @@ void testCreateOrganization_WhenOrganizationNameIsNull_ShouldReturnBadRequest() 
         mockMvc.perform(get("/api/organization/UnknownOrg/capabilities").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
+
+ @Test
+void testGetOrganizationsByPrimaryCapability_ReturnsOk() throws Exception {
+    OrganizationDTO orgDto = new OrganizationDTO();
+    orgDto.setOrganizationName("TestOrg");
+
+    when(organizationService.getOrganizationsByCapabilities(eq("Cutting"), any()))
+            .thenReturn(List.of(orgDto));
+
+    // Act & Assert
+    mockMvc.perform(get("/api/organization/by-capability")
+                    .param("primaryCapability", "Cutting")
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json;charset=UTF-8"))
+            .andExpect(jsonPath("$[0].organizationName").value("TestOrg"));
+}
+
+   @Test
+void testGetOrganizationsBySecondaryCapability_ReturnsOk() throws Exception {
+    OrganizationDTO orgDto = new OrganizationDTO();
+    orgDto.setOrganizationName("OrgB");
+
+    when(organizationService.getOrganizationsByCapabilities(nullable(String.class), eq("Welding")))
+            .thenReturn(List.of(orgDto));
+
+    mockMvc.perform(get("/api/organization/by-capability")
+                    .param("secondaryCapability", "Welding")
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json;charset=UTF-8"))
+            .andExpect(jsonPath("$[0].organizationName").value("OrgB"));
+}
+
+
+@Test
+void testGetOrganizationsByCapability_NoParams_ReturnsBadRequest() throws Exception {
+    mockMvc.perform(get("/api/organization/by-capability")
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+}
+
+
+    @Test
+    void testGetOrganizationsByCapability_EmptyList_ReturnsNoContent() throws Exception {
+        when(organizationService.getOrganizationsByCapabilities(eq("Unknown"), any()))
+                .thenReturn(List.of());
+
+        mockMvc.perform(get("/api/organization/by-capability")
+                        .param("primaryCapability", "Unknown")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+    }
+
 }
 

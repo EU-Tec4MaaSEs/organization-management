@@ -5,6 +5,7 @@ import java.util.Optional;
 import gr.atc.t4m.organization_management.model.EventType;
 
 import org.apache.kafka.clients.producer.RecordMetadata;
+import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -215,4 +216,42 @@ public class OrganizationService {
 
             organizationRepository.save(organization);
         }
+        public List<OrganizationDTO> getOrganizationsByCapabilities(String primaryCapability,
+                String secondaryCapability) {
+            List<ManufacturingResource> manufacturingResources = manufacturingResourceService
+                    .findByCapabilities(primaryCapability, secondaryCapability);
+
+            LOGGER.info("Found {} manufacturing resources with the specified capabilities",
+                    manufacturingResources.size());
+
+            if (manufacturingResources.isEmpty()) {
+                return List.of();
+            }
+
+            List<String> resourceIds = manufacturingResources.stream()
+                    .map(ManufacturingResource::getManufacturingResourceID)
+                    .toList();
+
+            List<ObjectId> resourceObjectIds = resourceIds.stream()
+                    .map(ObjectId::new)
+                    .toList();
+
+            List<Organization> organizations = organizationRepository
+                    .findByManufacturingResourceObjectIds(resourceObjectIds);
+
+            LOGGER.info("Found {} organizations containing matching manufacturing resources", organizations.size());
+
+            for (Organization org : organizations) {
+                List<ManufacturingResource> matchedResources = org.getManufacturingResources().stream()
+                        .filter(r -> resourceIds.contains(r.getManufacturingResourceID()))
+                        .toList();
+                org.setManufacturingResources(matchedResources);
+            }
+
+            return organizations.stream()
+                    .map(org -> modelMapper.map(org, OrganizationDTO.class))
+                    .toList();
+
+        }
+
 }

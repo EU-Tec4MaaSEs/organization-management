@@ -111,8 +111,8 @@ public List<CapabilityEntry> parseAASCapabilities(String jsonResponse) throws IO
             if (qualifier == null) continue;
             try {
                 switch (Type.valueOf(qualifier.getType())) {
-                    case CapabilityType -> entry.setType(qualifier.getValue());
-                    case Offered -> entry.setOffered(Boolean.parseBoolean(qualifier.getValue()));
+                    case CapabilityType -> entry.setType(qualifier.getValue().trim());
+                    case Offered -> entry.setOffered(Boolean.parseBoolean(qualifier.getValue().trim()));
                     default -> {
                         LOGGER.info("Unknown qualifier type: {}", qualifier.getType());
                     }
@@ -203,16 +203,28 @@ public List<CapabilityEntry> parseAASCapabilities(String jsonResponse) throws IO
      * Parses a relation from a CapabilityRelations element and builds a GeneralizationRelation.
      */
     private GeneralizationRelation extractRelation(SubmodelElement relationElement) {
-        List<SubmodelElement> wrapperList = mapper.convertValue(relationElement.getValue(), new TypeReference<>() {
-        });
-        if (wrapperList.isEmpty() || wrapperList.get(0).getValue().isEmpty()) return null;
+    List<SubmodelElement> wrapperList = mapper.convertValue(
+        relationElement.getValue(),
+        new TypeReference<>() {}
+    );
 
-        Relation relation = mapper.convertValue(wrapperList.get(0).getValue().get(0), Relation.class);
-        String first = relation.getFirst().getKeys().get(3).getValue();
-        String second = relation.getSecond().getKeys().get(3).getValue();
+    if (wrapperList.isEmpty() || wrapperList.get(0).getValue().isEmpty()) return null;
 
-        return new GeneralizationRelation(first, second);
+    Relation relation = mapper.convertValue(wrapperList.get(0).getValue().get(0), Relation.class);
+
+    List<Key> firstKeys = relation.getFirst().getKeys();
+    List<Key> secondKeys = relation.getSecond().getKeys();
+
+    if (firstKeys.size() <= 3 || secondKeys.size() <= 3) {
+        LOGGER.warn("Relation keys too short: first={}, second={}", firstKeys.size(), secondKeys.size());
+        return null;
     }
+
+    String first = firstKeys.get(3).getValue();
+    String second = secondKeys.get(3).getValue();
+
+    return new GeneralizationRelation(first, second);
+}
 
     public List<DatasetEntry> retrieveCapabilitiesInformation(String body) throws IOException {
         List<DatasetEntry> datasets = parseDatasets(body);

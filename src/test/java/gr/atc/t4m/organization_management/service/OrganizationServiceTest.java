@@ -3,6 +3,7 @@ package gr.atc.t4m.organization_management.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -12,6 +13,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -25,47 +27,49 @@ import gr.atc.t4m.organization_management.exception.OrganizationAlreadyExistsExc
 import gr.atc.t4m.organization_management.exception.OrganizationNotFoundException;
 import gr.atc.t4m.organization_management.model.EventType;
 import gr.atc.t4m.organization_management.model.MaasRole;
+import gr.atc.t4m.organization_management.model.ManufacturingResource;
 import gr.atc.t4m.organization_management.model.Organization;
 import gr.atc.t4m.organization_management.repository.OrganizationRepository;
 
 import org.apache.kafka.clients.producer.RecordMetadata;
 
 import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.kafka.support.SendResult;
 
 
 import java.lang.reflect.Field;
 
 
+@ExtendWith(MockitoExtension.class) 
 class OrganizationServiceTest {
 
     @Mock
     private OrganizationRepository organizationRepository;
 
-    private ModelMapper modelMapper;
+    @Mock
+    private ModelMapper modelMapper; 
 
     @Mock
     private KafkaTemplate<String, EventDTO> kafkaTemplate;
-    @Captor
-    private ArgumentCaptor<EventDTO> eventCaptor;
 
     @Mock
     private ManufacturingResourceService manufacturingResourceService;
 
-    private OrganizationService organizationService;
+    @Captor
+    private ArgumentCaptor<EventDTO> eventCaptor;
+
+    @InjectMocks
+    private OrganizationService organizationService; 
+
     private static final String TOPIC = "dataspace-organization-onboarding";
 
-
     @BeforeEach
-    void setUp() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-      MockitoAnnotations.openMocks(this);
-      modelMapper = new ModelMapper();
-     organizationService = new OrganizationService(organizationRepository, manufacturingResourceService, modelMapper, kafkaTemplate);
+    void setUp() throws Exception {
         Field topicField = OrganizationService.class.getDeclaredField("organizationRegistrationTopic");
         topicField.setAccessible(true);
         topicField.set(organizationService, TOPIC);
     }
-
     @Test
     void testCreateOrganization_Success() {
         Organization organization = new Organization();
@@ -152,32 +156,47 @@ class OrganizationServiceTest {
 
         assertEquals(2, result.getTotalElements());
     }
+@Test
+void testUpdateOrganization_WhenExists_ShouldUpdateAndReturnOrganization() {
+    String userId = "user123";
 
-    @Test
-    void testUpdateOrganization_WhenExists_ShouldUpdateAndReturnOrganization() {
-        Organization existingOrganization = new Organization();
-        String userId = "user123";
-        existingOrganization.setOrganizationID("123");
-        existingOrganization.setOrganizationName("ORG_OLD");
+    Organization existingOrganization = new Organization();
+    existingOrganization.setOrganizationID("123");
+    existingOrganization.setOrganizationName("ORG_OLD");
 
-        OrganizationDTO organizationDTO = new OrganizationDTO();
-        organizationDTO.setOrganizationName("ORG_NEW");
+    OrganizationDTO organizationDTO = new OrganizationDTO();
+    organizationDTO.setOrganizationName("ORG_NEW");
 
-        when(organizationRepository.findById("123")).thenReturn(Optional.of(existingOrganization));
-        when(organizationRepository.save(any(Organization.class))).thenReturn(existingOrganization);
+    when(organizationRepository.findById("123")).thenReturn(Optional.of(existingOrganization));
 
-        Organization updatedOrganization = organizationService.updateOrganization("123", organizationDTO);
+    doAnswer(invocation -> {
+        OrganizationDTO dto = invocation.getArgument(0);
+        Organization org = invocation.getArgument(1);
+        org.setOrganizationName(dto.getOrganizationName());
+        return null; // For void methods, return null
+    }).when(modelMapper).map(any(OrganizationDTO.class), any(Organization.class));
 
-        assertNotNull(updatedOrganization);
-        assertEquals("ORG_NEW", updatedOrganization.getOrganizationName());
+    when(organizationRepository.save(any(Organization.class)))
+            .thenAnswer(invocation -> invocation.getArgument(0));
 
-        organizationService.createKafkaMessage(updatedOrganization, userId, EventType.UPDATE);
+    Organization updatedOrganization = organizationService.updateOrganization("123", organizationDTO);
 
-        verify(kafkaTemplate).send(eq(TOPIC), eventCaptor.capture());
-        EventDTO sentEvent = eventCaptor.getValue();
-        assertEquals("Organization_Updated", sentEvent.getType());
-        assertTrue(sentEvent.getDescription().contains("ORG_NEW"));
-    }
+    // Assert
+    assertNotNull(updatedOrganization);
+    assertEquals("ORG_NEW", updatedOrganization.getOrganizationName());
+
+    // Kafka verification
+    organizationService.createKafkaMessage(updatedOrganization, userId, EventType.UPDATE);
+    verify(kafkaTemplate).send(eq(TOPIC), eventCaptor.capture());
+    EventDTO sentEvent = eventCaptor.getValue();
+    assertEquals("Organization_Updated", sentEvent.getType());
+    assertTrue(sentEvent.getDescription().contains("ORG_NEW"));
+
+    // Verify interactions
+    verify(modelMapper).map(any(OrganizationDTO.class), any(Organization.class));
+    verify(organizationRepository).save(any(Organization.class));
+}
+
 
     @Test
     void testUpdateOrganization_WhenNotExists_ShouldThrowException() {
@@ -262,7 +281,6 @@ class OrganizationServiceTest {
 
        @Test
     void testCreateKafkaMessage_Success() {
-        // Arrange
         Organization organization = new Organization();
         organization.setOrganizationID("org-123");
         organization.setOrganizationName("Test Org");
@@ -280,10 +298,8 @@ class OrganizationServiceTest {
 
         when(kafkaTemplate.send(eq(TOPIC), any(EventDTO.class))).thenReturn(future);
 
-        // Act
         organizationService.createKafkaMessage(organization, userId, EventType.CREATE);
 
-        // Assert
         verify(kafkaTemplate).send(eq(TOPIC), eventCaptor.capture());
         EventDTO sentEvent = eventCaptor.getValue();
         assertEquals("Organization_Onboarding", sentEvent.getType());
@@ -292,7 +308,6 @@ class OrganizationServiceTest {
 
     @Test
     void testCreateKafkaMessage_Failure() {
-        // Arrange
         Organization organization = new Organization();
         String userId = "user123";
 
@@ -301,13 +316,91 @@ class OrganizationServiceTest {
 
         when(kafkaTemplate.send(eq(TOPIC), any(EventDTO.class))).thenReturn(future);
 
-        // Act
         organizationService.createKafkaMessage(organization, userId, EventType.CREATE);
 
-        // Assert
         verify(kafkaTemplate).send(eq(TOPIC), any(EventDTO.class));
-        // Optional: verify logs or interruption flag
         assertTrue(Thread.currentThread().isInterrupted());
+    }
+    
+    @Test
+    void testGetOrganizationsByCapabilities_ResourcesFound_OrganizationsReturned() {
+        // Arrange
+        ManufacturingResource resource = new ManufacturingResource();
+        resource.setManufacturingResourceID("507f1f77bcf86cd799439011");
+
+        Organization org = new Organization();
+        org.setOrganizationID("org1");
+        org.setOrganizationName("TestOrg");
+        org.setManufacturingResources(List.of(resource));
+
+        OrganizationDTO orgDto = new OrganizationDTO();
+        orgDto.setOrganizationName("TestOrg");
+
+        when(manufacturingResourceService.findByCapabilities(any(), any()))
+                .thenReturn(List.of(resource));
+        when(organizationRepository.findByManufacturingResourceObjectIds(anyList()))
+                .thenReturn(List.of(org));
+        when(modelMapper.map(any(Organization.class), eq(OrganizationDTO.class)))
+                .thenReturn(orgDto);
+
+        List<OrganizationDTO> result =
+                organizationService.getOrganizationsByCapabilities("Cutting", "Drilling");
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals("TestOrg", result.get(0).getOrganizationName());
+
+        verify(modelMapper, times(1)).map(any(Organization.class), eq(OrganizationDTO.class));
+    }
+    @Test
+    void testGetOrganizationsByCapabilities_NoMatchingResources_ReturnsEmptyList() {
+        when(manufacturingResourceService.findByCapabilities(any(), any()))
+                .thenReturn(List.of());
+
+        List<OrganizationDTO> result =
+                organizationService.getOrganizationsByCapabilities("Cutting", "Drilling");
+
+        assertTrue(result.isEmpty());
+        verify(organizationRepository, never()).findByManufacturingResourceObjectIds(anyList());
+    }
+
+    @Test
+    void testGetOrganizationsByCapabilities_ModelMapperCalledForEachOrg() {
+        // Arrange
+        ManufacturingResource resource = new ManufacturingResource();
+        resource.setManufacturingResourceID("507f1f77bcf86cd799439011");
+
+        Organization org1 = new Organization();
+        org1.setOrganizationID("org1");
+        org1.setOrganizationName("Org1");
+        org1.setManufacturingResources(List.of(resource));
+
+        Organization org2 = new Organization();
+        org2.setOrganizationID("org2");
+        org2.setOrganizationName("Org2");
+        org2.setManufacturingResources(List.of(resource));
+
+        when(manufacturingResourceService.findByCapabilities(any(), any()))
+                .thenReturn(List.of(resource));
+        when(organizationRepository.findByManufacturingResourceObjectIds(anyList()))
+                .thenReturn(List.of(org1, org2));
+        when(modelMapper.map(any(Organization.class), eq(OrganizationDTO.class)))
+                .thenAnswer(invocation -> {
+                    Organization source = invocation.getArgument(0);
+                    OrganizationDTO dto = new OrganizationDTO();
+                    dto.setOrganizationName(source.getOrganizationName());
+                    return dto;
+                });
+
+        List<OrganizationDTO> result =
+                organizationService.getOrganizationsByCapabilities("Machining", "Welding");
+
+        assertEquals(2, result.size());
+        assertEquals("Org1", result.get(0).getOrganizationName());
+        assertEquals("Org2", result.get(1).getOrganizationName());
+
+        verify(modelMapper, times(2))
+                .map(any(Organization.class), eq(OrganizationDTO.class));
     }
 }
 
