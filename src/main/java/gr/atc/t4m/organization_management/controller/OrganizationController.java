@@ -354,4 +354,37 @@ public ResponseEntity<List<OrganizationDTO>> getOrganizationsByCapabilities(
 }
 
     
+
+ @Operation(summary = "Update organization's logo", security = @SecurityRequirement(name = "bearerAuth"))
+@ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Organization logo updated successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid input value"),
+        @ApiResponse(responseCode = "401", description = "Authentication failed"),
+        @ApiResponse(responseCode = "404", description = "Organization not found"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+})
+@PutMapping(value = "/{organizationId}/update-logo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+public ResponseEntity<Organization> updateOrganizationLogo(
+        @PathVariable String organizationId,
+        @RequestPart(value = "logoFile", required = false) MultipartFile logoFile)
+{
+    // Validate file
+    if (logoFile == null || logoFile.isEmpty()) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Logo file is required");
+    }
+
+    // Fetch existing organization
+    Organization organization = organizationService.getOrganization(organizationId);
+    if (organization == null) {
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Organization not found");
+    }
+
+    String logoUrl = minioService.uploadLogo(logoFile);
+    organization.setLogoUrl(logoUrl);
+
+    Organization updated = organizationService.save(organization);
+
+    return ResponseEntity.ok(updated);
+}
+
 }

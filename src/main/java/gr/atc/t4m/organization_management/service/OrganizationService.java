@@ -124,6 +124,12 @@ public class OrganizationService {
                         ORGANIZATION_WITH_ID + id + " not found. Update is aborted"));
 
         modelMapper.map(organizationDTO, existing);
+        if (organizationDTO.getMaasProvider() == null) {
+           existing.setMaasProvider(null);
+         }
+        if (organizationDTO.getMaasConsumer() == null) {
+          existing.setMaasConsumer(null);
+         }
 
         return organizationRepository.save(existing);
     }
@@ -252,6 +258,11 @@ public class OrganizationService {
                     .map(org -> modelMapper.map(org, OrganizationDTO.class))
                     .toList();
 
+        }
+
+        public Organization save(Organization organization) {
+        organizationRepository.save(organization);
+        return organization;
         }
 
 }
