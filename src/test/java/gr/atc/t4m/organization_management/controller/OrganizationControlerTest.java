@@ -369,5 +369,60 @@ void testGetOrganizationsByCapability_NoParams_ReturnsBadRequest() throws Except
                 .andExpect(status().isNoContent());
     }
 
+@Test
+    void testUpdateOrganizationLogo_Success() throws Exception {
+        String orgId = "123";
+        String logoUrl = "https://minio.example.com/logo.png";
+
+        Organization org = new Organization();
+        org.setOrganizationID(orgId);
+
+        // Mock service responses
+        when(organizationService.getOrganization(orgId)).thenReturn(org);
+        when(minioService.uploadLogo(any())).thenReturn(logoUrl);
+        when(organizationService.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        MockMultipartFile file = new MockMultipartFile(
+                "logoFile",
+                "logo.png",
+                "image/png",
+                "fake-content".getBytes()
+        );
+
+        mockMvc.perform(multipart("/api/organization/123/update-logo", orgId)
+                        .file(file)
+                        .with(request -> { request.setMethod("PUT"); return request; }))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.logoUrl").value(logoUrl));
+    }
+
+    @Test
+    void testUpdateOrganizationLogo_MissingFile_ShouldReturnBadRequest() throws Exception {
+        String orgId = "123";
+
+        mockMvc.perform(multipart("/api/organization/{orgId}/update-logo", orgId)
+                        .with(request -> { request.setMethod("PUT"); return request; }))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testUpdateOrganizationLogo_OrganizationNotFound_ShouldReturnNotFound() throws Exception {
+        String orgId = "123";
+
+        MockMultipartFile file = new MockMultipartFile(
+                "logoFile",
+                "logo.png",
+                "image/png",
+                "fake-content".getBytes()
+        );
+
+        when(organizationService.getOrganization(orgId)).thenReturn(null);
+
+        mockMvc.perform(multipart("/api/organization/{orgId}/update-logo", orgId)
+                        .file(file)
+                        .with(request -> { request.setMethod("PUT"); return request; }))
+                .andExpect(status().isNotFound());
+    }
+
 }
 
