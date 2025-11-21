@@ -8,7 +8,7 @@ COPY src ./src
 RUN ls /app/src/main/resources
 RUN mvn clean package -DskipTests
 
-FROM openjdk:17-jdk-slim
+FROM openjdk:17.0.2-jdk-slim-bullseye
 
 WORKDIR /app
 
