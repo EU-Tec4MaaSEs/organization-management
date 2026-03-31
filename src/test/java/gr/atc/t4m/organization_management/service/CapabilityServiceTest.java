@@ -31,46 +31,49 @@ void parseDatasets_shouldReturnDatasetEntries() throws IOException {
     String json = """
             {
               "data": {
-                "dcat:dataset": [
+                "dataset": [
                   {
                     "@id": "dataset1",
                     "@type": "Dataset",
-                    "dct:title": "Test Dataset",
-                    "dct:description": [
+                    "title": "Test Dataset",
+                    "description": [
                         {"@language": "en", "@value": "Test description"}
                     ],
-                    "dcat:keyword": ["kw1"],
-                    "dcat:distribution": [],
-                    "odrl:hasPolicy": {
+                    "keyword": ["kw1"],
+                    "distribution": [],
+                    "hasPolicy": [{
                         "@type": "Policy",
-                        "odrl:providerId": "provider123",
-                        "odrl:permission": [
+                        "providerid": "provider123",
+                        "permission": [
                             {
                                 "@type": "Permission",
-                                "odrl:action": "read"
+                                "action": "read"
                             }
                         ]
                     }
+                   ]
                   },
                   {
                     "@id": "dataset2",
                     "@type": "Dataset",
-                    "dct:title": "Second Dataset",
-                    "dct:description": [
+                    "title": "Second Dataset",
+                    "description": [
                         {"@language": "en", "@value": "Second description"}
                     ],
-                    "dcat:keyword": ["kw2"],
-                    "dcat:distribution": [],
-                    "odrl:hasPolicy": {
+                    "keyword": ["kw2"],
+                    "distribution": [],
+                    "hasPolicy": [
+                     {
                         "@type": "Policy",
-                        "odrl:providerId": "provider456",
-                        "odrl:permission": [
+                        "providerid": "provider456",
+                        "permission": [
                             {
                                 "@type": "Permission",
-                                "odrl:action": "write"
+                                "action": "write"
                             }
                         ]
                     }
+                   ]
                   }
                 ]
               }
@@ -85,20 +88,20 @@ void parseDatasets_shouldReturnDatasetEntries() throws IOException {
     assertEquals("dataset1", first.getId());
     assertEquals("Test Dataset", first.getTitle());
     assertEquals("Test description", first.getDescription().get(0).getValue());
-    assertEquals("read", first.getPolicy().getPermissions().get(0).getAction());
+    assertEquals("read", first.getHasPolicy().get(0).getPermissions().get(0).getAction());
 
     DatasetEntry second = entries.get(1);
     assertEquals("dataset2", second.getId());
     assertEquals("Second Dataset", second.getTitle());
     assertEquals("Second description", second.getDescription().get(0).getValue());
-    assertEquals("write", second.getPolicy().getPermissions().get(0).getAction());
+    assertEquals("write", second.getHasPolicy().get(0).getPermissions().get(0).getAction());
 }
 
 
     @Test
     void parseDatasets_shouldReturnEmptyListIfNoDatasets() throws IOException {
         String json = """
-                { "data": { "dcat:dataset": [] } }
+                { "data": { "dataset": [] } }
                 """;
 
         List<DatasetEntry> entries = capabilityService.parseDatasets(json);
@@ -107,34 +110,37 @@ void parseDatasets_shouldReturnDatasetEntries() throws IOException {
 
     @Test
 void retrieveCapabilitiesInformation_shouldReturnEntries() throws IOException {
-    String json = """
-            {
-              "data": {
-                "dcat:dataset": [
-                  {
-                    "@id": "dataset1",
-                    "@type": "Dataset",
-                    "dct:title": "Test Dataset",
-                    "dct:description": [
-                      {"@language": "en", "@value": "Description here"}
-                    ],
-                    "dcat:keyword": ["keyword1"],
-                    "dcat:distribution": [],
-                    "odrl:hasPolicy": {
-                        "@type": "Policy",
-                        "odrl:providerId": "provider1",
-                        "odrl:permission": [
-                          {
-                            "@type": "Permission",
-                            "odrl:action": "read"
-                          }
-                        ]
-                    }
-                  }
-                ]
+   String json = """
+{
+  "data": {
+    "dataset": [
+      {
+        "@id": "dataset1",
+        "@type": "Dataset",
+        "title": "Test Dataset",
+        "description": [
+          { "@language": "en", "@value": "Description here" }
+        ],
+        "keyword": ["keyword1"],
+        "distribution": [],
+        "hasPolicy": [
+          {
+            "@type": "Policy",
+            "providerid": "provider1",
+            "permission": [
+              {
+                "@type": "Permission",
+                "action": "read"
               }
-            }
-            """;
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+""";
+
 
     List<DatasetEntry> entries = capabilityService.retrieveCapabilitiesInformation(json);
 
@@ -143,14 +149,14 @@ void retrieveCapabilitiesInformation_shouldReturnEntries() throws IOException {
     assertEquals("dataset1", entry.getId());
     assertEquals("Test Dataset", entry.getTitle());
     assertEquals("Description here", entry.getDescription().get(0).getValue());
-    assertEquals("read", entry.getPolicy().getPermissions().get(0).getAction());
+    assertEquals("read", entry.getHasPolicy().get(0).getPermissions().get(0).getAction());
 }
 
 
     @Test
     void retrieveCapabilitiesInformation_shouldThrowIOExceptionIfEmpty() {
         String json = """
-                { "data": { "dcat:dataset": [] } }
+                { "data": { "dataset": [] } }
                 """;
 
         assertThrows(IOException.class,
@@ -160,7 +166,7 @@ void retrieveCapabilitiesInformation_shouldReturnEntries() throws IOException {
 void parseAASCapabilities_shouldParseCapabilityEntries() throws IOException {
 String json = """
 {
-  "result": [
+  "submodelElements": [
     {
       "idShort": "MillingContainer",
       "modelType": "SubmodelElementCollection",
@@ -170,7 +176,7 @@ String json = """
           "modelType": "Capability",
           "qualifiers": [
             {
-              "type": "Offered",
+              "type": "OFFERED",
               "value": "true"
             },
             {
@@ -213,7 +219,7 @@ String json = """
                     "type": "ExternalReference"
                   },
                   "kind": "ValueQualifier",
-                  "type": "Offered",
+                  "type": "OFFERED",
                   "value": "true",
                   "valueType": "xs:boolean"
                 },
@@ -257,7 +263,7 @@ String json = """
 void parseAASCapabilities_shouldParseCapabilityEntriesWithProperties() throws IOException {
 String json = """
 {
-  "result": [
+  "submodelElements": [
     {
       "idShort": "MillingContainer",
       "modelType": "SubmodelElementCollection",

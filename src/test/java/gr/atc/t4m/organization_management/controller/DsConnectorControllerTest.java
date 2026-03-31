@@ -27,6 +27,9 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.List;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 
@@ -112,15 +115,14 @@ class DsConnectorControllerTest {
         mr.setManufacturingResourceTitle("Test Resource");
 
         when(organizationService.getOrganizationByName("TestOrg")).thenReturn(org);
-        when(dsConnectorService.retrieveCapabilities(any(CatalogDTO.class))).thenReturn(mr);
+        when(dsConnectorService.retrieveCapabilities(any(CatalogDTO.class))).thenReturn(List.of(mr));
         doNothing().when(manufacturingResourceService).save(any(ManufacturingResource.class));
 
         mockMvc.perform(post("/api/connector/retrieveCapabilities")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(catalogDTO)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.manufacturingResourceTitle").value("Test Resource"));
-    }
+                .andExpect(jsonPath("$[0].manufacturingResourceTitle").value("Test Resource"));    }
 
     @Test
     void shouldReturn400_whenMissingOrganizationNameOrUrl() throws Exception {

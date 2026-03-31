@@ -13,9 +13,9 @@ public class DSAccessService {
     @JsonProperty("@type")
     private String type;
 
-    @JsonProperty("dcat:endpointDescription")
+    @JsonProperty("endpointDescription")
     private String endpointDescription;
 
-    @JsonProperty("dcat:endpointUrl")
+    @JsonProperty("endpointURL")
     private String endpointUrl;
 }

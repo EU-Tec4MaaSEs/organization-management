@@ -65,4 +65,14 @@ public class ManufacturingResourceService {
     return List.of();
 }
 
+    public List<ManufacturingResource> saveAll(List<ManufacturingResource> manufacturingResource) {
+      return manufacturingResourceRepo.saveAll(manufacturingResource);
+    }
+
+   public void deleteAll(List<ManufacturingResource> resources) {
+        if (resources != null && !resources.isEmpty()) {
+            manufacturingResourceRepo.deleteAll(resources);
+        }
+    }
+
 }

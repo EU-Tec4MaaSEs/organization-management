@@ -17,17 +17,17 @@ public class DatasetEntry {
     @JsonProperty("@type")
     private String type;
 
-    @JsonProperty("dct:title")
+    @JsonProperty("title")
     private String title;
 
-    @JsonProperty("dct:description")
+    @JsonProperty("description")
     private List<DSDescription> description;
 
-    @JsonProperty("dcat:keyword")
+    @JsonProperty("keyword")
     private List<String> keywords;
-    @JsonProperty("dcat:distribution")
+    @JsonProperty("distribution")
     private List<DSDistribution> distributions;
 
-    @JsonProperty("odrl:hasPolicy")
-    private DSPolicy policy;
+    @JsonProperty("hasPolicy")
+    private List<DSPolicy> hasPolicy;
 }

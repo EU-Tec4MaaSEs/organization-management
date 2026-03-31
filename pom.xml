@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.4.5</version>
+		<version>3.4.13</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>gr.atc.t4m</groupId>
 	<artifactId>organization_management</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.8-SNAPSHOT</version>
 	<name>organization Management</name>
 	<description>Organization Management for T4M</description>
 	<url/>

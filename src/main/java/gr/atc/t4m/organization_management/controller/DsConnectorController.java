@@ -1,8 +1,10 @@
 package gr.atc.t4m.organization_management.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,7 +35,6 @@ public class DsConnectorController {
     private final OrganizationService organizationService;
     private final ManufacturingResourceService manufacturingResourceService;
 
-    @Autowired
     public DsConnectorController(DsConnectorService dsConnectorService, OrganizationService organizationService, ManufacturingResourceService manufacturingResourceService) {
         this.dsConnectorService = dsConnectorService;
         this.organizationService = organizationService;
@@ -71,8 +72,9 @@ public class DsConnectorController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
 
     })
+    @Transactional
     @PostMapping(value = "retrieveCapabilities")
-    public ManufacturingResource  retrieveCapabilities(
+    public List<ManufacturingResource>  retrieveCapabilities(
             @Valid @RequestBody CatalogDTO catalogDTO,
             final HttpServletRequest request) {
                 if (catalogDTO.getOrganizationName() == null || catalogDTO.getProviderUrl() == null) {
@@ -89,8 +91,14 @@ public class DsConnectorController {
                     );
                 }
           
-                ManufacturingResource manufacturingResource = dsConnectorService.retrieveCapabilities(catalogDTO);
-                manufacturingResourceService.save(manufacturingResource);
+                List<ManufacturingResource> manufacturingResource = dsConnectorService.retrieveCapabilities(catalogDTO);
+
+                //delete the old values
+                if (organization.getManufacturingResources() != null && !organization.getManufacturingResources().isEmpty()) {
+                     manufacturingResourceService.deleteAll(organization.getManufacturingResources());
+                     organization.getManufacturingResources().clear();
+                }
+                manufacturingResourceService.saveAll(manufacturingResource);
                
                 organizationService.addManufacturingResource(organization, manufacturingResource);
 
