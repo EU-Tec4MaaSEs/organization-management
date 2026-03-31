@@ -212,13 +212,13 @@ public class OrganizationService {
             return event;
         }
 
-        public void addManufacturingResource(Organization organization, ManufacturingResource manufacturingResource) {
+        public void addManufacturingResource(Organization organization, List<ManufacturingResource> manufacturingResource) {
 
             if (organization.getManufacturingResources() == null) {
                 organization.setManufacturingResources(new ArrayList<>());
             }
 
-            organization.getManufacturingResources().add(manufacturingResource);
+            organization.getManufacturingResources().addAll(manufacturingResource);
 
             organizationRepository.save(organization);
         }

@@ -13,9 +13,9 @@ public class DSPermission {
     @JsonProperty("@type")
     private String type;
 
-    @JsonProperty("odrl:action")
+    @JsonProperty("action")
     private String action;
 
-    @JsonProperty("odrl:constraint")
+    @JsonProperty("constraint")
     private List<String> constraint;
 }

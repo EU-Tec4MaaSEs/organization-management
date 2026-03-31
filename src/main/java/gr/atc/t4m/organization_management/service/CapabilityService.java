@@ -33,33 +33,33 @@ public class CapabilityService {
      * @return List of CapabilityEntry parsed from the JSON file.
      * @throws IOException if the JSON file cannot be read.
      */
-public List<CapabilityEntry> parseAASCapabilities(String jsonResponse) throws IOException {
-    // Parse JSON string directly instead of reading from file
-    SubmodelWrapper wrapper = mapper.readValue(jsonResponse, SubmodelWrapper.class);
+ public List<CapabilityEntry> parseAASCapabilities(String jsonResponse) throws IOException {
+     // Parse JSON string directly instead of reading from file
+     SubmodelWrapper wrapper = mapper.readValue(jsonResponse, SubmodelWrapper.class);
 
-      List<SubmodelElement> submodelElements = wrapper.getSubmodelElements();
-      if (submodelElements == null || submodelElements.isEmpty()) {
-        return Collections.emptyList();
-    }
+       List<SubmodelElement> submodelElements = wrapper.getSubmodelElements();
+       if (submodelElements == null || submodelElements.isEmpty()) {
+         return Collections.emptyList();
+     }
 
-        // Extract the first-level container (assumed to contain all capability sets)
-        List<SubmodelElement> capabilitySets = mapper.convertValue(
-                wrapper.getSubmodelElements().get(0).getValue(),
-                new TypeReference<>() {
-                }
-        );
+         // Extract the first-level container (assumed to contain all capability sets)
+         List<SubmodelElement> capabilitySets = mapper.convertValue(
+                 wrapper.getSubmodelElements().get(0).getValue(),
+                 new TypeReference<>() {
+                 }
+         );
 
-        List<CapabilityEntry> results = new ArrayList<>();
-        for (SubmodelElement container : capabilitySets) {
-            CapabilityEntry entry = parseCapabilityContainer(container);
-            results.add(entry);
-        }
+         List<CapabilityEntry> results = new ArrayList<>();
+         for (SubmodelElement container : capabilitySets) {
+             CapabilityEntry entry = parseCapabilityContainer(container);
+             results.add(entry);
+         }
 
-        if (LOGGER.isInfoEnabled()) {
-            LOGGER.info("Parsed AAS Capabilities: {}", mapper.writerWithDefaultPrettyPrinter().writeValueAsString(results));
-        }
-        return results;
-    }
+         if (LOGGER.isInfoEnabled()) {
+             LOGGER.info("Parsed AAS Capabilities: {}", mapper.writerWithDefaultPrettyPrinter().writeValueAsString(results));
+         }
+         return results;
+     }
 
     /**
      * Parses a single capability container element into a CapabilityEntry.
@@ -112,7 +112,7 @@ public List<CapabilityEntry> parseAASCapabilities(String jsonResponse) throws IO
             try {
                 switch (Type.valueOf(qualifier.getType())) {
                     case CapabilityType -> entry.setType(qualifier.getValue().trim());
-                    case Offered -> entry.setOffered(Boolean.parseBoolean(qualifier.getValue().trim()));
+                    case OFFERED -> entry.setOffered(Boolean.parseBoolean(qualifier.getValue().trim()));
                     default -> {
                         LOGGER.info("Unknown qualifier type: {}", qualifier.getType());
                     }
@@ -237,7 +237,7 @@ public List<CapabilityEntry> parseAASCapabilities(String jsonResponse) throws IO
 
     public List<DatasetEntry> parseDatasets(String json) throws IOException {
     JsonNode root = mapper.readTree(json);
-    JsonNode datasetsNode = root.path("data").path("dcat:dataset");
+    JsonNode datasetsNode = root.path("data").path("dataset");
 
     List<DatasetEntry> datasets = new ArrayList<>();
     if (datasetsNode.isArray()) {

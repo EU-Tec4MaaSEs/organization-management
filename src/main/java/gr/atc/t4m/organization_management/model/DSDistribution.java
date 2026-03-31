@@ -14,9 +14,10 @@ public class DSDistribution {
     @JsonProperty("@type")
     private String type;
 
-    @JsonProperty("dcat:mediaType")
+    @JsonProperty("mediaType")
     private String mediaType;
-    @JsonProperty("dcat:accessService")
+    @JsonProperty("accessService")
     private DSAccessService accessService;
 
+    private String format;
 }

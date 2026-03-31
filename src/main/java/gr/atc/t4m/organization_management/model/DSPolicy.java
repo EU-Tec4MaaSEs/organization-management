@@ -15,9 +15,9 @@ public class DSPolicy {
     @JsonProperty("@type")
     private String type;
 
-    @JsonProperty("odrl:providerId")
+    @JsonProperty("providerid")
     private String providerId;
 
-    @JsonProperty("odrl:permission")
+    @JsonProperty("permission")
     private List<DSPermission> permissions;
 }
