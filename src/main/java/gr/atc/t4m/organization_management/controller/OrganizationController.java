@@ -3,9 +3,7 @@ package gr.atc.t4m.organization_management.controller;
 import java.util.List;
 import java.util.Optional;
 
-import gr.atc.t4m.organization_management.service.CapabilityService;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -46,6 +44,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.beans.factory.annotation.Value;
 
 
 @RestController
@@ -54,13 +53,14 @@ import org.springframework.http.MediaType;
 
 public class OrganizationController {
 
+    @Value("${organization.default.valueNetwork}")
+    private String defaultValueNetwork;
     private final OrganizationService organizationService;
     private final MinioService minioService;
 
 
-    @Autowired
     public OrganizationController(OrganizationService organizationService,
-                                  MinioService minioService, CapabilityService capabilityService) {
+                                  MinioService minioService) {
         this.organizationService = organizationService;
         this.minioService = minioService;
     }
@@ -101,6 +101,9 @@ public class OrganizationController {
         // Handle validations
         if (organizationDTO.getOrganizationName() == null || organizationDTO.getOrganizationName().trim().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Organization name is required");
+        }
+        if (organizationDTO.getValueNetwork() == null || organizationDTO.getValueNetwork().trim().isEmpty()){
+            organizationDTO.setValueNetwork(defaultValueNetwork); //SET DEFAULT VALUE NETWORK
         }
 
         // Upload file (if present)
@@ -144,6 +147,9 @@ public class OrganizationController {
 
         JwtAuthenticationToken jwtToken = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         String userId = jwtToken.getToken().getClaim("sub"); // or any custom claim
+        if (organizationDTO.getValueNetwork() == null || organizationDTO.getValueNetwork().trim().isEmpty()){
+            organizationDTO.setValueNetwork(defaultValueNetwork); //SET DEFAULT VALUE NETWORK
+        }
         Organization updatedOrganization = organizationService.updateOrganization(id, organizationDTO);
         // Trigger Kafka event for organization update
         organizationService.createKafkaMessage(updatedOrganization, userId, EventType.UPDATE);
