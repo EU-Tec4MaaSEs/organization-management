@@ -23,6 +23,7 @@ public class Organization {
     private MaasProvider maasProvider;
     private String logoUrl;
     private String phoneNumber;
+    private String valueNetwork;
 
      @DBRef
     private List<ManufacturingResource> manufacturingResources;

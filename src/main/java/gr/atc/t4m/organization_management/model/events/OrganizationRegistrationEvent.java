@@ -21,6 +21,7 @@ public class OrganizationRegistrationEvent {
     private String dataSpaceConnectorUrl;
     private String verifiableCredential;
     private String userId;
+    private String valueNetwork;
 
 }
 

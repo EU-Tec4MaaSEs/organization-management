@@ -25,6 +25,7 @@ public class OrganizationDTO {
     private MaasConsumer maasConsumer;
     private MaasProvider maasProvider;
     private List<ManufacturingResource> manufacturingResources = new ArrayList<>();
+    private String valueNetwork;
 
 
 }

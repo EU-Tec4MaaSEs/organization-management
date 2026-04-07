@@ -161,6 +161,7 @@ public class OrganizationService {
                data.setContact(organization.getContact());
                data.setRole(organization.getMaasRole());
                data.setDataSpaceConnectorUrl(organization.getDsConnectorURL());
+               data.setValueNetwork(organization.getValueNetwork());
             }
 
             EventDTO event = setEventInformation(eventType, organization, data);
