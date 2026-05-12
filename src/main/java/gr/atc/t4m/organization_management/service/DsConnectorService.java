@@ -346,7 +346,7 @@ private void processAgreementCheck(DatasetEntry entry,
 
     String sanitizedToken = token.replace("\"", "");
 
-    URI baseUri = new URI(baseUrl + V1_CONSUMER + sanitizedToken);
+    URI baseUri = new URI(baseUrl + V1_CONSUMER + "client/"+ sanitizedToken);
 
     HttpHeaders headers = new HttpHeaders();
     headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
