@@ -129,7 +129,7 @@ class OrganizationServiceTest {
 
         verify(organizationRepository).delete(organization);
 
-        organizationService.createKafkaMessage(organization, userId, EventType.DELETE);
+        organizationService.createKafkaMessage(organization, userId, EventType.DELETE, null);
 
         verify(kafkaTemplate).send(eq(TOPIC), eventCaptor.capture());
         EventDTO sentEvent = eventCaptor.getValue();
@@ -186,7 +186,7 @@ void testUpdateOrganization_WhenExists_ShouldUpdateAndReturnOrganization() {
     assertEquals("ORG_NEW", updatedOrganization.getOrganizationName());
 
     // Kafka verification
-    organizationService.createKafkaMessage(updatedOrganization, userId, EventType.UPDATE);
+    organizationService.createKafkaMessage(updatedOrganization, userId, EventType.UPDATE,"orgs verifiable credential");
     verify(kafkaTemplate).send(eq(TOPIC), eventCaptor.capture());
     EventDTO sentEvent = eventCaptor.getValue();
     assertEquals("Organization_Updated", sentEvent.getType());
@@ -298,7 +298,7 @@ void testUpdateOrganization_WhenExists_ShouldUpdateAndReturnOrganization() {
 
         when(kafkaTemplate.send(eq(TOPIC), any(EventDTO.class))).thenReturn(future);
 
-        organizationService.createKafkaMessage(organization, userId, EventType.CREATE);
+        organizationService.createKafkaMessage(organization, userId, EventType.CREATE, "verifiable credential");
 
         verify(kafkaTemplate).send(eq(TOPIC), eventCaptor.capture());
         EventDTO sentEvent = eventCaptor.getValue();
@@ -316,7 +316,7 @@ void testUpdateOrganization_WhenExists_ShouldUpdateAndReturnOrganization() {
 
         when(kafkaTemplate.send(eq(TOPIC), any(EventDTO.class))).thenReturn(future);
 
-        organizationService.createKafkaMessage(organization, userId, EventType.CREATE);
+        organizationService.createKafkaMessage(organization, userId, EventType.CREATE, "verifiable credential");
 
         verify(kafkaTemplate).send(eq(TOPIC), any(EventDTO.class));
         assertTrue(Thread.currentThread().isInterrupted());

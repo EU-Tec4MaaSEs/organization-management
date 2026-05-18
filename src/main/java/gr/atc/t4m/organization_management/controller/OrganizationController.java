@@ -121,7 +121,7 @@ public class OrganizationController {
         Organization savedOrganization = organizationService.createOrganization(organization);
 
         // Trigger Kafka event for organization registration
-        organizationService.createKafkaMessage(organization, userId, EventType.CREATE);
+        organizationService.createKafkaMessage(organization, userId, EventType.CREATE, organizationDTO.getVerifiableCredential());
         return ResponseEntity.ok(savedOrganization);
     }
 
@@ -152,7 +152,7 @@ public class OrganizationController {
         }
         Organization updatedOrganization = organizationService.updateOrganization(id, organizationDTO);
         // Trigger Kafka event for organization update
-        organizationService.createKafkaMessage(updatedOrganization, userId, EventType.UPDATE);
+        organizationService.createKafkaMessage(updatedOrganization, userId, EventType.UPDATE,organizationDTO.getVerifiableCredential());
         return ResponseEntity.ok(updatedOrganization);
     }
 
@@ -297,7 +297,7 @@ public class OrganizationController {
         InformationMessage informationMessage = new InformationMessage();
         informationMessage.setMessage("Organization deleted successfully.");
         // Trigger Kafka event for organization deletion
-        organizationService.createKafkaMessage(organizationToBeDeleted, userId, EventType.DELETE);
+        organizationService.createKafkaMessage(organizationToBeDeleted, userId, EventType.DELETE, null);
         return ResponseEntity.ok(informationMessage);
     }
 
