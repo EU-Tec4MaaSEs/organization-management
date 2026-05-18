@@ -149,15 +149,18 @@ public class OrganizationService {
     }
 
 
-        public void createKafkaMessage(Organization organization, String userId, EventType eventType) {
+        public void createKafkaMessage(Organization organization, String userId, EventType eventType, String verifiableCredential) {
     
             OrganizationRegistrationEvent data = new OrganizationRegistrationEvent();
             data.setId(organization.getOrganizationID());
             data.setUserId(userId);
             data.setName(organization.getOrganizationName());
             if (eventType != EventType.DELETE) {
-                //The verifiable credential is set to a dummy value for demonstration purposes.
-               data.setVerifiableCredential(Base64.getEncoder().encodeToString("Hello World".getBytes()));
+               if (verifiableCredential != null && !verifiableCredential.isBlank()) {
+                data.setVerifiableCredential(verifiableCredential);
+              } else {
+                data.setVerifiableCredential("Invalid Verifiable Credential");
+              }
                data.setContact(organization.getContact());
                data.setRole(organization.getMaasRole());
                data.setDataSpaceConnectorUrl(organization.getDsConnectorURL());

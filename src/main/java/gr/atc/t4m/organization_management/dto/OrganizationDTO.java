@@ -26,6 +26,7 @@ public class OrganizationDTO {
     private MaasProvider maasProvider;
     private List<ManufacturingResource> manufacturingResources = new ArrayList<>();
     private String valueNetwork;
+    private String verifiableCredential;
 
 
 }
