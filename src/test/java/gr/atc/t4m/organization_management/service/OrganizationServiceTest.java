@@ -4,6 +4,7 @@ package gr.atc.t4m.organization_management.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -17,26 +18,33 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.kafka.core.KafkaTemplate;
 
+import gr.atc.t4m.organization_management.dto.CreateReviewDTO;
 import gr.atc.t4m.organization_management.dto.EventDTO;
 import gr.atc.t4m.organization_management.dto.OrganizationDTO;
+import gr.atc.t4m.organization_management.dto.OrganizationReviewsResponseDTO;
 import gr.atc.t4m.organization_management.dto.ProviderSearchDTO;
+import gr.atc.t4m.organization_management.exception.InvalidOrganizationRoleException;
 import gr.atc.t4m.organization_management.exception.OrganizationAlreadyExistsException;
 import gr.atc.t4m.organization_management.exception.OrganizationNotFoundException;
 import gr.atc.t4m.organization_management.model.EventType;
 import gr.atc.t4m.organization_management.model.MaasRole;
 import gr.atc.t4m.organization_management.model.ManufacturingResource;
 import gr.atc.t4m.organization_management.model.Organization;
+import gr.atc.t4m.organization_management.model.OrganizationReview;
 import gr.atc.t4m.organization_management.repository.OrganizationRepository;
+import gr.atc.t4m.organization_management.repository.OrganizationReviewRepository;
 
 import org.apache.kafka.clients.producer.RecordMetadata;
 
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.kafka.support.SendResult;
-
+import org.springframework.web.server.ResponseStatusException;
 
 import java.lang.reflect.Field;
 
@@ -61,6 +69,9 @@ class OrganizationServiceTest {
 
     @InjectMocks
     private OrganizationService organizationService; 
+
+    @Mock
+    private OrganizationReviewRepository reviewRepository;
 
     private static final String TOPIC = "dataspace-organization-onboarding";
 
@@ -401,6 +412,306 @@ void testUpdateOrganization_WhenExists_ShouldUpdateAndReturnOrganization() {
 
         verify(modelMapper, times(2))
                 .map(any(Organization.class), eq(OrganizationDTO.class));
+    }
+
+
+    // ==========================================
+    // 5. saveReview(targetOrgId, ...) TESTS
+    // ==========================================
+
+    @Test
+    void testSaveReview_Success_MapsAndSavesReview() {
+        // Arrange
+        String targetOrgId = "target-123";
+        String reviewerOrgId = "reviewer-456";
+        String reviewerUserId = "user-789";
+
+        CreateReviewDTO dto = new CreateReviewDTO();
+        dto.setRating(5);
+        dto.setComment("Excellent collaboration!");
+        dto.setTargetRole(MaasRole.PROVIDER);
+
+        Organization targetOrg = new Organization();
+        targetOrg.setOrganizationID(targetOrgId);
+        targetOrg.setOrganizationName("Target Logistics Inc.");
+        targetOrg.setMaasRole(List.of(MaasRole.PROVIDER));
+
+        Organization reviewerOrg = new Organization();
+        reviewerOrg.setOrganizationID(reviewerOrgId);
+        reviewerOrg.setOrganizationName("Reviewer Consumer Corp.");
+
+        when(organizationRepository.findById(targetOrgId)).thenReturn(Optional.of(targetOrg));
+        when(organizationRepository.findById(reviewerOrgId)).thenReturn(Optional.of(reviewerOrg));
+
+        OrganizationReview result = organizationService.saveReview(targetOrgId, reviewerUserId, reviewerOrgId, dto);
+
+        assertNotNull(result);
+        assertEquals(targetOrgId, result.getTargetOrganizationId());
+        assertEquals("Target Logistics Inc.", result.getTargetOrganizationName());
+        assertEquals(reviewerOrgId, result.getReviewerOrganizationId());
+        assertEquals("Reviewer Consumer Corp.", result.getReviewerOrganizationName());
+        assertEquals(reviewerUserId, result.getReviewerUserId());
+        assertEquals(5, result.getRating());
+        assertEquals("Excellent collaboration!", result.getComment());
+        assertEquals(MaasRole.PROVIDER, result.getTargetRole());
+
+        verify(reviewRepository, times(1)).save(any(OrganizationReview.class));
+    }
+
+    @Test
+    void testSaveReview_InvalidRoleContext_ThrowsInvalidOrganizationRoleException() {
+        String targetOrgId = "target-123";
+        String reviewerOrgId = "reviewer-456";
+        String reviewerUserId = "user-789";
+
+        CreateReviewDTO dto = new CreateReviewDTO();
+        dto.setRating(3);
+        dto.setComment("Mismatched role review attempt");
+        dto.setTargetRole(MaasRole.CONSUMER);
+
+        Organization targetOrg = new Organization();
+        targetOrg.setOrganizationID(targetOrgId);
+        targetOrg.setMaasRole(List.of(MaasRole.PROVIDER));
+
+        Organization reviewerOrg = new Organization();
+        reviewerOrg.setOrganizationID(reviewerOrgId);
+
+        when(organizationRepository.findById(targetOrgId)).thenReturn(Optional.of(targetOrg));
+        when(organizationRepository.findById(reviewerOrgId)).thenReturn(Optional.of(reviewerOrg));
+
+        assertThrows(InvalidOrganizationRoleException.class, () -> {
+            organizationService.saveReview(targetOrgId, reviewerUserId, reviewerOrgId, dto);
+        });
+
+        verify(reviewRepository, never()).save(any(OrganizationReview.class));
+    }
+
+    // ==========================================
+    // 6. getReviewAnalytics(...) TESTS
+    // ==========================================
+
+    @Test
+    void testGetReviewAnalytics_Success_ReturnsCombinedAnalyticsAndPage() {
+        // Arrange
+        String orgId = "target-org-123";
+        MaasRole requestedRole = MaasRole.CONSUMER;
+        Pageable pageable = PageRequest.of(0, 10);
+
+        // Mock DB distribution aggregation data for PROVIDER
+        // [ { "_id": 5, "count": 4 }, { "_id": 4, "count": 1 } ] -> Avg: (20+4)/5 = 4.8
+        java.util.Map<String, Object> provRow1 = java.util.Map.of("_id", 5, "count", 4L);
+        java.util.Map<String, Object> provRow2 = java.util.Map.of("_id", 4, "count", 1L);
+        List<java.util.Map<String, Object>> mockProviderDist = List.of(provRow1, provRow2);
+
+        // Mock DB distribution aggregation data for CONSUMER
+        // [ { "_id": 3, "count": 2 } ] -> Avg: 6/2 = 3.0
+        java.util.Map<String, Object> consRow1 = java.util.Map.of("_id", 3, "count", 2L);
+        List<java.util.Map<String, Object>> mockConsumerDist = List.of(consRow1);
+
+
+        when(reviewRepository.getStarCountDistribution(orgId, MaasRole.PROVIDER.name()))
+                .thenReturn(mockProviderDist);
+        when(reviewRepository.getStarCountDistribution(orgId, MaasRole.CONSUMER.name()))
+                .thenReturn(mockConsumerDist);
+
+
+        OrganizationReview mockReview = new OrganizationReview();
+        mockReview.setId("rev-99");
+        mockReview.setComment("Excellent consumer experience!");
+        mockReview.setRating(3);
+        mockReview.setTargetRole(MaasRole.CONSUMER);
+        Page<OrganizationReview> mockPage = new PageImpl<>(List.of(mockReview), pageable, 1);
+
+        when(reviewRepository.findByTargetOrganizationIdAndTargetRole(orgId, requestedRole, pageable))
+                .thenReturn(mockPage);
+
+
+        OrganizationReviewsResponseDTO result = 
+                organizationService.getReviewAnalytics(orgId, requestedRole, pageable);
+
+        assertNotNull(result);
+        
+        assertNotNull(result.getProviderAnalytics());
+        assertEquals(4.8, result.getProviderAnalytics().getAverageRating());
+        assertEquals(5, result.getProviderAnalytics().getTotalReviews());
+        assertEquals(0, result.getProviderAnalytics().getStars1()); // 0 one-star review
+        assertEquals(0, result.getProviderAnalytics().getStars2()); // 0 two-star review
+        assertEquals(0, result.getProviderAnalytics().getStars3()); // 0 three-star review
+        assertEquals(1, result.getProviderAnalytics().getStars4()); // 1 four-star reviews
+        assertEquals(4, result.getProviderAnalytics().getStars5()); // 4 five-star reviews
+
+        // Verify Consumer Analytics Calculations
+        assertNotNull(result.getConsumerAnalytics());
+        assertEquals(3.0, result.getConsumerAnalytics().getAverageRating());
+        assertEquals(2, result.getConsumerAnalytics().getTotalReviews());
+        assertEquals(0, result.getConsumerAnalytics().getStars1()); //  0 one-star reviews
+        assertEquals(0, result.getConsumerAnalytics().getStars2()); //  0 two-star reviews
+        assertEquals(2, result.getConsumerAnalytics().getStars3()); //  2 three-star review
+        assertEquals(0, result.getConsumerAnalytics().getStars4()); //  0 four-star reviews
+        assertEquals(0, result.getConsumerAnalytics().getStars5()); // 0  five-star reviews
+
+
+        assertNotNull(result.getReviews());
+        assertEquals(1, result.getReviews().getTotalElements());
+        assertEquals("rev-99", result.getReviews().getContent().get(0).getId());
+        assertEquals("Excellent consumer experience!", result.getReviews().getContent().get(0).getComment());
+
+        verify(reviewRepository, times(1)).getStarCountDistribution(orgId, MaasRole.PROVIDER.name());
+        verify(reviewRepository, times(1)).getStarCountDistribution(orgId, MaasRole.CONSUMER.name());
+        verify(reviewRepository, times(1)).findByTargetOrganizationIdAndTargetRole(orgId, requestedRole, pageable);
+    }
+
+
+    @Test
+    void testUpdateReview_Success_MutatesAndSaves() {
+        String reviewId = "review-777";
+        String currentUserId = "author-user-id";
+
+        CreateReviewDTO editDto = new CreateReviewDTO();
+        editDto.setRating(5);
+        editDto.setComment("Updated feedback text!");
+
+        OrganizationReview existingReview = new OrganizationReview();
+        existingReview.setId(reviewId);
+        existingReview.setReviewerUserId(currentUserId);
+        existingReview.setRating(2); // Old rating
+        existingReview.setComment("Old placeholder feedback");
+
+        when(reviewRepository.findById(reviewId)).thenReturn(Optional.of(existingReview));
+        when(reviewRepository.save(any(OrganizationReview.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        OrganizationReview result = organizationService.updateReview(reviewId, currentUserId, editDto);
+
+        assertNotNull(result);
+        assertEquals(reviewId, result.getId());
+        assertEquals(5, result.getRating());
+        assertEquals("Updated feedback text!", result.getComment());
+        assertNotNull(result.getUpdatedAt());
+
+        verify(reviewRepository, times(1)).save(existingReview);
+    }
+
+    @Test
+    void testUpdateReview_UserDoesNotOwnReview_ThrowsResponseStatusException() {
+        // Arrange
+        String reviewId = "review-777";
+        String currentUserId = "malicious-user-id"; // Different user
+
+        CreateReviewDTO editDto = new CreateReviewDTO();
+        editDto.setRating(5);
+        editDto.setComment("Trying to edit someone else's text");
+
+        OrganizationReview existingReview = new OrganizationReview();
+        existingReview.setId(reviewId);
+        existingReview.setReviewerUserId("original-author-id"); // Original author
+
+        when(reviewRepository.findById(reviewId)).thenReturn(Optional.of(existingReview));
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            organizationService.updateReview(reviewId, currentUserId, editDto);
+        });
+
+        assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+        assertTrue(exception.getReason().contains("You do not own this review."));
+        
+        verify(reviewRepository, never()).save(any(OrganizationReview.class));
+    }
+
+    @Test
+    void testUpdateReview_ReviewNotFound_ThrowsIllegalArgumentException() {
+        // Arrange
+        String reviewId = "non-existent-review-id";
+        String currentUserId = "any-user-id";
+        CreateReviewDTO editDto = new CreateReviewDTO();
+
+        when(reviewRepository.findById(reviewId)).thenReturn(Optional.empty());
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            organizationService.updateReview(reviewId, currentUserId, editDto);
+        });
+
+        assertTrue(exception.getMessage().contains("Review not found with ID: " + reviewId));
+        verify(reviewRepository, never()).save(any(OrganizationReview.class));
+    }
+    
+
+    // ==========================================
+    // 9. getReviewsPerformedByOrganization(...) TESTS
+    // ==========================================
+
+    @Test
+    void testGetReviewsPerformedByOrganization_WithValidTargetFilter_ReturnsFilteredPage() {
+        // Arrange
+        String reviewerOrgId = "my-org-111";
+        String targetOrgId = "target-org-222";
+        Pageable pageable = PageRequest.of(0, 10);
+
+        OrganizationReview mockReview = new OrganizationReview();
+        mockReview.setId("rev-1");
+        mockReview.setReviewerOrganizationId(reviewerOrgId);
+        mockReview.setTargetOrganizationId(targetOrgId);
+        Page<OrganizationReview> expectedPage = new PageImpl<>(List.of(mockReview), pageable, 1);
+
+        // Target org exists check must return true
+        when(organizationRepository.existsById(targetOrgId)).thenReturn(true);
+        when(reviewRepository.findByReviewerOrganizationIdAndTargetOrganizationIdOrderByCreatedAtDesc(reviewerOrgId, targetOrgId, pageable))
+                .thenReturn(expectedPage);
+
+        // Act
+        Page<OrganizationReview> result = organizationService.getReviewsPerformedByOrganization(reviewerOrgId, targetOrgId, pageable);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.getTotalElements());
+        assertEquals("rev-1", result.getContent().get(0).getId());
+
+        verify(organizationRepository, times(1)).existsById(targetOrgId);
+        verify(reviewRepository, times(1)).findByReviewerOrganizationIdAndTargetOrganizationIdOrderByCreatedAtDesc(reviewerOrgId, targetOrgId, pageable);
+        verify(reviewRepository, never()).findByReviewerOrganizationIdOrderByCreatedAtDesc(anyString(), any(Pageable.class));
+    }
+
+    @Test
+    void testGetReviewsPerformedByOrganization_NoTargetFilter_ReturnsGlobalOutboundPage() {
+        String reviewerOrgId = "my-org-111";
+        Pageable pageable = PageRequest.of(0, 10);
+
+        OrganizationReview review1 = new OrganizationReview();
+        review1.setId("rev-1");
+        OrganizationReview review2 = new OrganizationReview();
+        review2.setId("rev-2");
+        Page<OrganizationReview> expectedPage = new PageImpl<>(List.of(review1, review2), pageable, 2);
+
+        when(reviewRepository.findByReviewerOrganizationIdOrderByCreatedAtDesc(reviewerOrgId, pageable))
+                .thenReturn(expectedPage);
+
+        Page<OrganizationReview> resultWithNull = organizationService.getReviewsPerformedByOrganization(reviewerOrgId, null, pageable);
+        Page<OrganizationReview> resultWithBlank = organizationService.getReviewsPerformedByOrganization(reviewerOrgId, "   ", pageable);
+
+        assertNotNull(resultWithNull);
+        assertEquals(2, resultWithNull.getTotalElements());
+        assertNotNull(resultWithBlank);
+
+        verify(organizationRepository, never()).existsById(anyString());
+        verify(reviewRepository, times(2)).findByReviewerOrganizationIdOrderByCreatedAtDesc(reviewerOrgId, pageable);
+        verify(reviewRepository, never()).findByReviewerOrganizationIdAndTargetOrganizationIdOrderByCreatedAtDesc(anyString(), anyString(), any(Pageable.class));
+    }
+
+    @Test
+    void testGetReviewsPerformedByOrganization_TargetOrgNotFound_ThrowsOrganizationNotFoundException() {
+        String reviewerOrgId = "my-org-111";
+        String missingTargetOrgId = "ghost-org-999";
+        Pageable pageable = PageRequest.of(0, 10);
+
+        when(organizationRepository.existsById(missingTargetOrgId)).thenReturn(false);
+
+        OrganizationNotFoundException exception = assertThrows(OrganizationNotFoundException.class, () -> {
+            organizationService.getReviewsPerformedByOrganization(reviewerOrgId, missingTargetOrgId, pageable);
+        });
+
+        assertTrue(exception.getMessage().contains("Target organization not found with ID: " + missingTargetOrgId));
+
+        verify(organizationRepository, times(1)).existsById(missingTargetOrgId);
+        verifyNoInteractions(reviewRepository);
     }
 }
 

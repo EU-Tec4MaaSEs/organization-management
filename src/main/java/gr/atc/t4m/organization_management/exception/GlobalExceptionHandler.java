@@ -40,4 +40,11 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(ex.getMessage());
 }
+
+   @ExceptionHandler(InvalidOrganizationRoleException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidOrganizationRoleException(InvalidOrganizationRoleException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put(ERROR_MESSAGE, ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
 }

@@ -1,6 +1,7 @@
 package gr.atc.t4m.organization_management.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import gr.atc.t4m.organization_management.model.EventType;
 
@@ -11,28 +12,37 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gr.atc.t4m.organization_management.dto.CreateReviewDTO;
 import gr.atc.t4m.organization_management.dto.EventDTO;
 import gr.atc.t4m.organization_management.dto.OrganizationDTO;
+import gr.atc.t4m.organization_management.dto.OrganizationReviewsResponseDTO;
 import gr.atc.t4m.organization_management.dto.ProviderSearchDTO;
+import gr.atc.t4m.organization_management.dto.ReviewAnalyticsDTO;
+import gr.atc.t4m.organization_management.exception.InvalidOrganizationRoleException;
 import gr.atc.t4m.organization_management.exception.OrganizationAlreadyExistsException;
 import gr.atc.t4m.organization_management.exception.OrganizationNotFoundException;
 import gr.atc.t4m.organization_management.model.MaasRole;
 import gr.atc.t4m.organization_management.model.ManufacturingResource;
 import gr.atc.t4m.organization_management.model.Organization;
+import gr.atc.t4m.organization_management.model.OrganizationReview;
 import gr.atc.t4m.organization_management.model.events.OrganizationRegistrationEvent;
 import gr.atc.t4m.organization_management.repository.OrganizationRepository;
+import gr.atc.t4m.organization_management.repository.OrganizationReviewRepository;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.Base64;
 
 import org.springframework.beans.factory.annotation.Value;
 @Service
@@ -42,6 +52,7 @@ public class OrganizationService {
     private static final String NOT_FOUND = " not found";
 
     OrganizationRepository organizationRepository;
+    OrganizationReviewRepository reviewRepository;
     ManufacturingResourceService manufacturingResourceService;
     ModelMapper modelMapper;
     private KafkaTemplate<String, EventDTO> kafkaTemplate;
@@ -51,11 +62,13 @@ public class OrganizationService {
 
     public OrganizationService(OrganizationRepository organizationRepository,
             ManufacturingResourceService manufacturingResourceService, ModelMapper modelMapper,
-            KafkaTemplate<String, EventDTO> kafkaTemplate) {
+            KafkaTemplate<String, EventDTO> kafkaTemplate,
+            OrganizationReviewRepository reviewRepository) {
         this.organizationRepository = organizationRepository;
         this.manufacturingResourceService = manufacturingResourceService;
         this.modelMapper = modelMapper;
         this.kafkaTemplate = kafkaTemplate;
+        this.reviewRepository = reviewRepository;
     }
 
     public Organization createOrganization(Organization organization) {
@@ -269,4 +282,130 @@ public class OrganizationService {
         return organization;
         }
 
+    @Transactional
+    public OrganizationReview saveReview(String targetOrgId, String reviewerUserId, String reviewerOrgId, CreateReviewDTO dto) {
+        LOGGER.info("Validating and saving flat review for organization: {}", targetOrgId);
+
+        Organization targetOrg = getOrganization(targetOrgId); 
+        Organization reviewerOrg = getOrganization(reviewerOrgId); 
+
+        List<MaasRole> assignedRoles = targetOrg.getMaasRole();
+        if (assignedRoles == null || !assignedRoles.contains(dto.getTargetRole())) {
+            throw new InvalidOrganizationRoleException("Invalid role context.");
+        }
+
+        OrganizationReview review = new OrganizationReview();
+        
+        review.setTargetOrganizationId(targetOrg.getOrganizationID());
+        review.setTargetOrganizationName(targetOrg.getOrganizationName());
+        
+        review.setReviewerOrganizationId(reviewerOrg.getOrganizationID());
+        review.setReviewerOrganizationName(reviewerOrg.getOrganizationName());
+        
+        review.setReviewerUserId(reviewerUserId); 
+        review.setRating(dto.getRating());
+        review.setComment(dto.getComment());
+        review.setTargetRole(dto.getTargetRole()); 
+
+        reviewRepository.save(review);
+        return review;
+    }
+    
+
+public OrganizationReviewsResponseDTO getReviewAnalytics(String orgId, MaasRole role, Pageable pageable) {
+        ReviewAnalyticsDTO providerAnalytics = calculateRoleAnalytics(orgId, MaasRole.PROVIDER);
+        ReviewAnalyticsDTO consumerAnalytics = calculateRoleAnalytics(orgId, MaasRole.CONSUMER);
+
+        Page<OrganizationReview> paginatedReviews = reviewRepository
+                .findByTargetOrganizationIdAndTargetRole(orgId, role, pageable);
+
+        return new OrganizationReviewsResponseDTO(
+                providerAnalytics,
+                consumerAnalytics,
+                paginatedReviews
+        );
+    }
+
+
+private ReviewAnalyticsDTO calculateRoleAnalytics(String orgId, MaasRole role) {
+    List<Map<String, Object>> rawDistribution = reviewRepository.getStarCountDistribution(orgId, role.name());
+
+    long t1 = 0;
+    long t2 = 0;
+    long t3 = 0;
+    long t4 = 0;
+    long t5 = 0;
+    long totalCount = 0;
+    double weightedSum = 0.0;
+
+    for (Map<String, Object> row : rawDistribution) {
+        Object idVal = row.get("_id");
+        Object countVal = row.get("count");
+
+        if (idVal != null && countVal != null) {
+            int starRating = ((Number) idVal).intValue();
+            long count = ((Number) countVal).longValue();
+
+            totalCount += count;
+            weightedSum += (starRating * count);
+
+            switch (starRating) {
+                case 1 -> t1 = count;
+                case 2 -> t2 = count;
+                case 3 -> t3 = count;
+                case 4 -> t4 = count;
+                case 5 -> t5 = count;
+                default -> { /* Ignore invalid ratings */ }
+            }
+        }
+    }
+
+    double averageRating = (totalCount > 0) ? (weightedSum / totalCount) : 0.0;
+    averageRating = Math.round(averageRating * 10.0) / 10.0; 
+
+    return new ReviewAnalyticsDTO(averageRating, totalCount, t1, t2, t3, t4, t5);
+}
+
+@Transactional
+ public OrganizationReview updateReview(String reviewId, String currentUserId, CreateReviewDTO editDto) {
+        OrganizationReview review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new IllegalArgumentException("Review not found with ID: " + reviewId));
+
+        if (!review.getReviewerUserId().equals(currentUserId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not own this review.");
+        }
+
+        review.setRating(editDto.getRating());
+        review.setComment(editDto.getComment());
+        review.setUpdatedAt(LocalDateTime.now());
+        
+       
+        return reviewRepository.save(review);
+    }
+
+
+/**
+     * Retrieves a paginated history trail of outbound reviews written by an organization,
+     * optionally filtered by a specific target organization.
+     */
+    public Page<OrganizationReview> getReviewsPerformedByOrganization(
+            String reviewerOrgId, 
+            String targetOrganizationId, 
+            Pageable pageable) {
+        
+        LOGGER.info("Fetching outbound reviews from reviewerOrg: {} to targetOrg: {} (Page: {}, Size: {})", 
+                reviewerOrgId, targetOrganizationId, pageable.getPageNumber(), pageable.getPageSize());
+
+        if (targetOrganizationId != null && !targetOrganizationId.isBlank()) {
+            
+            if (!organizationRepository.existsById(targetOrganizationId)) {
+                throw new OrganizationNotFoundException("Target organization not found with ID: " + targetOrganizationId);
+            }
+
+            return reviewRepository.findByReviewerOrganizationIdAndTargetOrganizationIdOrderByCreatedAtDesc(
+                    reviewerOrgId, targetOrganizationId, pageable);
+        }
+
+        return reviewRepository.findByReviewerOrganizationIdOrderByCreatedAtDesc(reviewerOrgId, pageable);
+    }
 }
