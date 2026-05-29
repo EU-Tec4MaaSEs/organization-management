@@ -3,6 +3,9 @@ package gr.atc.t4m.organization_management.controller;
 import java.util.List;
 import java.util.Optional;
 
+import gr.atc.t4m.organization_management.dto.VerifiableCredentialInputDTO;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,18 +25,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import gr.atc.t4m.organization_management.dto.CreateReviewDTO;
 import gr.atc.t4m.organization_management.dto.OrganizationDTO;
-import gr.atc.t4m.organization_management.dto.OrganizationReviewsResponseDTO;
 import gr.atc.t4m.organization_management.dto.ProviderSearchDTO;
 import gr.atc.t4m.organization_management.exception.OrganizationAlreadyExistsException;
 import gr.atc.t4m.organization_management.exception.OrganizationNotFoundException;
 import gr.atc.t4m.organization_management.model.CapabilityEntry;
 import gr.atc.t4m.organization_management.model.EventType;
 import gr.atc.t4m.organization_management.model.InformationMessage;
-import gr.atc.t4m.organization_management.model.MaasRole;
 import gr.atc.t4m.organization_management.model.Organization;
-import gr.atc.t4m.organization_management.model.OrganizationReview;
 import gr.atc.t4m.organization_management.service.MinioService;
 import gr.atc.t4m.organization_management.service.OrganizationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -49,7 +48,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.beans.factory.annotation.Value;
-
 
 
 @RestController
@@ -162,12 +160,33 @@ public class OrganizationController {
     }
 
     /**
+     * Issue a Verifiable Credential
+     *
+     * @return the String of the JWT
+     */
+    @Operation(
+            summary = "Issue a Verifiable Credential",
+            description = "Forwards the request to the configured Identity Provider and returns the raw credential response"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Credential issued successfully",
+                    content = @Content(mediaType = "application/json", schema = @Schema(type = "string"))),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized — bad Identity Provider credentials"),
+            @ApiResponse(responseCode = "500", description = "Identity Provider unreachable or internal error")
+    })
+    @PostMapping("/issue-verifiable-credential")
+    public ResponseEntity<String> issueCredential(@RequestBody VerifiableCredentialInputDTO request) {
+        String result = organizationService.issueVerifiableCredential(request);
+        return ResponseEntity.ok(result);
+    }
+
+    /**
      * Get organization information
      *
      * @return message of success or failure
      * @throws OrganizationNotFoundException
      */
-
     @Operation(summary = "Get Organization Information", description = "Returns the information of the organization", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Organization information."),
@@ -293,7 +312,7 @@ public class OrganizationController {
     public ResponseEntity<InformationMessage> deleteOrganization(@PathVariable String id, final HttpServletRequest request) {
         JwtAuthenticationToken jwtToken = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         String userId = jwtToken.getToken().getClaim("sub"); // or any custom claim
-           
+
         Organization organizationToBeDeleted = organizationService.getOrganization(id);
 
         organizationService.deleteOrganizationById(id);
@@ -336,166 +355,66 @@ public class OrganizationController {
 
         return ResponseEntity.ok(capabilities);
     }
-  
+
     @Operation(summary = "Retrieves the list of organizations by capability", description = "Returns a list of organizations related to a specific capability", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of organizations for the specified capability."),
             @ApiResponse(responseCode = "400", description = "Bad request."),
             @ApiResponse(responseCode = "401", description = "Authentication process failed!"),
     })
-@GetMapping(value = "/by-capability", produces = "application/json;charset=UTF-8")
-public ResponseEntity<List<OrganizationDTO>> getOrganizationsByCapabilities(
-        @RequestParam Optional<String> primaryCapability,
-        @RequestParam Optional<String> secondaryCapability) {
+    @GetMapping(value = "/by-capability", produces = "application/json;charset=UTF-8")
+    public ResponseEntity<List<OrganizationDTO>> getOrganizationsByCapabilities(
+            @RequestParam Optional<String> primaryCapability,
+            @RequestParam Optional<String> secondaryCapability) {
 
-    if (primaryCapability.isEmpty() && secondaryCapability.isEmpty()) {
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                "At least one of primaryCapability or secondaryCapability must be provided.");
-    }
-
-    List<OrganizationDTO> organizations =
-            organizationService.getOrganizationsByCapabilities(
-                    primaryCapability.orElse(null),
-                    secondaryCapability.orElse(null));
-                    
-
-    return organizations == null || organizations.isEmpty()
-            ? ResponseEntity.noContent().build()
-            : ResponseEntity.ok(organizations);
-}
-
-    
-
- @Operation(summary = "Update organization's logo", security = @SecurityRequirement(name = "bearerAuth"))
-@ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Organization logo updated successfully"),
-        @ApiResponse(responseCode = "400", description = "Invalid input value"),
-        @ApiResponse(responseCode = "401", description = "Authentication failed"),
-        @ApiResponse(responseCode = "404", description = "Organization not found"),
-        @ApiResponse(responseCode = "500", description = "Internal server error")
-})
-@PutMapping(value = "/{organizationId}/update-logo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-public ResponseEntity<Organization> updateOrganizationLogo(
-        @PathVariable String organizationId,
-        @RequestPart(value = "logoFile", required = false) MultipartFile logoFile)
-{
-    // Validate file
-    if (logoFile == null || logoFile.isEmpty()) {
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Logo file is required");
-    }
-
-    // Fetch existing organization
-    Organization organization = organizationService.getOrganization(organizationId);
-    if (organization == null) {
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Organization not found");
-    }
-
-    String logoUrl = minioService.uploadLogo(logoFile);
-    organization.setLogoUrl(logoUrl);
-
-    Organization updated = organizationService.save(organization);
-
-    return ResponseEntity.ok(updated);
-}
-
-/**
- * Submit a new rating/review for a target organization
- */
-@Operation(summary = "Submit an organization review", description = "Allows an authenticated user to review a target organization", 
-security = @SecurityRequirement(name = "bearerAuth"))
-@ApiResponses(value = {
-                @ApiResponse(responseCode = "201", description = "Review submitted successfully."),
-                @ApiResponse(responseCode = "400", description = "Invalid input or data payload."),
-                @ApiResponse(responseCode = "401", description = "Authentication process failed!")
-})
-@PostMapping("/{orgId}/reviews")
-    public ResponseEntity<OrganizationReview> createReview(
-            @PathVariable String orgId,
-            @RequestBody @Valid CreateReviewDTO reviewDto) {
-
-        JwtAuthenticationToken jwtToken = (JwtAuthenticationToken) SecurityContextHolder.getContext()
-                        .getAuthentication();
-        String userId = jwtToken.getToken().getClaim("sub");
-        String reviewerOrgId = jwtToken.getToken().getClaim("organization_id");
-
-        if (orgId.equals(reviewerOrgId)) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "An organization cannot review itself.");
+        if (primaryCapability.isEmpty() && secondaryCapability.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "At least one of primaryCapability or secondaryCapability must be provided.");
         }
 
-        OrganizationReview savedReview = organizationService.saveReview(orgId, userId, reviewerOrgId, reviewDto);
-        
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedReview);
+        List<OrganizationDTO> organizations =
+                organizationService.getOrganizationsByCapabilities(
+                        primaryCapability.orElse(null),
+                        secondaryCapability.orElse(null));
+
+
+        return organizations == null || organizations.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(organizations);
     }
 
-@Operation(
-        summary = "Get review analytics and paginated feed by role", 
-        description = "Returns star distributions and averages for both roles, alongside a paginated list of reviews filtered by the specified role.",
-        security = @SecurityRequirement(name = "bearerAuth")
-    )@ApiResponses(value = {
-                @ApiResponse(responseCode = "200", description = "Review analytics and paginated feed retrieved successfully."),
-                @ApiResponse(responseCode = "400", description = "Invalid role parameter or pagination values provided.")
-})
-@GetMapping("/{orgId}/reviews")
-public ResponseEntity<OrganizationReviewsResponseDTO> getReviewAnalytics(
-                @PathVariable String orgId,
-                @RequestParam MaasRole role,
-                @RequestParam(defaultValue = "0") int page,
-                @RequestParam(defaultValue = "10") int size) {
 
-        Pageable pageable = PageRequest.of(page, size);
 
-        OrganizationReviewsResponseDTO analytics = organizationService.getReviewAnalytics(orgId, role, pageable);
+    @Operation(summary = "Update organization's logo", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Organization logo updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input value"),
+            @ApiResponse(responseCode = "401", description = "Authentication failed"),
+            @ApiResponse(responseCode = "404", description = "Organization not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @PutMapping(value = "/{organizationId}/update-logo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Organization> updateOrganizationLogo(
+            @PathVariable String organizationId,
+            @RequestPart(value = "logoFile", required = false) MultipartFile logoFile)
+    {
+        // Validate file
+        if (logoFile == null || logoFile.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Logo file is required");
+        }
 
-        return ResponseEntity.ok(analytics);
-}
+        // Fetch existing organization
+        Organization organization = organizationService.getOrganization(organizationId);
+        if (organization == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Organization not found");
+        }
 
-@Operation(summary = "Edit an existing organization review", description = "Allows the original author of a review to update its rating score and text comment. "
-                +
-                "The target organization and target role context cannot be mutated.",
-                 security = @SecurityRequirement(name = "bearerAuth"))
-@ApiResponses(value = {
-                @ApiResponse(responseCode = "200", description = "Review updated successfully."),
-                @ApiResponse(responseCode = "400", description = "Invalid input payload data (e.g., rating out of 1-5 range, comment text limits exceeded)."),
-                @ApiResponse(responseCode = "401", description = "Authentication failed! Invalid or expired Bearer token."),
-                @ApiResponse(responseCode = "403", description = "Forbidden! You are authenticated but you are not the original author of this review."),
-                @ApiResponse(responseCode = "404", description = "Review not found with the provided reviewId identifier.")
-})
-@PutMapping("/reviews/{reviewId}")
-    public ResponseEntity<OrganizationReview> updateReview(
-            @PathVariable String reviewId,
-            @RequestBody @Valid CreateReviewDTO editDto) {
+        String logoUrl = minioService.uploadLogo(logoFile);
+        organization.setLogoUrl(logoUrl);
 
-        JwtAuthenticationToken jwtToken = (JwtAuthenticationToken) SecurityContextHolder.getContext()
-                        .getAuthentication();
-        String currentUserId = jwtToken.getToken().getClaim("sub");
+        Organization updated = organizationService.save(organization);
 
-        OrganizationReview updatedReview = organizationService.updateReview(reviewId, currentUserId, editDto);
-
-        return ResponseEntity.ok(updatedReview);
+        return ResponseEntity.ok(updated);
     }
-
-@Operation(summary = "Get reviews performed by the current authenticated organization", description = "Returns a paginated list of reviews written by the caller's organization. Supports an optional query parameter filter to isolate reviews for a specific target company.", 
-security = @SecurityRequirement(name = "bearerAuth"))
-@ApiResponses(value = {
-                @ApiResponse(responseCode = "200", description = "Paginated outbound review history retrieved successfully."),
-                @ApiResponse(responseCode = "401", description = "Authentication failed! Invalid or expired Bearer token.")
-})
-@GetMapping("/reviews/performed")
-public ResponseEntity<Page<OrganizationReview>> getReviewsPerformedByMyOrganization(
-                @RequestParam(required = false) String targetOrganizationId,
-                @RequestParam(defaultValue = "0") int page,
-                @RequestParam(defaultValue = "10") int size) {
-
-        JwtAuthenticationToken jwtToken = (JwtAuthenticationToken) SecurityContextHolder.getContext()
-                        .getAuthentication();
-        String reviewerOrgId = jwtToken.getToken().getClaim("organization_id");
-
-        Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
-
-        Page<OrganizationReview> performedReviews = organizationService.getReviewsPerformedByOrganization(
-                        reviewerOrgId, targetOrganizationId, pageable);
-
-        return ResponseEntity.ok(performedReviews);
-}
 
 }
