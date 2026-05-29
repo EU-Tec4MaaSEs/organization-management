@@ -163,12 +163,13 @@ public class OrganizationController {
             summary = "Issue a Verifiable Credential",
             description = "Forwards the request to the configured Identity Provider and returns the raw credential response"
     )
-    @ApiResponses({
+    @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Credential issued successfully",
                     content = @Content(mediaType = "application/json", schema = @Schema(type = "string"))),
             @ApiResponse(responseCode = "400", description = "Invalid input"),
             @ApiResponse(responseCode = "401", description = "Unauthorized — bad Identity Provider credentials"),
             @ApiResponse(responseCode = "500", description = "Identity Provider unreachable or internal error")
+
     })
     @PostMapping("/issue-verifiable-credential")
     public ResponseEntity<String> issueCredential(@RequestBody VerifiableCredentialInputDTO request) {
