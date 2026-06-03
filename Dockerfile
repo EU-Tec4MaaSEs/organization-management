@@ -14,6 +14,18 @@ WORKDIR /app
 
 COPY --from=build /app/target/*.jar app.jar
 
+USER root
+
+COPY tekniker.crt /usr/local/share/ca-certificates/tekniker.crt
+
+RUN keytool -importcert -trustcacerts \
+    -file /usr/local/share/ca-certificates/tekniker.crt \
+    -alias tekniker-chain \
+    -keystore $JAVA_HOME/lib/security/cacerts \
+    -storepass changeit \
+    -noprompt
+
+
 EXPOSE 8090
 
 CMD ["java", "-jar", "app.jar"]
