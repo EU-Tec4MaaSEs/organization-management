@@ -24,6 +24,7 @@ public class Organization {
     private String logoUrl;
     private String phoneNumber;
     private String valueNetwork;
+    private String participantID; // the participant ID from the Dataspace Connector
 
      @DBRef
     private List<ManufacturingResource> manufacturingResources;

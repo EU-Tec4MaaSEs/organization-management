@@ -32,9 +32,9 @@ import gr.atc.t4m.organization_management.model.CapabilityEntry;
 import gr.atc.t4m.organization_management.model.DSNegotiationInfo;
 import gr.atc.t4m.organization_management.model.DSTransferProcess;
 import gr.atc.t4m.organization_management.model.DatasetEntry;
-import gr.atc.t4m.organization_management.model.DatasetListDTO;
+import gr.atc.t4m.organization_management.dto.DatasetListDTO;
 import gr.atc.t4m.organization_management.model.ManufacturingResource;
-import gr.atc.t4m.organization_management.model.ParticipantDTO;
+import gr.atc.t4m.organization_management.dto.ParticipantDTO;
 
 @Service
 public class DsConnectorService {
