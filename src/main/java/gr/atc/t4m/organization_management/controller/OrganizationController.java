@@ -159,9 +159,10 @@ public class OrganizationController {
      *
      * @return the String of the JWT
      */
-    @Operation(
-            summary = "Issue a Verifiable Credential",
-            description = "Forwards the request to the configured Identity Provider and returns the raw credential response"
+@Operation(
+        summary = "Issue a Verifiable Credential",
+        description = "Forwards the request to the configured Identity Provider and returns the raw credential response",
+        security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Credential issued successfully",

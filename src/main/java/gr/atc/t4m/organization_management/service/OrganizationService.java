@@ -159,8 +159,11 @@ public class OrganizationService {
         Organization existing = organizationRepository.findById(id)
                 .orElseThrow(() -> new OrganizationNotFoundException(
                         ORGANIZATION_WITH_ID + id + " not found. Update is aborted"));
+        String existingId = existing.getOrganizationID();
 
         modelMapper.map(organizationDTO, existing);
+
+        existing.setOrganizationID(existingId);
         if (organizationDTO.getMaasProvider() == null) {
             existing.setMaasProvider(null);
         }
