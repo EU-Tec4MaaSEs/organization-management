@@ -27,6 +27,6 @@ public class OrganizationDTO {
     private List<ManufacturingResource> manufacturingResources = new ArrayList<>();
     private String valueNetwork;
     private String verifiableCredential;
-    private String participantID; // the participant ID from the Dataspace Connector
+    private String participantID;
 
 }
