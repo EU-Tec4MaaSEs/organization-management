@@ -436,4 +436,20 @@ public class OrganizationService {
 
         return reviewRepository.findByReviewerOrganizationIdOrderByCreatedAtDesc(reviewerOrgId, pageable);
     }
+
+ public List<OrganizationLogoResponse> getLogosForOrganizations(List<String> organizationIds) {
+
+List<Organization> organizations =
+        organizationRepository.findAllById(organizationIds);
+
+return organizations.stream()
+        .filter(org -> org.getLogoUrl() != null)
+        .map(org -> new OrganizationLogoResponse(
+                org.getOrganizationID(),
+                org.getLogoUrl()
+        ))
+        .toList();
+
+}
+
 }

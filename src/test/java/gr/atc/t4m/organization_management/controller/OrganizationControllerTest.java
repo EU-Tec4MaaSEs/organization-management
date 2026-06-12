@@ -1,6 +1,11 @@
 
 package gr.atc.t4m.organization_management.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -13,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gr.atc.t4m.organization_management.config.TestSecurityConfig;
 import gr.atc.t4m.organization_management.dto.CreateReviewDTO;
 import gr.atc.t4m.organization_management.dto.OrganizationDTO;
+import gr.atc.t4m.organization_management.dto.OrganizationLogoResponse;
 import gr.atc.t4m.organization_management.dto.OrganizationReviewsResponseDTO;
 import gr.atc.t4m.organization_management.dto.ProviderSearchDTO;
 import gr.atc.t4m.organization_management.dto.ReviewAnalyticsDTO;
@@ -619,6 +625,31 @@ void testGetOrganizationsByCapability_NoParams_ReturnsBadRequest() throws Except
                 .andExpect(jsonPath("$.content").isArray())
                 .andExpect(jsonPath("$.totalElements").value(0));
     }
+
+    @Test
+    void testGetOrganizationLogos_ReturnsListOfLogoResponses() throws Exception {
+
+            OrganizationLogoResponse dto1 = new OrganizationLogoResponse("org1", "https://test.logo1.png");
+
+            OrganizationLogoResponse dto2 = new OrganizationLogoResponse("org2", "https://test.logo2.png");
+
+            when(organizationService.getLogosForOrganizations(anyList()))
+                            .thenReturn(List.of(dto1, dto2));
+
+            mockMvc.perform(post("/api/organization/logos")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsBytes(List.of("org1", "org2"))))
+                            .andExpect(status().isOk())
+                            .andExpect(jsonPath("$[0].organizationId").value("org1"))
+                            .andExpect(jsonPath("$[0].logoUrl").value("https://test.logo1.png"))
+                            .andExpect(jsonPath("$[1].organizationId").value("org2"))
+                            .andExpect(jsonPath("$[1].logoUrl").value("https://test.logo2.png"));
+
+            verify(organizationService, times(1))
+                            .getLogosForOrganizations(anyList());
+
+    }
+
 }
 
 

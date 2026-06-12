@@ -513,4 +513,32 @@ public class OrganizationController {
         return ResponseEntity.ok(performedReviews);
     }
 
+    /**
+     * 
+     * Get logos for a list of organization IDs
+     *
+     * @param organizationIds List of IDs to fetch logos for
+     * @return List of organization logo responses
+     */
+    @Operation(summary = "Get logos for multiple organizations", description = "Accepts a list of organization IDs and returns their corresponding logo URLs", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses(value = {
+                    @ApiResponse(responseCode = "200", description = "Logos retrieved successfully.", content = @Content(mediaType = "application/json")),
+                    @ApiResponse(responseCode = "400", description = "Invalid payload or empty ID list."),
+                    @ApiResponse(responseCode = "401", description = "Authentication process failed!")
+    })
+    @PostMapping("/logos")
+    public ResponseEntity<List<OrganizationLogoResponse>> getOrganizationLogos(
+                    @RequestBody List<String> organizationIds) {
+
+            if (organizationIds == null || organizationIds.isEmpty()) {
+                    throw new ResponseStatusException(
+                                    HttpStatus.BAD_REQUEST,
+                                    "The list of organization IDs cannot be empty");
+            }
+
+            List<OrganizationLogoResponse> response = organizationService.getLogosForOrganizations(organizationIds);
+
+            return ResponseEntity.ok(response);
+    }
+
 }
