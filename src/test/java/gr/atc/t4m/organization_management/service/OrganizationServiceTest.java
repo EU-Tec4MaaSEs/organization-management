@@ -26,6 +26,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import gr.atc.t4m.organization_management.dto.CreateReviewDTO;
 import gr.atc.t4m.organization_management.dto.EventDTO;
 import gr.atc.t4m.organization_management.dto.OrganizationDTO;
+import gr.atc.t4m.organization_management.dto.OrganizationLogoResponse;
 import gr.atc.t4m.organization_management.dto.OrganizationReviewsResponseDTO;
 import gr.atc.t4m.organization_management.dto.ProviderSearchDTO;
 import gr.atc.t4m.organization_management.exception.InvalidOrganizationRoleException;
@@ -713,5 +714,36 @@ void testUpdateOrganization_WhenExists_ShouldUpdateAndReturnOrganization() {
         verify(organizationRepository, times(1)).existsById(missingTargetOrgId);
         verifyNoInteractions(reviewRepository);
     }
+
+    @Test
+    void testGetLogosForOrganizations_Success_ReturnsLogoResponses() {
+
+        // Arrange
+        Organization org1 = new Organization();
+        org1.setOrganizationID("org1");
+        org1.setLogoUrl("https://logo1.png");
+
+        Organization org2 = new Organization();
+        org2.setOrganizationID("org2");
+        org2.setLogoUrl("https://logo2.png");
+
+        when(organizationRepository.findAllById(anyList()))
+                .thenReturn(List.of(org1, org2));
+
+        List<OrganizationLogoResponse> result = organizationService.getLogosForOrganizations(List.of("org1", "org2"));
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+
+        assertEquals("org1", result.get(0).organizationId());
+        assertEquals("https://logo1.png", result.get(0).logoUrl());
+
+        assertEquals("org2", result.get(1).organizationId());
+        assertEquals("https://logo2.png", result.get(1).logoUrl());
+
+        verify(organizationRepository, times(1)).findAllById(anyList());
+
+    }
+
 }
 
