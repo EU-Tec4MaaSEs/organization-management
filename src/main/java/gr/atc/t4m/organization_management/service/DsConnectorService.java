@@ -1,5 +1,6 @@
 package gr.atc.t4m.organization_management.service;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -120,156 +122,92 @@ public class DsConnectorService {
         }
     }
 
-   
-    public List<ManufacturingResource> retrieveCapabilities(CatalogDTO catalogDTO) {
-        LOGGER.info("Validating organization URL: {}", catalogDTO.getProviderUrl());
+public List<ManufacturingResource> retrieveUnifiedResources(CatalogDTO catalogDTO) 
+        throws URISyntaxException, IOException {
+    ParticipantDTO response = fetchCatalog(catalogDTO);
+    String participantCatalogueId = searchParticipantCatalogue(response.getId()).replace("\"", "");
 
-        try {
-            // 1. Fetch Catalog & Participant Info
-            ParticipantDTO response = fetchCatalog(catalogDTO);
-            String participantCatalogueId = searchParticipantCatalogue(response.getId());
-            String cleanIParticipantId = participantCatalogueId.replace("\"", "");
-
-            // 2. Retrieve Dataset IDs
-
-            DatasetListDTO datasetLists = retrieveCatalogDatasets(catalogDTO, cleanIParticipantId);
-            List<DatasetEntry> allDatasetEntries = new ArrayList<>();
-            if (datasetLists == null || datasetLists.getData() == null) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No datasets found in provider catalog");
-            }
-            for (String datasetId : datasetLists.getData()) {
-                DatasetEntry entry = fetchDatasetMetadata(datasetId);
-                if (entry != null)
-                    allDatasetEntries.add(entry);
-            }
-
-            if (allDatasetEntries.isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No datasets found in provider catalog");
-            }
-
-            // 3. Separate datasets into those with agreements and those without
-            List<DatasetEntry> datasetWithAggrements = new ArrayList<>();
-            List<DatasetEntry> datasetWithNoAgreements = new ArrayList<>();
-
-            for (DatasetEntry entry : allDatasetEntries) {
-                processAgreementCheck(entry, datasetWithAggrements, datasetWithNoAgreements);
-            }
-
-            // 4. Trigger Negotiations for those without agreements
-
-            for (DatasetEntry entry : datasetWithNoAgreements) {
-                handleNegotiation(entry, datasetWithAggrements);
-            }
-
-            // 5. PROCESS ALL VALID DATASETS INTO THE FINAL LIST
-            List<ManufacturingResource> allResources = new ArrayList<>();
-
-            for (DatasetEntry entry : datasetWithAggrements) {
-                ManufacturingResource resource = processDatasetTransfer(entry, catalogDTO);
-
-                if (resource != null) {
-                    allResources.add(resource);
-                }
-            }
-
-            if (allResources.isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.NO_CONTENT, "No capability data could be retrieved");
-            }
-
-            return allResources;
-
-        } catch (URISyntaxException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid base URI: " + e.getMessage(), e);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Validation failed: " + e.getMessage(),
-                    e);
-        }
+    DatasetListDTO parentMachines = retrieveCatalogDatasets(catalogDTO, participantCatalogueId);
+    if (parentMachines == null || parentMachines.getData() == null) {
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No parent machine profiles discovered.");
     }
 
-
-private void processAgreementCheck(DatasetEntry entry,
-                                   List<DatasetEntry> datasetWithAggrements,
-                                   List<DatasetEntry> datasetWithNoAgreements) {
-    try {
-        String agreementId = checkDatasetAggrement(entry.getId());
-
-        if (agreementId != null) {
-            datasetWithAggrements.add(entry);
-        } else {
-            datasetWithNoAgreements.add(entry);
+    List<ManufacturingResource> manufacturingResources = new ArrayList<>();
+    //Find children for every machine to extract data
+    for (String parentMachineId : parentMachines.getData()) {
+        DatasetEntry parentEntry = fetchDatasetMetadata(parentMachineId);
+        if (parentEntry == null) {
+            continue;
         }
 
-    } catch (Exception e) {
-        LOGGER.error("Agreement check failed for ID: {}", entry.getId(), e);
+         ManufacturingResource machineResource = new ManufacturingResource();
+         machineResource.setManufacturingResourceTitle(parentEntry.getTitle());
+         machineResource.setProviderUrl(catalogDTO.getProviderUrl());
+        
+        processMachineSubmodels(parentMachineId, machineResource);
+
+        manufacturingResources.add(machineResource);
     }
+
+    return manufacturingResources;
 }
 
 
-    private ManufacturingResource processDatasetTransfer(DatasetEntry entry,  CatalogDTO catalogDTO ) {
-          try {
-                LOGGER.info("Processing Dataset ID: {}", entry.getId());
-                
-                // A. Request Data Transfer
-                DSTransferProcess transferResponse = requestDatasetTransfer(entry.getId());
-                
-                if (transferResponse != null) {
-                    //  Wait for Transfer to be STARTED (Step 7 of Spec)
-                    String tState = "";
-                    int attempts = 0;
-                   while (!STARTED.equals(tState) && attempts < 10) {
-                     if (!sleepSafely(2000)) {
-                         break;
-                     }
+private void processMachineSubmodels(String parentMachineId, ManufacturingResource resource) throws IOException {
+    List<String> childrenIds = getDatasetChildrenIds(parentMachineId);
 
-                   tState = getTransferState(transferResponse.getId());
-                   attempts++;
-                }
+    for (String childId : childrenIds) {
+        DatasetEntry childEntry = fetchDatasetMetadata(childId);
+        if (childEntry == null) {
+            continue;
+        }
 
-                    if (STARTED.equals(tState)) {
-                        // B. Consume the AAS Submodel JSON
-                        ResponseEntity<String> capabilitiesResult = consumeCapabilities(entry.getId());
-                        
-                        if (capabilitiesResult != null && capabilitiesResult.getBody() != null) {
-                            // C. Parse the AAS JSON
-                            List<CapabilityEntry> capabilities = capabilityService.parseAASCapabilities(capabilitiesResult.getBody());
-                            
-                            // D. Create the Resource Document
-                            ManufacturingResource resource = new ManufacturingResource();
-                            resource.setCapabilityDatasetID(entry.getId());
-                            resource.setManufacturingResourceTitle(entry.getTitle());
-                            resource.setCapabilities(capabilities);
-                            resource.setProviderUrl(catalogDTO.getProviderUrl());
-                            
-                            return resource;
-                        }
-                    } else {
-                        LOGGER.warn("Transfer for {} timed out or terminated in state: {}", entry.getId(), tState);
-                    }
-                }
+        if ("CapabilityDescription".equalsIgnoreCase(childEntry.getTitle())) {
+            handleCapabilityDescription(childEntry, resource);
+        } else if ("ProductionCalendar".equalsIgnoreCase(childEntry.getTitle())) {
+            handleProductionCalendar(childEntry, resource);
+        }
+    }
+}
 
-            } catch (Exception e) {
-                LOGGER.error("Data transfer/parsing failed for Dataset ID: {}. Error: {}", entry.getId(), e.getMessage());
-            }
-            return null;
+private void handleCapabilityDescription(DatasetEntry childEntry, ManufacturingResource resource) throws IOException {
+    String jsonBody = fetchChildPayload(childEntry);
+    List<CapabilityEntry> capabilities = capabilityService.parseAASCapabilities(jsonBody);
+
+    resource.setCapabilityDatasetID(childEntry.getId());
+    resource.setCapabilities(capabilities);
+}
+
+private void handleProductionCalendar(DatasetEntry childEntry, ManufacturingResource resource) {
+    resource.setProductionCalendarDatasetID(childEntry.getId());
     
-}
+    // Parse the baseline file reference directly from this level
+    String jsonBody = fetchChildPayload(childEntry);
+    String icalFileRef = capabilityService.parseProductionCalendarFileRef(jsonBody);
+    resource.setCalendarFileRef(icalFileRef);
 
-
-   private void handleNegotiation(DatasetEntry entry,
-                              List<DatasetEntry> datasetWithAggrements) {
-    try {
-        DSNegotiationInfo info = negotiateDataset(entry.getId());
-
-        if (info != null && FINALIZED.equals(info.getState())) {
-            datasetWithAggrements.add(entry);
+    // Scan for deeper nested children to retrieve calendar dataset 
+    List<String> grandchildIds = getDatasetChildrenIds(childEntry.getId());
+    for (String grandchildId : grandchildIds) {
+        DatasetEntry grandchildEntry = fetchDatasetMetadata(grandchildId);
+        if (grandchildEntry != null && "calendar".equalsIgnoreCase(grandchildEntry.getTitle())) {
+            processNestedCalendarLeaf(grandchildEntry, resource);
         }
-
-    } catch (Exception e) {
-        LOGGER.error("Failed negotiation for dataset ID: {}", entry.getId(), e);
     }
 }
 
+private void processNestedCalendarLeaf(DatasetEntry grandchildEntry, ManufacturingResource resource) {
+    LOGGER.warn("SUCCESS: Triggered 'calendar' leaf node branch!");
 
+    resource.setCalendarDatasetID(grandchildEntry.getId());
+
+    try {
+        String rawCalendarText = fetchChildPayload(grandchildEntry);
+        resource.setRawCalendarContent(rawCalendarText);
+    } catch (Exception e) {
+        LOGGER.error("General error retrieving calendar payload for ID: {}", grandchildEntry.getId(), e);
+    }
+}
     private DatasetEntry fetchDatasetMetadata(String datasetId) {
     try {
         return getDatasetMetadata(datasetId);
@@ -423,7 +361,7 @@ private void processAgreementCheck(DatasetEntry entry,
 }
 
 
-public String checkDatasetAggrement(String datasetId) {
+public String checkDatasetAgreement(String datasetId) {
     try {
         String baseUrl = dsConnectorUrl.endsWith("/") ? dsConnectorUrl : dsConnectorUrl + "/";
         URI baseUri = new URI(baseUrl + V1_DATASETS_REQUESTED + datasetId + "/agreements");
@@ -433,14 +371,15 @@ public String checkDatasetAggrement(String datasetId) {
         headers.set(HEADER_X_REQUEST_ID, dsParticipantId);
         HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
 
-        ResponseEntity<Map> response = restTemplate.exchange(baseUri, HttpMethod.GET, requestEntity, Map.class);
+        ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
+                baseUri, HttpMethod.GET, requestEntity, new ParameterizedTypeReference<Map<String, Object>>() {});
                
-        Map resp = response.getBody();
+        Map<String, Object> resp = response.getBody();
 
-        if (resp == null){
+        if (resp == null) {
             return null;
         } 
-        if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+        if (response.getStatusCode().is2xxSuccessful()) {
             Object dataObj = resp.get("data");
             
             if (dataObj instanceof List<?> dataList && !dataList.isEmpty()) {
@@ -497,10 +436,9 @@ public DatasetListDTO retrieveCatalogDatasets(CatalogDTO catalogDTO, String cata
                 .path(V1_CATALOG)          
                 .pathSegment(catalogId)
                 .pathSegment("datasets") 
-                .queryParam("scope", "all")
+                .queryParam("scope", "parents")
                 .queryParam("page", catalogDTO.getPage())
                 .queryParam("size", catalogDTO.getSize())
-                .queryParam("title", catalogDTO.getTitle())
                 .queryParam("description", catalogDTO.getDescription())
                 .encode()
                 .build()
@@ -691,4 +629,98 @@ private boolean sleepSafely(long millis) {
 }
 
 
+public List<String> getDatasetChildrenIds(String parentId) {
+    List<String> childIds = new ArrayList<>();
+    try {
+        // Targets: v1/datasets/requested/{parentId}/child?page=1&size=100
+        URI finalUri = UriComponentsBuilder.fromUriString(dsConnectorUrl)
+                .path(V1_DATASETS_REQUESTED)
+                .pathSegment(parentId.replace("\"", "").trim())
+                .pathSegment("child")
+                .queryParam("page", 1)
+                .queryParam("size", 100)
+                .build()
+                .toUri();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        headers.set(HEADER_X_REQUEST_ID, dsParticipantId);
+
+        ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
+                finalUri, 
+                HttpMethod.GET, 
+                new HttpEntity<>(headers), 
+                new ParameterizedTypeReference<Map<String, Object>>() {}
+        );
+
+        Map<String, Object> respBody = response.getBody();
+        if (respBody != null && respBody.get("data") instanceof List<?> dataList) {
+            for (Object obj : dataList) {
+                if (obj != null) {
+                    childIds.add(obj.toString());
+                }
+            }
+        }
+    } catch (Exception e) {
+        LOGGER.debug("No children found for dataset ID: {}", parentId);
+    }
+    return childIds;
+}
+
+
+
+/**
+ * A helper method that encapsulates the full  data space pipeline:
+ * checks agreements, negotiates if necessary, requests transfer, polls for state,
+ * and grabs the final payload from the data plane proxy.
+ */
+private String fetchChildPayload(DatasetEntry childEntry) {
+    try {
+        LOGGER.info("Fetch payload for Child ID: {}", childEntry.getId());
+
+        // 1. Check for an existing contract agreement
+        String agreementId = checkDatasetAgreement(childEntry.getId());
+        
+        // 2. If no agreement exists, trigger contract negotiation and wait for it to finalize
+        if (agreementId == null) {
+            LOGGER.info("No active agreement found for child dataset {}. Starting negotiation...", childEntry.getId());
+            DSNegotiationInfo negotiationInfo = negotiateDataset(childEntry.getId());
+            if (negotiationInfo == null || !FINALIZED.equals(negotiationInfo.getState())) {
+                LOGGER.error("Contract negotiation failed or timed out for child dataset: {}", childEntry.getId());
+                return null;
+            }
+        }
+
+        // 3. Request Data Plane Transfer Process
+        DSTransferProcess transferResponse = requestDatasetTransfer(childEntry.getId());
+        if (transferResponse == null) {
+            return null;
+        }
+
+        // 4. Poll the state engine until the data stream is ready (STARTED flag)
+        String tState = "";
+        int attempts = 0;
+        while (!STARTED.equals(tState) && attempts < 10) {
+            if (!sleepSafely(2000)) {
+                break;
+            }
+            tState = getTransferState(transferResponse.getId());
+            attempts++;
+        }
+
+        // 5. Consume and stream the raw AAS JSON payload directly through the proxy
+        if (STARTED.equals(tState)) {
+            ResponseEntity<String> resultPayload = consumeCapabilities(childEntry.getId());
+            if (resultPayload != null) {
+                return resultPayload.getBody();
+            }
+        } else {
+            LOGGER.warn("Transfer process for child dataset {} failed to enter STARTED state (Current: {}).", childEntry.getId(), tState);
+        }
+
+    } catch (Exception e) {
+        LOGGER.error("Failed to retrieve payload for child ID: {}", childEntry.getId(), e);
+    }
+    return null;
+}
 }

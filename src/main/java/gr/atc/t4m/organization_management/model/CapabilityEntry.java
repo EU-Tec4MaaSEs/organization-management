@@ -18,5 +18,6 @@ public class CapabilityEntry {
     private String comment;
     private List<Property> properties = new ArrayList<>();
     private GeneralizationRelation generalizedBy;
+    private CapacitySet capacitySet;
 }
 

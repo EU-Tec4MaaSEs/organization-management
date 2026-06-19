@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -163,25 +164,27 @@ void requestDatasetTransfer_Success() throws Exception {
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, ex.getStatusCode());
     }
-
-    @Test
+    
+   @Test
 void checkDatasetAgreement_Success() throws Exception {
     Map<String, Object> mockBody = new HashMap<>();
     List<String> mockDataList = Collections.singletonList("agreement-id-123");
     mockBody.put("data", mockDataList);
 
-    ResponseEntity<Map> responseEntity = new ResponseEntity<>(mockBody, HttpStatus.OK);
+    ResponseEntity<Map<String, Object>> responseEntity = new ResponseEntity<>(mockBody, HttpStatus.OK);
 
-    // 2. Mock the RestTemplate for GET
-    // The service uses Map.class for the response type
-    when(restTemplate.exchange(
-            any(URI.class),
-            eq(HttpMethod.GET),
-            any(HttpEntity.class),
-            eq(Map.class)
-    )).thenReturn(responseEntity);
+    ParameterizedTypeReference<Map<String, Object>> typeRef = new ParameterizedTypeReference<>() {};
 
-    String result = dsConnectorService.checkDatasetAggrement("test-dataset-id");
+    org.mockito.Mockito.doReturn(responseEntity)
+            .when(restTemplate)
+            .exchange(
+                    any(URI.class),
+                    eq(HttpMethod.GET),
+                    any(HttpEntity.class),
+                    eq(typeRef)
+            );
+
+    String result = dsConnectorService.checkDatasetAgreement("test-dataset-id");
 
     assertNotNull(result, "Result should not be null on success");
     assertEquals("agreement-id-123", result);
@@ -192,16 +195,23 @@ void checkDatasetAgreement_EmptyData_ReturnsNull() throws Exception {
     Map<String, Object> mockBody = new HashMap<>();
     mockBody.put("data", Collections.emptyList());
 
-    ResponseEntity<Map> responseEntity = new ResponseEntity<>(mockBody, HttpStatus.OK);
+    ResponseEntity<Map<String, Object>> responseEntity = new ResponseEntity<>(mockBody, HttpStatus.OK);
 
-    when(restTemplate.exchange(any(URI.class), eq(HttpMethod.GET), any(HttpEntity.class), eq(Map.class)))
-            .thenReturn(responseEntity);
+    ParameterizedTypeReference<Map<String, Object>> typeRef = new ParameterizedTypeReference<>() {};
 
-    String result = dsConnectorService.checkDatasetAggrement("test-dataset-id");
+    org.mockito.Mockito.doReturn(responseEntity)
+            .when(restTemplate)
+            .exchange(
+                    any(URI.class),
+                    eq(HttpMethod.GET),
+                    any(HttpEntity.class),
+                    eq(typeRef)
+            );
+
+    String result = dsConnectorService.checkDatasetAgreement("test-dataset-id");
 
     assertNull(result, "Should return null if the data list is empty");
 }
-
 
 @Test
 void getTransferState_Success() throws Exception {
@@ -267,55 +277,64 @@ void getDatasetMetadata_UnexpectedError_Throws500() {
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatusCode());
     assertTrue(exception.getReason().contains("Failed to retrieve dataset metadata"));
 }
-
-
 @Test
 void retrieveCapabilities_FullSuccess() throws Exception {
-    
     CatalogDTO catalogDTO = new CatalogDTO();
     catalogDTO.setProviderUrl("http://provider.com");
 
     ParticipantDTO mockParticipant = new ParticipantDTO();
     mockParticipant.setId("participant-123");
 
-    DatasetListDTO mockDatasetList = new DatasetListDTO();
-    mockDatasetList.setData(Collections.singletonList("dataset-001"));
+    // This represents the Parent Machine discovered in step 1
+    DatasetListDTO mockParentMachineList = new DatasetListDTO();
+    mockParentMachineList.setData(Collections.singletonList("machine-parent-id"));
 
-    DatasetEntry mockEntry = new DatasetEntry();
-    mockEntry.setId("dataset-001");
-    mockEntry.setTitle("CapabilityDescription");
+    // The metadata of the Parent Machine Node
+    DatasetEntry mockParentEntry = new DatasetEntry();
+    mockParentEntry.setId("machine-parent-id");
+    mockParentEntry.setTitle("F_005-DMG_MORI_DMF_360L"); // Provides the title engine!
+
+    // The metadata of the child node matching CapabilityDescription
+    DatasetEntry mockChildEntry = new DatasetEntry();
+    mockChildEntry.setId("dataset-001");
+    mockChildEntry.setTitle("CapabilityDescription");
 
     DSTransferProcess mockTransfer = new DSTransferProcess();
     mockTransfer.setId("transfer-999");
 
-
-    doReturn(mockParticipant).when(dsConnectorService).fetchCatalog(any());
+    doReturn(mockParticipant).when(dsConnectorService).fetchCatalog(any(CatalogDTO.class));
     doReturn("participant-123").when(dsConnectorService).searchParticipantCatalogue(anyString());
-    doReturn(mockDatasetList).when(dsConnectorService).retrieveCatalogDatasets(any(), anyString());
-    doReturn(mockEntry).when(dsConnectorService).getDatasetMetadata("dataset-001");
-    doReturn("agreement-abc").when(dsConnectorService).checkDatasetAggrement("dataset-001");
-    doReturn(mockTransfer).when(dsConnectorService).requestDatasetTransfer("dataset-001");
     
+    doReturn(mockParentMachineList).when(dsConnectorService)
+            .retrieveCatalogDatasets(any(CatalogDTO.class), anyString());
+    
+    doReturn(mockParentEntry).when(dsConnectorService).getDatasetMetadata("machine-parent-id");
+
+    List<String> mockChildrenIds = Collections.singletonList("dataset-001");
+    doReturn(mockChildrenIds).when(dsConnectorService).getDatasetChildrenIds("machine-parent-id");
+    
+    doReturn(mockChildEntry).when(dsConnectorService).getDatasetMetadata("dataset-001");
+    doReturn("agreement-abc").when(dsConnectorService).checkDatasetAgreement("dataset-001");
+    doReturn(mockTransfer).when(dsConnectorService).requestDatasetTransfer("dataset-001");
     doReturn("STARTED").when(dsConnectorService).getTransferState("transfer-999");
     
-
     ResponseEntity<String> mockResponse = new ResponseEntity<>("RAW_AAS_JSON", HttpStatus.OK);
     doReturn(mockResponse).when(dsConnectorService).consumeCapabilities("dataset-001");
     
     List<CapabilityEntry> mockCaps = Collections.singletonList(new CapabilityEntry());
     when(capabilityService.parseAASCapabilities("RAW_AAS_JSON")).thenReturn(mockCaps);
 
-    List<ManufacturingResource> results = dsConnectorService.retrieveCapabilities(catalogDTO);
+    
+    List<ManufacturingResource> results = dsConnectorService.retrieveUnifiedResources(catalogDTO);
+
 
     assertNotNull(results);
     assertEquals(1, results.size());
-    assertEquals("dataset-001", results.get(0).getCapabilityDatasetID());
-    assertEquals("CapabilityDescription", results.get(0).getManufacturingResourceTitle());
+    assertEquals("dataset-001", results.get(0).getCapabilityDatasetID()); // Populated perfectly from the loop child!
+    assertEquals("F_005-DMG_MORI_DMF_360L", results.get(0).getManufacturingResourceTitle()); // Clean human title verified
     
-
     verify(dsConnectorService, times(1)).requestDatasetTransfer(anyString());
     verify(capabilityService, times(1)).parseAASCapabilities(anyString());
 }
-
 
 }

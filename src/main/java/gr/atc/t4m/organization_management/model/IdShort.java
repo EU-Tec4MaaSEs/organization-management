@@ -5,6 +5,9 @@ public enum IdShort {
     PropertySet,
     Container,
     PropertyComment,
-    CapabilityRelations;
+    CapabilityRelations,
+    AvailableCapacityContainer,
+    AvailableCapacity,
+    CapacitySet;
 }
 

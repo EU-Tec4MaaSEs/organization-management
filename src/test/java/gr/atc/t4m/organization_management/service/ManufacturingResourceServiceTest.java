@@ -27,8 +27,8 @@ class ManufacturingResourceServiceTest {
     @Test
     @DisplayName("getAllCapabilities returns flattened list of capabilities")
     void testGetAllCapabilities_success() {
-        CapabilityEntry cap1 = new CapabilityEntry("Cutting", "Primary", true, "High precision", List.of(), null);
-        CapabilityEntry cap2 = new CapabilityEntry("Welding", "Secondary", true, "Automated", List.of(), null);
+        CapabilityEntry cap1 = new CapabilityEntry("Cutting", "Primary", true, "High precision", List.of(), null, null);
+        CapabilityEntry cap2 = new CapabilityEntry("Welding", "Secondary", true, "Automated", List.of(), null, null);
 
         ManufacturingResource mr1 = new ManufacturingResource();
         mr1.setCapabilities(List.of(cap1));
