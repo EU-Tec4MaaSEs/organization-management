@@ -33,33 +33,38 @@ public class CapabilityService {
      * @return List of CapabilityEntry parsed from the JSON file.
      * @throws IOException if the JSON file cannot be read.
      */
- public List<CapabilityEntry> parseAASCapabilities(String jsonResponse) throws IOException {
-     // Parse JSON string directly instead of reading from file
-     SubmodelWrapper wrapper = mapper.readValue(jsonResponse, SubmodelWrapper.class);
+    public List<CapabilityEntry> parseAASCapabilities(String jsonResponse) throws IOException {
+        // Parse JSON string directly instead of reading from file
+        SubmodelWrapper wrapper = mapper.readValue(jsonResponse, SubmodelWrapper.class);
 
-       List<SubmodelElement> submodelElements = wrapper.getSubmodelElements();
-       if (submodelElements == null || submodelElements.isEmpty()) {
-         return Collections.emptyList();
-     }
+        List<SubmodelElement> submodelElements = wrapper.getSubmodelElements();
+        if (submodelElements == null || submodelElements.isEmpty()) {
+            return Collections.emptyList();
+        }
 
-         // Extract the first-level container (assumed to contain all capability sets)
-         List<SubmodelElement> capabilitySets = mapper.convertValue(
-                 wrapper.getSubmodelElements().get(0).getValue(),
-                 new TypeReference<>() {
-                 }
-         );
+        // Get all CapabilitySet collections from all top-level submodel elements
+        List<SubmodelElement> capabilitySets = new ArrayList<>();
 
-         List<CapabilityEntry> results = new ArrayList<>();
-         for (SubmodelElement container : capabilitySets) {
-             CapabilityEntry entry = parseCapabilityContainer(container);
-             results.add(entry);
-         }
+        for (SubmodelElement topLevel : wrapper.getSubmodelElements()) {
+            List<SubmodelElement> containers = mapper.convertValue(
+                    topLevel.getValue(),
+                    new TypeReference<>() {
+                    }
+            );
+            capabilitySets.addAll(containers);
+        }
 
-         if (LOGGER.isInfoEnabled()) {
-             LOGGER.info("Parsed AAS Capabilities: {}", mapper.writerWithDefaultPrettyPrinter().writeValueAsString(results));
-         }
-         return results;
-     }
+        List<CapabilityEntry> results = new ArrayList<>();
+        for (SubmodelElement container : capabilitySets) {
+            CapabilityEntry entry = parseCapabilityContainer(container);
+            results.add(entry);
+        }
+
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info("Parsed AAS Capabilities: {}", mapper.writerWithDefaultPrettyPrinter().writeValueAsString(results));
+        }
+        return results;
+    }
 
     /**
      * Parses a single capability container element into a CapabilityEntry.
@@ -96,9 +101,44 @@ public class CapabilityService {
                 GeneralizationRelation relation = extractRelation(element);
                 entry.setGeneralizedBy(relation);
             }
+
+            // Extract the CapacitySet
+            if (Type.SubmodelElementCollection.name().equals(type) && IdShort.CapacitySet.name().equals(idShort)) {
+                CapacitySet capacitySet = extractCapacitySet(element);
+                entry.setCapacitySet(capacitySet);
+            }
         }
 
         return entry;
+    }
+
+    /**
+     * Parses a CapacitySet element and extracts the production calendar reference.
+     */
+    private CapacitySet extractCapacitySet(SubmodelElement capacitySetElement) {
+        List<SubmodelElement> containers = mapper.convertValue(
+                capacitySetElement.getValue(), new TypeReference<>() {});
+
+        for (SubmodelElement container : containers) {
+            if (IdShort.AvailableCapacityContainer.name().equals(container.getIdShort())) {
+                // Deserialize inner elements as raw JsonNodes to preserve all fields
+                List<JsonNode> innerNodes = mapper.convertValue(container.getValue(), new TypeReference<>() {});
+
+                for (JsonNode innerNode : innerNodes) {
+                    String innerIdShort = innerNode.path("idShort").asText();
+                    if (IdShort.AvailableCapacity.name().equals(innerIdShort)) {
+                        Relation relation = mapper.convertValue(innerNode, Relation.class);
+                        if (relation.getSecond() == null
+                                || relation.getSecond().getKeys() == null
+                                || relation.getSecond().getKeys().isEmpty()) continue;
+
+                        String calendarRef = relation.getSecond().getKeys().get(0).getValue();
+                        return new CapacitySet(calendarRef);
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -203,28 +243,25 @@ public class CapabilityService {
      * Parses a relation from a CapabilityRelations element and builds a GeneralizationRelation.
      */
     private GeneralizationRelation extractRelation(SubmodelElement relationElement) {
-    List<SubmodelElement> wrapperList = mapper.convertValue(
-        relationElement.getValue(),
-        new TypeReference<>() {}
-    );
+        List<SubmodelElement> wrapperList = mapper.convertValue(relationElement.getValue(), new TypeReference<>() {});
 
-    if (wrapperList.isEmpty() || wrapperList.get(0).getValue().isEmpty()) return null;
+        if (wrapperList.isEmpty() || wrapperList.get(0).getValue().isEmpty()) return null;
 
-    Relation relation = mapper.convertValue(wrapperList.get(0).getValue().get(0), Relation.class);
+        Relation relation = mapper.convertValue(wrapperList.get(0).getValue().get(0), Relation.class);
 
-    List<Key> firstKeys = relation.getFirst().getKeys();
-    List<Key> secondKeys = relation.getSecond().getKeys();
+        List<Key> firstKeys = relation.getFirst().getKeys();
+        List<Key> secondKeys = relation.getSecond().getKeys();
 
-    if (firstKeys.size() <= 3 || secondKeys.size() <= 3) {
-        LOGGER.warn("Relation keys too short: first={}, second={}", firstKeys.size(), secondKeys.size());
-        return null;
+        if (firstKeys.size() <= 3 || secondKeys.size() <= 3) {
+            LOGGER.warn("Relation keys too short: first={}, second={}", firstKeys.size(), secondKeys.size());
+            return null;
+        }
+
+        String first = firstKeys.get(3).getValue();
+        String second = secondKeys.get(3).getValue();
+
+        return new GeneralizationRelation(first, second);
     }
-
-    String first = firstKeys.get(3).getValue();
-    String second = secondKeys.get(3).getValue();
-
-    return new GeneralizationRelation(first, second);
-}
 
     public List<DatasetEntry> retrieveCapabilitiesInformation(String body) throws IOException {
         List<DatasetEntry> datasets = parseDatasets(body);
@@ -236,17 +273,61 @@ public class CapabilityService {
     }
 
     public List<DatasetEntry> parseDatasets(String json) throws IOException {
-    JsonNode root = mapper.readTree(json);
-    JsonNode datasetsNode = root.path("data").path("dataset");
+        JsonNode root = mapper.readTree(json);
+        JsonNode datasetsNode = root.path("data").path("dataset");
 
-    List<DatasetEntry> datasets = new ArrayList<>();
-    if (datasetsNode.isArray()) {
-        for (JsonNode node : datasetsNode) {
-            DatasetEntry entry = mapper.treeToValue(node, DatasetEntry.class);
-            datasets.add(entry);
+        List<DatasetEntry> datasets = new ArrayList<>();
+        if (datasetsNode.isArray()) {
+            for (JsonNode node : datasetsNode) {
+                DatasetEntry entry = mapper.treeToValue(node, DatasetEntry.class);
+                datasets.add(entry);
+            }
         }
+
+        return datasets;
     }
 
-    return datasets;
+  /**
+ * Parses the ProductionCalendar submodel JSON to extract the reference to the iCalendar file.
+ * * @param jsonResponse Raw submodel JSON string
+ * @return The filename of the .ical capacity document, or null if not found
+ */
+public String parseProductionCalendarFileRef(String jsonResponse) {
+    try {
+        JsonNode root = mapper.readTree(jsonResponse);
+        JsonNode submodelElements = root.path("submodelElements");
+
+        if (submodelElements.isArray()) {
+            for (JsonNode element : submodelElements) {
+                String idShort = element.path("idShort").asText(null);
+                String modelType = element.path("modelType").asText(null);
+
+                // Look explicitly for the File element named "calendar"
+                if ("calendar".equals(idShort) && "File".equals(modelType)) {
+                    String icalFileReference = element.path("value").asText(null);
+                    LOGGER.info("Found capacity calendar reference file: {}", icalFileReference);
+                    return icalFileReference;
+                }
+            }
+        }
+    } catch (Exception e) {
+        LOGGER.error("Failed to parse ProductionCalendar submodel elements", e);
+    }
+    return null;
+}
+
+ /**
+ * Extract the root structural submodel ID URI from the ProductionCalendar JSON wrapper.
+ * * @param jsonResponse Raw submodel JSON string
+ * @return The canonical AAS ID string (e.g., "https://moldesura.com?/aas/...")
+ */
+public String parseProductionCalendarSubmodelId(String jsonResponse) {
+    try {
+        JsonNode root = mapper.readTree(jsonResponse);
+        return root.path("id").asText(null);
+    } catch (Exception e) {
+        LOGGER.error("Failed to parse ProductionCalendar root ID", e);
+        return null;
+    }
 }
 }

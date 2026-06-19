@@ -21,10 +21,15 @@ public class ManufacturingResource {
     private String manufacturingResourceCode;
     private String manufacturingResourceTitle;
     private String capabilityDatasetID;
+    private String productionCalendarDatasetID;
+
     private List<CapabilityEntry> capabilities;
     private String providerUrl;
     @Builder.Default
     private Instant timestamp = Instant.now();
+    private String calendarDatasetID;
+    private String calendarFileRef;
+    private String rawCalendarContent;
 
 }
 

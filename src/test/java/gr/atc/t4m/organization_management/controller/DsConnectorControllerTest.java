@@ -115,7 +115,8 @@ class DsConnectorControllerTest {
         mr.setManufacturingResourceTitle("Test Resource");
 
         when(organizationService.getOrganizationByName("TestOrg")).thenReturn(org);
-        when(dsConnectorService.retrieveCapabilities(any(CatalogDTO.class))).thenReturn(List.of(mr));
+        when(dsConnectorService.retrieveUnifiedResources(any(CatalogDTO.class))).thenReturn(List.of(mr));
+
         doNothing().when(manufacturingResourceService).save(any(ManufacturingResource.class));
 
         mockMvc.perform(post("/api/connector/retrieveCapabilities")

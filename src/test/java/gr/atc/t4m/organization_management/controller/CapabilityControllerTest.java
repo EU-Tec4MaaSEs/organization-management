@@ -35,8 +35,8 @@ class CapabilityControllerTest {
     @Test
     @DisplayName("GET /api/capability/all - should return list of capabilities")
     void testGetAllCapabilities_success() throws Exception {
-        CapabilityEntry cap1 = new CapabilityEntry("Milling", "Primary", true, "High precision", List.of(), null);
-        CapabilityEntry cap2 = new CapabilityEntry("Drilling", "Secondary", true, "Automated", List.of(), null);
+        CapabilityEntry cap1 = new CapabilityEntry("Milling", "Primary", true, "High precision", List.of(), null, null);
+        CapabilityEntry cap2 = new CapabilityEntry("Drilling", "Secondary", true, "Automated", List.of(), null, null);
 
         when(manufacturingResourceService.getAllCapabilities())
                 .thenReturn(List.of(cap1, cap2));

@@ -1,5 +1,7 @@
 package gr.atc.t4m.organization_management.controller;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -76,7 +78,7 @@ public class DsConnectorController {
     @PostMapping(value = "retrieveCapabilities")
     public List<ManufacturingResource>  retrieveCapabilities(
             @Valid @RequestBody CatalogDTO catalogDTO,
-            final HttpServletRequest request) {
+            final HttpServletRequest request) throws URISyntaxException, IOException {
                 if (catalogDTO.getOrganizationName() == null || catalogDTO.getProviderUrl() == null) {
                     throw new ResponseStatusException(
                             HttpStatus.BAD_REQUEST,
@@ -91,7 +93,7 @@ public class DsConnectorController {
                     );
                 }
           
-                List<ManufacturingResource> manufacturingResource = dsConnectorService.retrieveCapabilities(catalogDTO);
+                List<ManufacturingResource> manufacturingResource = dsConnectorService.retrieveUnifiedResources(catalogDTO);
 
                 //delete the old values
                 if (organization.getManufacturingResources() != null && !organization.getManufacturingResources().isEmpty()) {
