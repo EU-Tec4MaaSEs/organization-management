@@ -674,53 +674,73 @@ public List<String> getDatasetChildrenIds(String parentId) {
  * checks agreements, negotiates if necessary, requests transfer, polls for state,
  * and grabs the final payload from the data plane proxy.
  */
-private String fetchChildPayload(DatasetEntry childEntry) {
-    try {
-        LOGGER.info("Fetch payload for Child ID: {}", childEntry.getId());
 
-        // 1. Check for an existing contract agreement
-        String agreementId = checkDatasetAgreement(childEntry.getId());
-        
-        // 2. If no agreement exists, trigger contract negotiation and wait for it to finalize
+private String fetchChildPayload(DatasetEntry childEntry) {
+    return fetchDatasetPayload(childEntry.getId());
+}
+/**
+     * Fetches  production calendar text payload directly from the Data Space data plane.
+     * @param calendarDatasetID The static ID of the target calendar dataset
+     * @return Raw JSON string containing the real-time scheduling data
+     */
+   public String fetchCalendarContent(String calendarDatasetId) {
+    String payload = fetchDatasetPayload(calendarDatasetId);
+
+    if (payload == null) {
+        throw new IllegalStateException(
+            "Failed to retrieve calendar payload from the Data Space.");
+    }
+
+    return payload;
+}
+
+
+private String fetchDatasetPayload(String datasetId) {
+    try {
+        LOGGER.info("Fetching payload for dataset {}", datasetId);
+
+        String agreementId = checkDatasetAgreement(datasetId);
+																							  
         if (agreementId == null) {
-            LOGGER.info("No active agreement found for child dataset {}. Starting negotiation...", childEntry.getId());
-            DSNegotiationInfo negotiationInfo = negotiateDataset(childEntry.getId());
-            if (negotiationInfo == null || !FINALIZED.equals(negotiationInfo.getState())) {
-                LOGGER.error("Contract negotiation failed or timed out for child dataset: {}", childEntry.getId());
+            DSNegotiationInfo negotiation = negotiateDataset(datasetId);
+
+            if (negotiation == null || !FINALIZED.equals(negotiation.getState())) {
+			   LOGGER.error("Contract negotiation failed or timed out for  dataset: {}", datasetId);
+																							   
                 return null;
             }
         }
-
-        // 3. Request Data Plane Transfer Process
-        DSTransferProcess transferResponse = requestDatasetTransfer(childEntry.getId());
-        if (transferResponse == null) {
+												 
+        DSTransferProcess transfer = requestDatasetTransfer(datasetId);
+        if (transfer == null) {
             return null;
         }
 
-        // 4. Poll the state engine until the data stream is ready (STARTED flag)
-        String tState = "";
+        String state = "";				   
         int attempts = 0;
-        while (!STARTED.equals(tState) && attempts < 10) {
+
+        while (!STARTED.equals(state) && attempts < 10) {
             if (!sleepSafely(2000)) {
-                break;
+                return null;
             }
-            tState = getTransferState(transferResponse.getId());
+
+            state = getTransferState(transfer.getId());
             attempts++;
         }
 
-        // 5. Consume and stream the raw AAS JSON payload directly through the proxy
-        if (STARTED.equals(tState)) {
-            ResponseEntity<String> resultPayload = consumeCapabilities(childEntry.getId());
-            if (resultPayload != null) {
-                return resultPayload.getBody();
-            }
-        } else {
-            LOGGER.warn("Transfer process for child dataset {} failed to enter STARTED state (Current: {}).", childEntry.getId(), tState);
+																					
+        if (!STARTED.equals(state)) {
+            LOGGER.warn("Transfer for dataset {} never reached STARTED. Current state: {}", datasetId, state);
+            return null;
         }
 
+        ResponseEntity<String> response = consumeCapabilities(datasetId);
+        return response != null ? response.getBody() : null;
+
     } catch (Exception e) {
-        LOGGER.error("Failed to retrieve payload for child ID: {}", childEntry.getId(), e);
+        LOGGER.error("Failed to retrieve payload for dataset {}", datasetId, e);
+        return null;
     }
-    return null;
+				
 }
 }
