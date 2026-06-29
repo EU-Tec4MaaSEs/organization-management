@@ -19,15 +19,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -53,6 +60,8 @@ class DsConnectorControllerTest {
      @Autowired
     private ObjectMapper objectMapper;
 
+    private static final String CALENDAR_ID = "e02c1df3-c3fc-4945-84c4-7e52b327ac6d";
+    private static final String ICAL_CONTENT = "BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nSUMMARY:Available\nEND:VEVENT";
     @Test
     @DisplayName("validateOrganization should return 200 when service validates organization successfully")
     void validateOrganization_ok() throws Exception {
@@ -171,6 +180,53 @@ class DsConnectorControllerTest {
 
     }
 
+    @Test
+    void getRawCalendarContext_Returns200AndRawContent() throws Exception {
+        when(dsConnectorService.fetchCalendarContent(CALENDAR_ID)).thenReturn(ICAL_CONTENT);
+        doNothing().when(manufacturingResourceService).updateRawCalendarContent(CALENDAR_ID, ICAL_CONTENT);
+
+        mockMvc.perform(get("/api/connector/getCalendar/{calendarDatasetID}", CALENDAR_ID))
+                .andExpect(status().isOk())
+                .andExpect(content().string(ICAL_CONTENT));
+
+        verify(dsConnectorService, times(1)).fetchCalendarContent(CALENDAR_ID);
+        verify(manufacturingResourceService, times(1)).updateRawCalendarContent(CALENDAR_ID, ICAL_CONTENT);
+    }
+
+
+    @Test
+    void getRawCalendarContext_EmptyId_Returns400BadRequest() throws Exception {
+        mockMvc.perform(get("/api/connector/getCalendar/{calendarDatasetID}", "   "))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(dsConnectorService);
+        verifyNoInteractions(manufacturingResourceService);
+    }
+
+
+    @Test
+    void getRawCalendarContext_UnknownDatasetId_Returns404NotFound() throws Exception {
+        // Arrange
+        when(dsConnectorService.fetchCalendarContent(CALENDAR_ID))
+                .thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Dataset ID unknown"));
+
+        mockMvc.perform(get("/api/connector/getCalendar/{calendarDatasetID}", CALENDAR_ID))
+                .andExpect(status().isNotFound());
+
+        verify(manufacturingResourceService, never()).updateRawCalendarContent(anyString(), anyString());
+    }
+
+
+    @Test
+    void getRawCalendarContext_ServiceThrowsGenericException_Returns500InternalServerError() throws Exception {
+        when(dsConnectorService.fetchCalendarContent(CALENDAR_ID))
+                .thenThrow(new RuntimeException("Connection timeout over active data plane channel"));
+
+        mockMvc.perform(get("/api/connector/getCalendar/{calendarDatasetID}", CALENDAR_ID))
+                .andExpect(status().isInternalServerError());
+
+        verify(manufacturingResourceService, never()).updateRawCalendarContent(anyString(), anyString());
+    }
  
 }
     

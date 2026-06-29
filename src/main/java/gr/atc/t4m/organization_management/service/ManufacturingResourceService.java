@@ -75,4 +75,22 @@ public class ManufacturingResourceService {
         }
     }
 
+
+   public void updateRawCalendarContent(String calendarDatasetId, String freshCalendarContent) {
+    String sanitizedId = calendarDatasetId.replace("\"", "").trim();
+
+    List<ManufacturingResource> matchingResources = manufacturingResourceRepo.findByCalendarDatasetID(sanitizedId);
+
+    if (matchingResources != null && !matchingResources.isEmpty()) {
+        for (ManufacturingResource resource : matchingResources) {
+            resource.setRawCalendarContent(freshCalendarContent); 
+        }
+        
+        manufacturingResourceRepo.saveAll(matchingResources);
+        LOGGER.info("Successfully updated raw calendar content for {} resources.", matchingResources.size());
+    } else {
+        LOGGER.warn("No ManufacturingResources found in MongoDB matching Calendar ID: {}", sanitizedId);
+    }
+}
+
 }

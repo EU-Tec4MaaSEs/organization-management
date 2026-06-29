@@ -7,12 +7,13 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-
 import gr.atc.t4m.organization_management.dto.CatalogDTO;
 import gr.atc.t4m.organization_management.model.ManufacturingResource;
 import gr.atc.t4m.organization_management.model.Organization;
@@ -105,6 +106,34 @@ public class DsConnectorController {
                 organizationService.addManufacturingResource(organization, manufacturingResource);
 
         return manufacturingResource;
+    }
+
+    @Operation(
+            summary = "Get raw calendar context via Data Space for specific calendar dataset", 
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Raw calendar payload retrieved successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid calendar ID provided"),
+            @ApiResponse(responseCode = "401", description = "Authentication process failed!"),
+            @ApiResponse(responseCode = "500", description = "Internal transfer failure")
+    })
+    @GetMapping(value = "/getCalendar/{calendarDatasetID}")
+    public ResponseEntity<String> getRawCalendarContext(@PathVariable String calendarDatasetID) {
+        if (calendarDatasetID == null || calendarDatasetID.trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Calendar Dataset ID is required");
+        }
+        
+        try {
+            String rawCalendarContent = dsConnectorService.fetchCalendarContent(calendarDatasetID);
+            manufacturingResourceService.updateRawCalendarContent(calendarDatasetID, rawCalendarContent);
+            return ResponseEntity.ok(rawCalendarContent);
+        } catch (ResponseStatusException e) {
+            throw e; 
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, 
+                "Failed to retrieve  calendar: " + e.getMessage(), e);
+        }
     }
 
 

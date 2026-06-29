@@ -22,6 +22,7 @@ public interface ManufacturingResourceRepository extends MongoRepository<Manufac
             String primaryCapability,
             String secondaryCapability);
 
+    List<ManufacturingResource> findByCalendarDatasetID(String calendarDatasetId);
 }
 
 
