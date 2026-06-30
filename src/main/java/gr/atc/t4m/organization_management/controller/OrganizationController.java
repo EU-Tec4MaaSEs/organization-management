@@ -28,6 +28,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import gr.atc.t4m.organization_management.exception.OrganizationAlreadyExistsException;
 import gr.atc.t4m.organization_management.exception.OrganizationNotFoundException;
+import gr.atc.t4m.organization_management.service.ManualSearchHistoryService;
 import gr.atc.t4m.organization_management.service.MinioService;
 import gr.atc.t4m.organization_management.service.OrganizationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,6 +41,7 @@ import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,13 +56,16 @@ public class OrganizationController {
     @Value("${organization.default.valueNetwork}")
     private String defaultValueNetwork;
     private final OrganizationService organizationService;
+    private final ManualSearchHistoryService searchHistoryService;
     private final MinioService minioService;
 
 
     public OrganizationController(OrganizationService organizationService,
-                                  MinioService minioService) {
+                                  MinioService minioService,
+                                  ManualSearchHistoryService searchHistoryService) {
         this.organizationService = organizationService;
         this.minioService = minioService;
+        this.searchHistoryService = searchHistoryService;
     }
 
     @Operation(summary = "Health Check", description = "Returns a health check message for the Organization Management service")
@@ -285,9 +290,69 @@ public class OrganizationController {
             @ApiResponse(responseCode = "401", description = "Authentication process failed!")
     })
     @PostMapping("/searchProviders")
-    public ResponseEntity<List<Organization>> filterProviders(@RequestBody ProviderSearchDTO filter) {
-        List<Organization> providers = organizationService.searchProviders(filter);
-        return ResponseEntity.ok(providers);
+    public ResponseEntity<List<Organization>> filterProviders(@RequestBody ProviderSearchDTO filter,
+                    JwtAuthenticationToken jwtToken) {
+            List<Organization> providers = organizationService.searchProviders(filter);
+            String userId = jwtToken.getToken().getClaim("sub");
+            searchHistoryService.recordSearch(userId, filter.getCountryCodes(), filter.getManufacturingServices());
+            return ResponseEntity.ok(providers);
+    }
+
+    @Operation(summary = "Retrieve search history for providers", description = "Retrieves the paginated search history for the user", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses(value = {
+                    @ApiResponse(responseCode = "200", description = "Successful retrieval of search history."),
+                    @ApiResponse(responseCode = "401", description = "Authentication process failed!")
+    })
+
+    @GetMapping("/searchProvidersHistory")
+    public ResponseEntity<Page<ManualSearchHistory>> getSearchHistory(
+                    @PageableDefault(size = 10, sort = "searchedAt", direction = Sort.Direction.DESC) Pageable pageable,
+                    JwtAuthenticationToken jwtToken) {
+
+            if (jwtToken == null) {
+               return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+            String userId = jwtToken.getToken().getClaim("sub");
+
+
+            Page<ManualSearchHistory> historyPage = searchHistoryService.getUserSearchHistory(userId, pageable);
+            return ResponseEntity.ok(historyPage);
+    }
+
+
+    @Operation(summary = "Delete all search history for the user", description = "Permanently removes all recent search records matching the user's ID", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Search history successfully cleared."),
+            @ApiResponse(responseCode = "401", description = "Authentication process failed!")
+    })
+    @DeleteMapping("/deleteProvidersHistory")
+    public ResponseEntity<Void> deleteSearchHistory(JwtAuthenticationToken jwtToken) {
+        String userId = jwtToken.getToken().getClaim("sub");
+        
+        searchHistoryService.clearUserSearchHistory(userId);
+        
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Delete a specific search history record", description = "Permanently removes a single search log entry by its unique ID", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Search history item successfully deleted."),
+            @ApiResponse(responseCode = "401", description = "Authentication process failed!")
+    })
+    @DeleteMapping("/deleteProvidersHistory/{id}")
+    public ResponseEntity<Void> deleteSearchHistoryEntry(
+            @PathVariable String id, 
+            JwtAuthenticationToken jwtToken) {
+        
+        if (jwtToken == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String userId = jwtToken.getToken().getClaim("sub");
+        
+        searchHistoryService.deleteHistoryEntry(id, userId);
+        
+        return ResponseEntity.noContent().build();
     }
 
     /**
