@@ -10,6 +10,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,10 +26,12 @@ import gr.atc.t4m.organization_management.dto.ReviewAnalyticsDTO;
 import gr.atc.t4m.organization_management.exception.OrganizationNotFoundException;
 import gr.atc.t4m.organization_management.model.CapabilityEntry;
 import gr.atc.t4m.organization_management.model.MaasRole;
+import gr.atc.t4m.organization_management.model.ManualSearchHistory;
 import gr.atc.t4m.organization_management.model.ManufacturingResource;
 import gr.atc.t4m.organization_management.model.Organization;
 import gr.atc.t4m.organization_management.model.OrganizationReview;
 import gr.atc.t4m.organization_management.service.CapabilityService;
+import gr.atc.t4m.organization_management.service.ManualSearchHistoryService;
 import gr.atc.t4m.organization_management.service.MinioService;
 import gr.atc.t4m.organization_management.service.OrganizationService;
 
@@ -52,6 +55,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.Authentication;
 import java.util.Collections;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 
 @WebMvcTest(OrganizationController.class)
 @Import(TestSecurityConfig.class)
@@ -68,6 +72,8 @@ class OrganizationControllerTest {
 
     @MockitoBean
     private CapabilityService capabilityService;
+    @MockitoBean
+     private ManualSearchHistoryService searchHistoryService;
 
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -236,26 +242,27 @@ void testCreateOrganization_WhenOrganizationNameIsNull_ShouldReturnBadRequest() 
                 .andExpect(jsonPath("$[1].organizationName").value("Provider Two"));
     }
 
-     @Test
-    void testFilterProviders_ReturnsFilteredOrganizations() throws Exception {
-        // Arrange
-        ProviderSearchDTO filter = new ProviderSearchDTO();
-        filter.setCountryCodes(List.of("GR", "DE"));
-        filter.setManufacturingServices(List.of("AM"));
+   @Test
+void testFilterProviders_ReturnsFilteredOrganizations() throws Exception {
+    ProviderSearchDTO filter = new ProviderSearchDTO();
+    filter.setCountryCodes(List.of("GR", "DE"));
+    filter.setManufacturingServices(List.of("AM"));
 
-        Organization org1 = new Organization();
-        org1.setOrganizationName("ATC Provider");
+    Organization org1 = new Organization();
+    org1.setOrganizationName("ATC Provider");
 
-        when(organizationService.searchProviders(filter))
-                .thenReturn(List.of(org1));
+    when(organizationService.searchProviders(any(ProviderSearchDTO.class)))
+            .thenReturn(List.of(org1));
 
-        // Act & Assert
-        mockMvc.perform(post("/api/organization/searchProviders")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(filter)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].organizationName").value("ATC Provider"));
-    }
+    mockMvc.perform(post("/api/organization/searchProviders")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(filter))
+                    .with(jwt().jwt(j -> j.claim("sub", "1234567890"))))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$[0].organizationName").value("ATC Provider"));
+
+    verify(searchHistoryService).recordSearch("1234567890", List.of("GR", "DE"), List.of("AM"));
+}
 
     @Test
     void testGetOrganizationByName() throws Exception {
@@ -650,6 +657,112 @@ void testGetOrganizationsByCapability_NoParams_ReturnsBadRequest() throws Except
 
     }
 
+    @Test
+    void testGetSearchHistory_ReturnsPaginatedHistorySuccessfully() throws Exception {
+        // Arrange
+        String mockUserId = "user-uuid-12345";
+        
+        ManualSearchHistory historyItem = ManualSearchHistory.builder()
+                .id("doc-id-1")
+                .userId(mockUserId)
+                .countryCodes(List.of("GR", "DE"))
+                .manufacturingServices(List.of("AM"))
+                .searchedAt(LocalDateTime.now())
+                .build();
+                
+        Page<ManualSearchHistory> mockPage = new PageImpl<>(List.of(historyItem));
+
+        // Stub the service layer to look for our specific mockUserId
+        when(searchHistoryService.getUserSearchHistory(eq(mockUserId), any(Pageable.class)))
+                .thenReturn(mockPage);
+
+        // Act & Assert
+        mockMvc.perform(get("/api/organization/searchProvidersHistory")
+                        .accept(MediaType.APPLICATION_JSON)
+                        // Mock the JWT token parameter extraction
+                        .with(jwt().jwt(j -> j.claim("sub", mockUserId))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].id").value("doc-id-1"))
+                .andExpect(jsonPath("$.content[0].userId").value(mockUserId))
+                .andExpect(jsonPath("$.content[0].countryCodes[0]").value("GR"))
+                .andExpect(jsonPath("$.totalElements").value(1));
+
+        verify(searchHistoryService).getUserSearchHistory(eq(mockUserId), any(Pageable.class));
+    }
+
+    @Test
+    void testDeleteSearchHistory_ReturnsNoContent() throws Exception {
+        // Arrange
+        String mockUserId = "user-uuid-12345";
+        
+        // Stub the void service deletion method
+        doNothing().when(searchHistoryService).clearUserSearchHistory(mockUserId);
+
+        // Act & Assert
+        mockMvc.perform(delete("/api/organization/deleteProvidersHistory")
+                        // Mock the JWT token parameter extraction
+                        .with(jwt().jwt(j -> j.claim("sub", mockUserId))))
+                .andExpect(status().isNoContent()); // Verifies HTTP 204 status
+
+        // Verify the interaction with our service mock
+        verify(searchHistoryService).clearUserSearchHistory(mockUserId);
+    }
+    
+    @Test
+    void testGetSearchHistory_WithoutToken_ReturnsUnauthorized() throws Exception {
+        // Act & Assert (Tests fallback security rules if token is missing entirely)
+        mockMvc.perform(get("/api/organization/searchProvidersHistory")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+    }
+
+
+    @Test
+    void testDeleteSearchHistoryEntry_Success_ReturnsNoContent() throws Exception {
+        // Arrange
+        String mockUserId = "user-uuid-12345";
+        String targetHistoryId = "doc-id-999";
+        
+        doNothing().when(searchHistoryService).deleteHistoryEntry(targetHistoryId, mockUserId);
+
+        mockMvc.perform(delete("/api/organization/deleteProvidersHistory/{id}", targetHistoryId)
+                        .with(jwt().jwt(j -> j.claim("sub", mockUserId))))
+                .andExpect(status().isNoContent()); // 204 No Content
+
+        verify(searchHistoryService).deleteHistoryEntry(targetHistoryId, mockUserId);
+    }
+
+    @Test
+    void testDeleteSearchHistoryEntry_NotOwner_ReturnsForbidden() throws Exception {
+        // Arrange
+        String mockUserId = "attacker-uuid-666";
+        String targetHistoryId = "doc-id-999";
+        
+        doThrow(new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized to delete this history record."))
+                .when(searchHistoryService).deleteHistoryEntry(targetHistoryId, mockUserId);
+
+        mockMvc.perform(delete("/api/organization/deleteProvidersHistory/{id}", targetHistoryId)
+                        .with(jwt().jwt(j -> j.claim("sub", mockUserId))))
+                .andExpect(status().isForbidden()); // 403 Forbidden
+
+        verify(searchHistoryService).deleteHistoryEntry(targetHistoryId, mockUserId);
+    }
+
+    @Test
+    void testDeleteSearchHistoryEntry_NotFound_ReturnsNotFound() throws Exception {
+        // Arrange
+        String mockUserId = "user-uuid-12345";
+        String nonExistentId = "invalid-id-000";
+        
+        doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "History record not found with id: " + nonExistentId))
+                .when(searchHistoryService).deleteHistoryEntry(nonExistentId, mockUserId);
+
+        mockMvc.perform(delete("/api/organization/deleteProvidersHistory/{id}", nonExistentId)
+                        .with(jwt().jwt(j -> j.claim("sub", mockUserId))))
+                .andExpect(status().isNotFound());
+
+        verify(searchHistoryService).deleteHistoryEntry(nonExistentId, mockUserId);
+    }
 }
 
 
