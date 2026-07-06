@@ -47,4 +47,25 @@ public class GlobalExceptionHandler {
         error.put(ERROR_MESSAGE, ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(DomainAlreadyExistsException.class)
+    public ResponseEntity<Map<String, String>> handleDuplicateDomains(DomainAlreadyExistsException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put(ERROR_MESSAGE, ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(DomainNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleNotFoundDomain(DomainNotFoundException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put(ERROR_MESSAGE, ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DomainInUseException.class)
+    public ResponseEntity<Map<String, String>> handleDomainInUse(DomainInUseException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put(ERROR_MESSAGE, ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
 }
