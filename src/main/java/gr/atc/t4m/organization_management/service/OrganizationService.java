@@ -23,6 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gr.atc.t4m.organization_management.exception.DomainNotFoundException;
 import gr.atc.t4m.organization_management.exception.InvalidOrganizationRoleException;
 import gr.atc.t4m.organization_management.exception.OrganizationAlreadyExistsException;
 import gr.atc.t4m.organization_management.exception.OrganizationNotFoundException;
@@ -49,6 +50,7 @@ public class OrganizationService {
     OrganizationRepository organizationRepository;
     OrganizationReviewRepository reviewRepository;
     ManufacturingResourceService manufacturingResourceService;
+    ManufacturingDomainService manufacturingDomainService;
     ModelMapper modelMapper;
     private KafkaTemplate<String, EventDTO> kafkaTemplate;
 
@@ -69,13 +71,15 @@ public class OrganizationService {
     public OrganizationService(OrganizationRepository organizationRepository,
                                ManufacturingResourceService manufacturingResourceService, ModelMapper modelMapper,
                                KafkaTemplate<String, EventDTO> kafkaTemplate,
-                               OrganizationReviewRepository reviewRepository, RestTemplate restTemplate) {
+                               OrganizationReviewRepository reviewRepository, RestTemplate restTemplate,
+                               ManufacturingDomainService manufacturingDomainService) {
         this.organizationRepository = organizationRepository;
         this.manufacturingResourceService = manufacturingResourceService;
         this.modelMapper = modelMapper;
         this.kafkaTemplate = kafkaTemplate;
         this.reviewRepository = reviewRepository;
         this.restTemplate = restTemplate;
+        this.manufacturingDomainService = manufacturingDomainService;
     }
 
     public String issueVerifiableCredential(VerifiableCredentialInputDTO input) {
@@ -103,6 +107,10 @@ public class OrganizationService {
                     "Organization with name " + organization.getOrganizationName() + " already exists");
 
         });
+
+          //checks if received manufacturing services are valid
+          validateManufacturingServices(organization);
+
         if (organization.getManufacturingResources() != null) {
             organization.getManufacturingResources().forEach(mr -> {
                 mr.getManufacturingResourceID();
@@ -171,6 +179,8 @@ public class OrganizationService {
             existing.setMaasConsumer(null);
         }
 
+        //checks if received manufacturing services are valid
+        validateManufacturingServices(existing);
         return organizationRepository.save(existing);
     }
 
@@ -451,5 +461,59 @@ return organizations.stream()
         .toList();
 
 }
+
+private void validateManufacturingServices(Organization organization) {
+    if (organization.getMaasProvider() != null 
+            && organization.getMaasProvider().getManufacturingServices() != null) {
+        
+        for (String serviceCode : organization.getMaasProvider().getManufacturingServices()) {
+            boolean domainExists = manufacturingDomainService.existsByAbbreviation(serviceCode);
+            
+            if (!domainExists) {
+                LOGGER.error("Validation failed: Domain code '{}' does not exist in master data.", serviceCode);
+                throw new DomainNotFoundException(
+                        "Manufacturing Service or Domain with abbreviation " + serviceCode + " does not exist");
+            }
+        }
+    }
+}
+
+    /**
+     * Retrieves a list of organization names that are currently using a specific manufacturing service/domain.
+     */
+    public List<String> getOrganizationNamesUsingService(String serviceCode) {
+        
+        return organizationRepository.findByMaasProviderManufacturingServices(serviceCode)
+                .stream()
+                .map(Organization::getOrganizationName)
+                .toList();
+    }
+
+    /**
+     * Finds all organizations using an old service code and updates it to a new one.
+     */
+    public void cascadeServiceCodeUpdate(String oldCode, String newCode) {
+        LOGGER.info("Cascading manufacturing service code update across organizations: {} -> {}", oldCode, newCode);
+        
+        // Fetch all organizations currently referencing the old code
+        List<Organization> affectedOrgs = organizationRepository.findByMaasProviderManufacturingServices(oldCode);
+        
+        if (!affectedOrgs.isEmpty()) {
+            for (Organization org : affectedOrgs) {
+                if (org.getMaasProvider() != null && org.getMaasProvider().getManufacturingServices() != null) {
+                    List<String> services = org.getMaasProvider().getManufacturingServices();
+                    
+                    // Replace the old abbreviation with the new one
+                    int index = services.indexOf(oldCode);
+                    while (index != -1) {
+                        services.set(index, newCode);
+                        index = services.indexOf(oldCode);
+                    }
+                    
+                    organizationRepository.save(org);
+                }
+            }
+        }
+    }
 
 }

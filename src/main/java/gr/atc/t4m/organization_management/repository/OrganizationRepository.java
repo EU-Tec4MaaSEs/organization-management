@@ -18,5 +18,6 @@ public interface OrganizationRepository extends MongoRepository<Organization, St
 
      @Query("{ 'manufacturingResources.$id': { $in: ?0 } }")
      List<Organization> findByManufacturingResourceObjectIds(List<ObjectId> ids);
+     List<Organization> findByMaasProviderManufacturingServices(String serviceCode);
 }
 

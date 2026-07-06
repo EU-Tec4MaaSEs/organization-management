@@ -3,12 +3,14 @@ package gr.atc.t4m.organization_management.model;
 import lombok.Data;
 import java.util.List;
 
+
 @Data
 public class MaasProvider {
     private double providerRating;
     private int minimumOrderQuantity;
     private int nominalRate;
     private String qualityStandard;
-    private List<ManufacturingServices> manufacturingServices;
+    private List<String> manufacturingServices;
+    private List<ManufacturingDomain> manufacturingDomains;
     private List<ShippingCountry> shippingCountries;
 }
