@@ -502,7 +502,11 @@ public class OrganizationController {
         }
 
         OrganizationReview savedReview = organizationService.saveReview(orgId, userId, reviewerOrgId, reviewDto);
-
+        if (MaasRole.PROVIDER == reviewDto.getTargetRole()) {
+                ReviewAnalyticsDTO providerAnalytics = organizationService.calculateRoleAnalytics(orgId,
+                                MaasRole.PROVIDER);
+                organizationService.updateOrganizationsProviderRating(orgId, providerAnalytics.getAverageRating());
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(savedReview);
     }
 
@@ -542,16 +546,23 @@ public class OrganizationController {
     })
     @PutMapping("/reviews/{reviewId}")
     public ResponseEntity<OrganizationReview> updateReview(
-            @PathVariable String reviewId,
-            @RequestBody @Valid CreateReviewDTO editDto) {
+                    @PathVariable String reviewId,
+                    @RequestBody @Valid CreateReviewDTO editDto) {
 
-        JwtAuthenticationToken jwtToken = (JwtAuthenticationToken) SecurityContextHolder.getContext()
-                .getAuthentication();
-        String currentUserId = jwtToken.getToken().getClaim("sub");
+            JwtAuthenticationToken jwtToken = (JwtAuthenticationToken) SecurityContextHolder.getContext()
+                            .getAuthentication();
+            String currentUserId = jwtToken.getToken().getClaim("sub");
 
-        OrganizationReview updatedReview = organizationService.updateReview(reviewId, currentUserId, editDto);
+            OrganizationReview updatedReview = organizationService.updateReview(reviewId, currentUserId, editDto);
+            if (MaasRole.PROVIDER == updatedReview.getTargetRole()) {
+                    ReviewAnalyticsDTO providerAnalytics = organizationService.calculateRoleAnalytics(
+                                    updatedReview.getTargetOrganizationId(),
+                                    MaasRole.PROVIDER);
+                    organizationService.updateOrganizationsProviderRating(updatedReview.getTargetOrganizationId(),
+                                    providerAnalytics.getAverageRating());
+            }
 
-        return ResponseEntity.ok(updatedReview);
+            return ResponseEntity.ok(updatedReview);
     }
 
     @Operation(summary = "Get reviews performed by the current authenticated organization", description = "Returns a paginated list of reviews written by the caller's organization. Supports an optional query parameter filter to isolate reviews for a specific target company.",
