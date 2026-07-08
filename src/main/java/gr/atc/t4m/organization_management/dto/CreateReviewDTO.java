@@ -23,5 +23,5 @@ public class CreateReviewDTO {
     private String comment;
 
     @NotNull(message = "Target role context is required")
-    private MaasRole targetRole; // Replaced with MaasRole
+    private MaasRole targetRole;
 }

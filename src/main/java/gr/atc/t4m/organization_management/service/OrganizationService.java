@@ -365,7 +365,7 @@ public class OrganizationService {
     }
 
 
-    private ReviewAnalyticsDTO calculateRoleAnalytics(String orgId, MaasRole role) {
+    public ReviewAnalyticsDTO calculateRoleAnalytics(String orgId, MaasRole role) {
         List<Map<String, Object>> rawDistribution = reviewRepository.getStarCountDistribution(orgId, role.name());
 
         long t1 = 0;
@@ -412,10 +412,9 @@ public class OrganizationService {
         if (!review.getReviewerUserId().equals(currentUserId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not own this review.");
         }
-
         review.setRating(editDto.getRating());
         review.setComment(editDto.getComment());
-        review.setUpdatedAt(LocalDateTime.now());
+        review.setUpdatedAt(LocalDateTime.now(ZoneOffset.UTC));
 
 
         return reviewRepository.save(review);
@@ -515,5 +514,17 @@ private void validateManufacturingServices(Organization organization) {
             }
         }
     }
+
+    public void updateOrganizationsProviderRating(String orgId, double averageRating) {
+        Organization existing = organizationRepository.findById(orgId)
+                .orElseThrow(() -> new OrganizationNotFoundException(
+                        ORGANIZATION_WITH_ID + orgId + " not found. Update is aborted"));
+        if (existing.getMaasRole() != null && existing.getMaasRole().contains(MaasRole.PROVIDER)
+                && existing.getMaasProvider() != null) {
+            existing.getMaasProvider().setProviderRating(averageRating);
+            organizationRepository.save(existing);
+        }
+    }
+
 
 }
