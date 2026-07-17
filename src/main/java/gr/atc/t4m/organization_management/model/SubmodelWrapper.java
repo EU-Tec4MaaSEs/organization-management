@@ -17,6 +17,7 @@ import java.util.List;
 public class SubmodelWrapper {
     @JsonProperty("submodelElements")
     private List<SubmodelElement> submodelElements;
+    private Object semanticId;
 
     @Data
     @AllArgsConstructor
@@ -30,6 +31,8 @@ public class SubmodelWrapper {
         private String valueType;
         private Integer min;
         private Integer max;
+        private JsonNode supplementalSemanticIds;
+        private JsonNode semanticId;
     }
 
     @Data
@@ -39,6 +42,7 @@ public class SubmodelWrapper {
     public static class Qualifier {
         private String type;
         private String value;
+        private Object semanticId;
     }
 
     @EqualsAndHashCode(callSuper = true)

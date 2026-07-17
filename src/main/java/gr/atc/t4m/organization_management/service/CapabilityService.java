@@ -24,6 +24,8 @@ public class CapabilityService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CapabilityService.class);
 
+    private static final String VALUE = "value";
+
 
     /**
      * Entry point for parsing capabilities from the static AAS JSON file.
@@ -80,8 +82,9 @@ public class CapabilityService {
             String type = element.getModelType();
             String idShort = element.getIdShort();
 
-            // Extract qualifiers like type and offered
+            // Extract qualifiers like type and offered and semanticId
             if (Type.Capability.name().equals(type)) {
+                extractOntologySemanticId(element, entry);
                 extractQualifiers(element.getQualifiers(), entry);
             }
 
@@ -111,6 +114,28 @@ public class CapabilityService {
 
         return entry;
     }
+
+/**
+ * Navigates the raw JSON tree to extract the semanticId and supplemental semanticId
+ */
+
+private void extractOntologySemanticId(SubmodelElement element, CapabilityEntry entry) {
+    if (element == null) return;
+
+
+    if (element.getSemanticId() != null) {
+        String templateId = element.getSemanticId().path("keys").path(0).path(VALUE)
+                                   .asText(element.getSemanticId().asText(null));
+        entry.setSemanticId(templateId);
+    }
+
+
+    if (element.getSupplementalSemanticIds() != null) {
+        String conceptId = element.getSupplementalSemanticIds().path(0).path("keys").path(0).path(VALUE)
+                                   .asText(element.getSupplementalSemanticIds().asText(null));
+        entry.setSupplementalSemanticIds(conceptId);
+    }
+}
 
     /**
      * Parses a CapacitySet element and extracts the production calendar reference.
@@ -142,25 +167,38 @@ public class CapabilityService {
     }
 
     /**
-     * Extracts qualifiers from a Capability element and updates the CapabilityEntry.
+     * Extracts qualifiers from a Capability element and updates the
+     * CapabilityEntry.
      */
     private void extractQualifiers(List<Qualifier> qualifiers, CapabilityEntry entry) {
-        if (qualifiers == null) return;
-
-        for (Qualifier qualifier : qualifiers) {
-            if (qualifier == null) continue;
-            try {
-                switch (Type.valueOf(qualifier.getType())) {
-                    case CapabilityType -> entry.setType(qualifier.getValue().trim());
-                    case OFFERED -> entry.setOffered(Boolean.parseBoolean(qualifier.getValue().trim()));
-                    default -> {
-                        LOGGER.info("Unknown qualifier type: {}", qualifier.getType());
-                    }
-                }
-            } catch (IllegalArgumentException ignored) {
-                // Skip unknown qualifier types (robustness for future-proofing)
-            }
+        if (qualifiers == null)
+            return;
+        for (Qualifier q : qualifiers) {
+            if (q == null)
+                continue;
+            processQualifierType(q, entry);
+            processSemanticId(q);
         }
+        entry.setQualifiers(qualifiers);
+    }
+
+    private void processQualifierType(Qualifier q, CapabilityEntry entry) {
+        try {
+            switch (Type.valueOf(q.getType())) {
+                case CapabilityType -> entry.setType(q.getValue().trim());
+                case OFFERED -> entry.setOffered(Boolean.parseBoolean(q.getValue().trim()));
+                default -> LOGGER.trace("Ignoring unrelated qualifier type: {}", q.getType());
+            }
+        } catch (IllegalArgumentException e) {
+            LOGGER.trace("Skipping unknown qualifier type: {}", q.getType());
+        }
+    }
+
+    private void processSemanticId(Qualifier q) {
+        if (q.getSemanticId() == null)
+            return;
+        JsonNode n = mapper.valueToTree(q.getSemanticId());
+        q.setSemanticId(n.isTextual() ? n.asText() : n.path("keys").path(0).path(VALUE).asText(null));
     }
 
     /**
@@ -172,56 +210,76 @@ public class CapabilityService {
         return (comments != null && !comments.isEmpty()) ? comments.get(0).getText() : null;
     }
 
-    /**
-     * Parses a SubmodelElement representing a PropertySet into a list of Property objects.
-     */
-    private List<Property> extractProperties(SubmodelElement element) {
-        List<SubmodelElement> propertyContainers = mapper.convertValue(element.getValue(), new TypeReference<>() {});
-        List<Property> props = new ArrayList<>();
 
-        for (SubmodelElement container : propertyContainers) {
-            Property prop = new Property();
-            prop.setName(container.getIdShort().replace(IdShort.Container.name(), ""));
 
-            List<SubmodelElement> valueElements = mapper.convertValue(container.getValue(), new TypeReference<>() {});
+private List<Property> extractProperties(SubmodelElement element) {
+    List<SubmodelElement> propertyContainers = mapper.convertValue(element.getValue(), new TypeReference<>() {});
+    Map<String, Property> propertyMap = new LinkedHashMap<>();
 
-            for (SubmodelElement valueElement : valueElements) {
-                try {
-                    switch (Type.valueOf(valueElement.getModelType())) {
-                        case Property -> {
-                            WrapperProperty property = mapper.convertValue(valueElement, WrapperProperty.class);
-                            prop.setValue(property.getPropertyValue());
-                            prop.setValueType(property.getValueType());
-                        }
-                        case Range -> {
-                            Map<String, Object> range = new HashMap<>();
-                            if (valueElement.getMin() != null) range.put("min", valueElement.getMin());
-                            if (valueElement.getMax() != null) range.put("max", valueElement.getMax());
-                            prop.setValue(range);
-                            prop.setValueType("xs:int (range)");
-                        }
-                        case SubmodelElementList -> {
-                            List<String> values = extractStringList(valueElement);
-                            prop.setValue(values);
-                            prop.setValueType("xs:string[]");
-                        }
-                        case MultiLanguageProperty -> {
-                            if (IdShort.PropertyComment.name().equals(valueElement.getIdShort())) {
-                                prop.setComment(extractComment(valueElement));
-                            }
-                        }
-                        default -> LOGGER.info("Other property type: {}", valueElement.getModelType());
+    for (SubmodelElement container : propertyContainers) {
+        String baseName = container.getIdShort().replace(IdShort.Container.name(), "");
+        Property prop = propertyMap.computeIfAbsent(baseName, k -> {
+            Property p = new Property();
+            p.setName(k);
+            return p;
+        });
+
+        List<SubmodelElement> valueElements = mapper.convertValue(container.getValue(), new TypeReference<>() {});
+
+        for (SubmodelElement valueElement : valueElements) {
+            try {
+                Type type = Type.valueOf(valueElement.getModelType());
+
+                // Apply IDs if this is the Property OR the List container
+                if (type == Type.Property || type == Type.SubmodelElementList) {
+                    if (valueElement.getSemanticId() != null) {
+                        prop.setSemanticId(resolveId(valueElement.getSemanticId()));
                     }
-                } catch (IllegalArgumentException ignored) {
-                    // Skip unknown or unsupported value types
+                    if (valueElement.getSupplementalSemanticIds() != null) {
+                        prop.setSupplementalSemanticIds(resolveId(valueElement.getSupplementalSemanticIds()));
+                    }
                 }
+
+                if (type == Type.Property) {
+                    WrapperProperty wrapperProp = mapper.convertValue(valueElement, WrapperProperty.class);
+                    prop.setValue(wrapperProp.getPropertyValue());
+                    prop.setValueType(wrapperProp.getValueType());
+                } else if (type == Type.Range) {
+                    Map<String, Object> range = new HashMap<>();
+                    if (valueElement.getMin() != null) range.put("min", valueElement.getMin());
+                    if (valueElement.getMax() != null) range.put("max", valueElement.getMax());
+                    prop.setValue(range);
+                    prop.setValueType("xs:int (range)");
+                } else if (type == Type.SubmodelElementList) {
+                    prop.setValue(extractStringList(valueElement));
+                    prop.setValueType("xs:string[]");
+                } else if (type == Type.MultiLanguageProperty && IdShort.PropertyComment.name().equals(valueElement.getIdShort())) {
+                    prop.setComment(extractComment(valueElement));
+                }
+            } catch (Exception e) {
+                LOGGER.error("Error parsing property element {}: {}", valueElement.getIdShort(), e.getMessage());
             }
-
-            props.add(prop);
         }
-
-        return props;
     }
+    return propertyMap.values().stream()
+            .filter(p -> p.getValue() != null || p.getComment() != null)
+            .toList();
+}
+/**
+ * Robustly resolves the semanticId, handling plain strings, arrays, and AAS object structures.
+ */
+private String resolveId(JsonNode node) {
+    if (node == null || node.isNull()) return null;
+    
+    JsonNode target = node.isArray() ? node.get(0) : node;
+    
+    if (target.isObject() && target.has("keys")) {
+        return target.path("keys").path(0).path(VALUE).asText(null);
+    }
+    
+    String text = target.asText();
+    return (text == null || text.isEmpty()) ? null : text;
+}
 
     /**
      * Extracts a list of string values from a SubmodelElementList.
@@ -304,7 +362,7 @@ public String parseProductionCalendarFileRef(String jsonResponse) {
 
                 // Look explicitly for the File element named "calendar"
                 if ("calendar".equals(idShort) && "File".equals(modelType)) {
-                    String icalFileReference = element.path("value").asText(null);
+                    String icalFileReference = element.path(VALUE).asText(null);
                     LOGGER.info("Found capacity calendar reference file: {}", icalFileReference);
                     return icalFileReference;
                 }

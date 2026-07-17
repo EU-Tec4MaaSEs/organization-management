@@ -281,8 +281,8 @@ void testFilterProviders_ReturnsFilteredOrganizations() throws Exception {
 
     @Test
     void testGetOrganizationCapabilities_success() throws Exception {
-        CapabilityEntry cap1 = new CapabilityEntry("Cutting", "Primary", true, "High precision", List.of(), null, null);
-        CapabilityEntry cap2 = new CapabilityEntry("Welding", "Secondary", true, "Automated", List.of(), null, null);
+        CapabilityEntry cap1 = new CapabilityEntry("Cutting", "Primary", true, "High precision", List.of(), null, null, null, null, null);
+        CapabilityEntry cap2 = new CapabilityEntry("Welding", "Secondary", true, "Automated", List.of(), null, null, null, null, null);
 
         ManufacturingResource resource = new ManufacturingResource();
         resource.setManufacturingResourceID("MR1");
