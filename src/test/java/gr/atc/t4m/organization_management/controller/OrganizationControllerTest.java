@@ -444,33 +444,42 @@ void testGetOrganizationsByCapability_NoParams_ReturnsBadRequest() throws Except
                         .with(request -> { request.setMethod("PUT"); return request; }))
                 .andExpect(status().isNotFound());
     }
+    
+@Test
+void testCreateReview_Success_Returns201() throws Exception {
+    String targetOrgId = "target-org-123";
+    String mockUserId = "test-user-id";
+    String reviewerOrgId = "test-org";
 
+    CreateReviewDTO validReviewDto = new CreateReviewDTO();
+    validReviewDto.setRating(4);
+    validReviewDto.setComment("This is a verified platform review");
+    validReviewDto.setTargetRole(MaasRole.CONSUMER);
 
-    @Test
-    void testCreateReview_Success_Returns201() throws Exception {
-        String targetOrgId = "target-org-123";
-        String mockUserId = "test-user-id";
-        String reviewerOrgId = "test-org";
+    OrganizationReview mockSavedReview = new OrganizationReview();
+    when(organizationService.saveReview(eq(targetOrgId), eq(mockUserId), eq(reviewerOrgId), any(CreateReviewDTO.class)))
+            .thenReturn(mockSavedReview);
 
-        CreateReviewDTO validReviewDto = new CreateReviewDTO();
-        validReviewDto.setRating(4);
-        validReviewDto.setComment("This is a verified platform review");
-        validReviewDto.setTargetRole(MaasRole.CONSUMER);
+     ReviewAnalyticsDTO mockAnalytics = new ReviewAnalyticsDTO();
+     mockAnalytics.setAverageRating(4.0);
+     when(organizationService.calculateRoleAnalytics(targetOrgId, MaasRole.CONSUMER))
+        .thenReturn(mockAnalytics);
 
+  mockMvc.perform(post("/api/organization/" + targetOrgId + "/reviews")
+        .with(jwt().jwt(builder -> builder
+                .claim("sub", mockUserId)
+                .claim("organization_id", reviewerOrgId))) 
+        .contentType(MediaType.APPLICATION_JSON)  
+        .content(objectMapper.writeValueAsBytes(validReviewDto)))
+        .andExpect(status().isCreated());
 
-        mockMvc.perform(post("/api/organization/" + targetOrgId + "/reviews")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsBytes(validReviewDto)))
-                .andExpect(status().isCreated());
-
-        verify(organizationService).saveReview(
-                eq(targetOrgId), 
-                eq(mockUserId), 
-                eq(reviewerOrgId), 
-                any(CreateReviewDTO.class)
-        );
-    }
-
+    verify(organizationService).saveReview(
+            eq(targetOrgId), 
+            eq(mockUserId), 
+            eq(reviewerOrgId), 
+            any(CreateReviewDTO.class)
+    );
+}
 @Test
     void testCreateReview_SelfReview_Returns400BadRequest() throws Exception {
         String selfOrgId = "test-org";
