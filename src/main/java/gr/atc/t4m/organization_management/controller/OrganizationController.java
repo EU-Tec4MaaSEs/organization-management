@@ -502,13 +502,15 @@ public class OrganizationController {
         }
 
         OrganizationReview savedReview = organizationService.saveReview(orgId, userId, reviewerOrgId, reviewDto);
+        ReviewAnalyticsDTO reviewAnalytics = organizationService.calculateRoleAnalytics(orgId,
+                        reviewDto.getTargetRole());
         if (MaasRole.PROVIDER == reviewDto.getTargetRole()) {
-                ReviewAnalyticsDTO providerAnalytics = organizationService.calculateRoleAnalytics(orgId,
-                                MaasRole.PROVIDER);
-                organizationService.updateOrganizationsProviderRating(orgId, providerAnalytics.getAverageRating());
+                organizationService.updateOrganizationsProviderRating(orgId, reviewAnalytics.getAverageRating());
+        } else if (MaasRole.CONSUMER == reviewDto.getTargetRole()) {
+                organizationService.updateOrganizationsConsumerRating(orgId, reviewAnalytics.getAverageRating());
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(savedReview);
-    }
+}
 
     @Operation(
             summary = "Get review analytics and paginated feed by role",
@@ -554,12 +556,14 @@ public class OrganizationController {
             String currentUserId = jwtToken.getToken().getClaim("sub");
 
             OrganizationReview updatedReview = organizationService.updateReview(reviewId, currentUserId, editDto);
+            ReviewAnalyticsDTO reviewAnalytics = organizationService.calculateRoleAnalytics(
+                                    updatedReview.getTargetOrganizationId(), editDto.getTargetRole());
             if (MaasRole.PROVIDER == updatedReview.getTargetRole()) {
-                    ReviewAnalyticsDTO providerAnalytics = organizationService.calculateRoleAnalytics(
-                                    updatedReview.getTargetOrganizationId(),
-                                    MaasRole.PROVIDER);
                     organizationService.updateOrganizationsProviderRating(updatedReview.getTargetOrganizationId(),
-                                    providerAnalytics.getAverageRating());
+                                    reviewAnalytics.getAverageRating());
+            } else if (MaasRole.CONSUMER == updatedReview.getTargetRole()) {
+                    organizationService.updateOrganizationsConsumerRating(updatedReview.getTargetOrganizationId(),
+                                    reviewAnalytics.getAverageRating());
             }
 
             return ResponseEntity.ok(updatedReview);

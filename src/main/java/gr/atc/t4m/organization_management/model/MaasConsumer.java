@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class MaasConsumer {
-    private double paymentRating;
+    private double consumerRating;
+
     private List<String> importOrigins;
 }

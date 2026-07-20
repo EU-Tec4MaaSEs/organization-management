@@ -164,9 +164,8 @@ public class OrganizationService {
     }
 
     public Organization updateOrganization(String id, OrganizationDTO organizationDTO) {
-        Organization existing = organizationRepository.findById(id)
-                .orElseThrow(() -> new OrganizationNotFoundException(
-                        ORGANIZATION_WITH_ID + id + " not found. Update is aborted"));
+
+        Organization existing = findOrganizationById(id);
         String existingId = existing.getOrganizationID();
 
         modelMapper.map(organizationDTO, existing);
@@ -514,17 +513,31 @@ private void validateManufacturingServices(Organization organization) {
             }
         }
     }
-
-    public void updateOrganizationsProviderRating(String orgId, double averageRating) {
-        Organization existing = organizationRepository.findById(orgId)
-                .orElseThrow(() -> new OrganizationNotFoundException(
-                        ORGANIZATION_WITH_ID + orgId + " not found. Update is aborted"));
-        if (existing.getMaasRole() != null && existing.getMaasRole().contains(MaasRole.PROVIDER)
-                && existing.getMaasProvider() != null) {
-            existing.getMaasProvider().setProviderRating(averageRating);
-            organizationRepository.save(existing);
-        }
+public void updateOrganizationsConsumerRating(String orgId, double averageRating) {
+    Organization existing = findOrganizationById(orgId);
+    
+    if (existing.getMaasRole() != null && existing.getMaasRole().contains(MaasRole.CONSUMER)
+            && existing.getMaasConsumer() != null) {
+        existing.getMaasConsumer().setConsumerRating(averageRating);
+        organizationRepository.save(existing);
     }
+}
+
+public void updateOrganizationsProviderRating(String orgId, double averageRating) {
+    Organization existing = findOrganizationById(orgId);
+    
+    if (existing.getMaasRole() != null && existing.getMaasRole().contains(MaasRole.PROVIDER)
+            && existing.getMaasProvider() != null) {
+        existing.getMaasProvider().setProviderRating(averageRating);
+        organizationRepository.save(existing);
+    }
+}
+
+private Organization findOrganizationById(String id) {
+    return organizationRepository.findById(id)
+            .orElseThrow(() -> new OrganizationNotFoundException(
+                    ORGANIZATION_WITH_ID + id + " not found. Update is aborted"));
+}
 
 
 }

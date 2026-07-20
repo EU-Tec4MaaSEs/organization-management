@@ -1,6 +1,5 @@
 package gr.atc.t4m.organization_management.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import gr.atc.t4m.organization_management.model.CapabilityEntry;
 import gr.atc.t4m.organization_management.model.DatasetEntry;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,12 +16,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class CapabilityServiceTest {
 
     private CapabilityService capabilityService;
-    private ObjectMapper mapper;
 
     @BeforeEach
     void setUp() {
         capabilityService = new CapabilityService();
-        mapper = new ObjectMapper();
     }
 
     // parseDatasets

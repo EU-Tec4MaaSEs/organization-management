@@ -12,4 +12,6 @@ public class Property {
     private Object value;
     private String valueType;
     private String comment;
+    private String semanticId;
+    private String supplementalSemanticIds;
 }
