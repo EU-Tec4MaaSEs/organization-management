@@ -82,37 +82,10 @@ public class CapabilityService {
         SubmodelElement capabilityRelationsElement = null;
 
         for (SubmodelElement element : elements) {
-            String type = element.getModelType();
-            String idShort = element.getIdShort();
+            SubmodelElement relationsElement = processCapabilityElement(element, entry);
 
-            // Extract qualifiers like type and offered and semanticId
-            if (Type.Capability.name().equals(type)) {
-                extractOntologySemanticId(element, entry);
-                extractQualifiers(element.getQualifiers(), entry);
-            }
-
-            // Extract top-level capability comment
-            if (Type.MultiLanguageProperty.name().equals(type) && IdShort.CapabilityComment.name().equals(idShort)) {
-                entry.setComment(extractComment(element));
-            }
-
-            // Extract the list of property sets
-            if (Type.SubmodelElementCollection.name().equals(type) && idShort.endsWith(IdShort.PropertySet.name())) {
-                List<Property> props = extractProperties(element);
-                entry.getProperties().addAll(props);
-            }
-
-            // Extract generalization relation (e.g., "is generalized by")
-            if (Type.SubmodelElementCollection.name().equals(type) && IdShort.CapabilityRelations.name().equals(idShort)) {
-                GeneralizationRelation relation = extractRelation(element);
-                entry.setGeneralizedBy(relation);
-                capabilityRelationsElement = element; // defer processing times until after the loop
-            }
-
-            // Extract the CapacitySet
-            if (Type.SubmodelElementCollection.name().equals(type) && IdShort.CapacitySet.name().equals(idShort)) {
-                CapacitySet capacitySet = extractCapacitySet(element);
-                entry.setCapacitySet(capacitySet);
+            if (relationsElement != null) {
+                capabilityRelationsElement = relationsElement;
             }
         }
 
@@ -121,6 +94,36 @@ public class CapabilityService {
         }
 
         return entry;
+    }
+
+    private SubmodelElement processCapabilityElement(SubmodelElement element, CapabilityEntry entry) {
+
+        String type = element.getModelType();
+        String idShort = element.getIdShort();
+
+        if (Type.Capability.name().equals(type)) {
+            extractOntologySemanticId(element, entry);
+            extractQualifiers(element.getQualifiers(), entry);
+        }
+
+        if (Type.MultiLanguageProperty.name().equals(type) && IdShort.CapabilityComment.name().equals(idShort)) {
+            entry.setComment(extractComment(element));
+        }
+
+        if (Type.SubmodelElementCollection.name().equals(type) && idShort.endsWith(IdShort.PropertySet.name())) {
+            entry.getProperties().addAll(extractProperties(element));
+        }
+
+        if (Type.SubmodelElementCollection.name().equals(type) && IdShort.CapabilityRelations.name().equals(idShort)) {
+            entry.setGeneralizedBy(extractRelation(element));
+            return element;
+        }
+
+        if (Type.SubmodelElementCollection.name().equals(type) && IdShort.CapacitySet.name().equals(idShort)) {
+            entry.setCapacitySet(extractCapacitySet(element));
+        }
+
+        return null;
     }
 
 /**
@@ -174,24 +177,21 @@ private void extractOntologySemanticId(SubmodelElement element, CapabilityEntry 
 
         for (SubmodelElement constraint : constraintChildren) {
             String idShort = constraint.getIdShort();
-            if (idShort == null || !idShort.startsWith("ProcessingTime")) {
-                continue;
-            }
+            if (idShort != null && idShort.startsWith("ProcessingTime")) {
+                List<SubmodelElement> constraintElements = mapper.convertValue(
+                        constraint.getValue(), new TypeReference<>() {
+                        });
 
-            List<SubmodelElement> constraintElements = mapper.convertValue(
-                    constraint.getValue(), new TypeReference<>() {});
-
-            Double processingTime = extractBasicConstraintValue(constraintElements);
-            if (processingTime == null) {
-                continue;
-            }
-
-            for (Integer index : extractRelatedProductIndices(constraintElements)) {
-                if (index == null || index < 0 || index >= products.size()) {
-                    LOGGER.warn("'{}' references out-of-range product index {}", idShort, index);
-                    continue;
+                Double processingTime = extractBasicConstraintValue(constraintElements);
+                if (processingTime != null) {
+                    for (Integer index : extractRelatedProductIndices(constraintElements)) {
+                        if (index == null || index < 0 || index >= products.size()) {
+                            LOGGER.warn("'{}' references out-of-range product index {}", idShort, index);
+                            continue;
+                        }
+                        products.get(index).setProcessingTime(processingTime);
+                    }
                 }
-                products.get(index).setProcessingTime(processingTime);
             }
         }
     }
