@@ -176,23 +176,45 @@ private void extractOntologySemanticId(SubmodelElement element, CapabilityEntry 
         List<SubmodelElement> constraintChildren = mapper.convertValue(constraintSet.getValue(), new TypeReference<>() {});
 
         for (SubmodelElement constraint : constraintChildren) {
-            String idShort = constraint.getIdShort();
-            if (idShort != null && idShort.startsWith("ProcessingTime")) {
-                List<SubmodelElement> constraintElements = mapper.convertValue(
-                        constraint.getValue(), new TypeReference<>() {
-                        });
+            processProcessingTimeConstraint(constraint, products);
+        }
+    }
 
-                Double processingTime = extractBasicConstraintValue(constraintElements);
-                if (processingTime != null) {
-                    for (Integer index : extractRelatedProductIndices(constraintElements)) {
-                        if (index == null || index < 0 || index >= products.size()) {
-                            LOGGER.warn("'{}' references out-of-range product index {}", idShort, index);
-                            continue;
-                        }
-                        products.get(index).setProcessingTime(processingTime);
-                    }
-                }
+    private void processProcessingTimeConstraint(SubmodelElement constraint, List<ProductCompatibilityItemDTO> products) {
+
+        String idShort = constraint.getIdShort();
+
+        if (idShort == null || !idShort.startsWith("ProcessingTime")) {
+            return;
+        }
+
+        List<SubmodelElement> constraintElements = mapper.convertValue(constraint.getValue(), new TypeReference<>() {});
+
+        Double processingTime = extractBasicConstraintValue(constraintElements);
+        if (processingTime == null) {
+            return;
+        }
+
+        assignProcessingTime(
+                idShort,
+                processingTime,
+                extractRelatedProductIndices(constraintElements),
+                products);
+    }
+
+    private void assignProcessingTime(
+            String idShort,
+            Double processingTime,
+            List<Integer> indices,
+            List<ProductCompatibilityItemDTO> products) {
+
+        for (Integer index : indices) {
+            if (index == null || index < 0 || index >= products.size()) {
+                LOGGER.warn("'{}' references out-of-range product index {}", idShort, index);
+                continue;
             }
+
+            products.get(index).setProcessingTime(processingTime);
         }
     }
 
