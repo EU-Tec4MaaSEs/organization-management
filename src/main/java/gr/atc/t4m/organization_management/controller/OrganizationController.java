@@ -1,5 +1,6 @@
 package gr.atc.t4m.organization_management.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,7 +59,7 @@ public class OrganizationController {
     private final OrganizationService organizationService;
     private final ManualSearchHistoryService searchHistoryService;
     private final MinioService minioService;
-
+    
 
     public OrganizationController(OrganizationService organizationService,
                                   MinioService minioService,
@@ -95,6 +96,8 @@ public class OrganizationController {
     public ResponseEntity<Organization> createOrganization(
             @RequestPart("organization") @Valid OrganizationDTO organizationDTO,
             @RequestPart(value = "logoFile", required = false) MultipartFile logoFile,
+            @RequestParam(value = "attachmentFiles", required = false) List<MultipartFile> attachmentFiles,
+            @RequestParam(value = "attachmentTitles", required = false) List<String> attachmentTitles,
             final HttpServletRequest request)
             throws OrganizationAlreadyExistsException {
 
@@ -108,19 +111,43 @@ public class OrganizationController {
         if (organizationDTO.getValueNetwork() == null || organizationDTO.getValueNetwork().trim().isEmpty()) {
             organizationDTO.setValueNetwork(defaultValueNetwork); //SET DEFAULT VALUE NETWORK
         }
-
         // Upload file (if present)
         String logoUrl = null;
 
         if (logoFile != null && !logoFile.isEmpty()) {
-            logoUrl = minioService.uploadLogo(logoFile); // Store and return URL
+            logoUrl = minioService.uploadFile(logoFile); // Store and return URL
+        }
+
+        List<FileInformation> processedAttachments = new ArrayList<>();
+        if (attachmentFiles != null && !attachmentFiles.isEmpty()) {
+                for (int i = 0; i < attachmentFiles.size(); i++) {
+                        MultipartFile file = attachmentFiles.get(i);
+
+                        if (!file.isEmpty()) {
+                                String fileUrl = minioService.uploadFile(file);
+
+                                // Fetch title by index or fallback to original filename
+                                String fileTitle;
+                                if (attachmentTitles != null && i < attachmentTitles.size()
+                                                && !attachmentTitles.get(i).isBlank()) {
+                                        fileTitle = attachmentTitles.get(i).trim();
+                                } else if (file.getOriginalFilename() != null
+                                                && !file.getOriginalFilename().isBlank()) {
+                                        fileTitle = file.getOriginalFilename();
+                                } else {
+                                        fileTitle = "attachment-" + (i + 1);
+                                }
+
+                                processedAttachments.add(new FileInformation(fileTitle, fileUrl));
+                        }
+                }
         }
 
         // Copy data
         Organization organization = new Organization();
         BeanUtils.copyProperties(organizationDTO, organization);
         organization.setLogoUrl(logoUrl); // Save logo location
-
+        organization.setAttachments(processedAttachments);
         Organization savedOrganization = organizationService.createOrganization(organization);
 
         // Trigger Kafka event for organization registration
@@ -373,7 +400,7 @@ public class OrganizationController {
     @DeleteMapping(value = "/deleteOrganization/{id}", produces = "application/json;charset=UTF-8")
     public ResponseEntity<InformationMessage> deleteOrganization(@PathVariable String id, final HttpServletRequest request) {
         JwtAuthenticationToken jwtToken = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-        String userId = jwtToken.getToken().getClaim("sub"); // or any custom claim
+        String userId = jwtToken.getToken().getClaim("sub");
 
         Organization organizationToBeDeleted = organizationService.getOrganization(id);
 
@@ -469,12 +496,45 @@ public class OrganizationController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Organization not found");
         }
 
-        String logoUrl = minioService.uploadLogo(logoFile);
+        String logoUrl = minioService.uploadFile(logoFile);
         organization.setLogoUrl(logoUrl);
 
         Organization updated = organizationService.save(organization);
 
         return ResponseEntity.ok(updated);
+    }
+
+
+    @Operation(
+        summary = "Delete an attachment from an organization",
+        description = "Deletes a specific attachment file from MinIO storage and removes its record from the organization."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200", 
+            description = "Attachment deleted successfully",
+            content = @Content(schema = @Schema(implementation = InformationMessage.class))
+        ),
+        @ApiResponse(
+            responseCode = "401", 
+            description = "Unauthorized - Missing or invalid JWT token"
+        ),
+        @ApiResponse(
+            responseCode = "404", 
+            description = "Organization or Attachment ID not found"
+        )
+    })
+     @DeleteMapping(value = "/{organizationId}/attachments/{fileId}", produces = "application/json;charset=UTF-8")
+      public ResponseEntity<InformationMessage> deleteAttachment(
+            @PathVariable String organizationId,
+            @PathVariable String fileId,
+            final HttpServletRequest request) {
+
+        organizationService.deleteAttachmentById(organizationId, fileId);
+
+        InformationMessage message = new InformationMessage();
+        message.setMessage("Attachment deleted successfully.");
+        return ResponseEntity.ok(message);
     }
 
     /**
@@ -621,4 +681,35 @@ public class OrganizationController {
             return ResponseEntity.ok(response);
     }
 
+
+    @Operation(
+        summary = "Add attachments to an organization",
+        description = "Uploads and appends one or more new attachment files to an existing organization without overwriting existing ones."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200", 
+            description = "Attachments added successfully",
+            content = @Content(schema = @Schema(implementation = Organization.class))
+        ),
+        @ApiResponse(
+            responseCode = "400", 
+            description = "Bad Request - No valid files provided"
+        ),
+        @ApiResponse(
+            responseCode = "404", 
+            description = "Organization not found"
+        )
+    })
+    @PostMapping(value = "/{organizationId}/attachments", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Organization> addAttachmentsToOrganization(
+            @PathVariable String organizationId,
+            @RequestParam("attachmentFiles") List<MultipartFile> attachmentFiles,
+            @RequestParam(value = "attachmentTitles", required = false) List<String> attachmentTitles,
+            final HttpServletRequest request) {
+
+        Organization updatedOrg = organizationService.addAttachments(organizationId, attachmentFiles, attachmentTitles);
+
+        return ResponseEntity.ok(updatedOrg);
+    }
 }

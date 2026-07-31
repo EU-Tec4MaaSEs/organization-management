@@ -13,6 +13,7 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import io.minio.RemoveObjectArgs;
 
 
 @Service
@@ -31,7 +32,7 @@ public class MinioService {
     @Value("${minio.bucket.name}")
     private String bucketName;
 
-    public String uploadLogo(MultipartFile file) {
+    public String uploadFile(MultipartFile file) {
     String fileName = UUID.randomUUID() + "-" + file.getOriginalFilename();
     LOGGER.info("Uploading file to MinIO: {}", fileName);
     LOGGER.info("Size file Uploaded to MinIO: {}", file.getSize());
@@ -52,5 +53,34 @@ public class MinioService {
         throw new MiniIOException("Error uploading file to MinIO"+ e.getMessage());
     }
 }
+    public void deleteFile(String fileUrl) {
+        if (fileUrl == null || fileUrl.isBlank()) {
+            return;
+        }
+
+        try {
+            String objectName = extractFileName(fileUrl);
+            minioClient.removeObject(
+                RemoveObjectArgs.builder()
+                    .bucket(bucketName)
+                    .object(objectName)
+                    .build()
+            );
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error deleting file from MinIO: " + fileUrl, e);
+        }
+    }
+
+    /**
+     * Extracts object filename from URL.
+     * Example: "https://minio.api.../bucket-name/1234-image.jpg" -> "1234-image.jpg"
+     */
+    private String extractFileName(String fileUrl) {
+        if (fileUrl.contains("/")) {
+            return fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
+        }
+        return fileUrl;
+    }
 }
 
