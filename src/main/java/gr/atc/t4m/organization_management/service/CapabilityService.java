@@ -205,16 +205,24 @@ private void extractOntologySemanticId(SubmodelElement element, CapabilityEntry 
     private void assignProcessingTime(
             String idShort,
             Double processingTime,
-            List<Integer> indices,
+            List<String> indices,
             List<ProductCompatibilityItemDTO> products) {
 
-        for (Integer index : indices) {
-            if (index == null || index < 0 || index >= products.size()) {
-                LOGGER.warn("'{}' references out-of-range product index {}", idShort, index);
+        for (String index : indices) {
+            if (index == null) {
+                LOGGER.warn("'{}' references out-of-range product index is null", idShort);
                 continue;
             }
 
-            products.get(index).setProcessingTime(processingTime);
+            products.stream()
+                    .filter(p -> p.getProduct().equals(index))
+                    .findFirst()
+                    .ifPresentOrElse(
+                            p -> p.setProcessingTime(processingTime),
+                            () -> {
+                                throw new IllegalArgumentException("Product not found: " + index);
+                            }
+                    );
         }
     }
 
@@ -238,8 +246,8 @@ private void extractOntologySemanticId(SubmodelElement element, CapabilityEntry 
      * Reads ConstraintPropertyRelations and returns, for each RelationshipElement inside it,
      * the index into the ProductCompatability list (last key of the "second" reference).
      */
-    private List<Integer> extractRelatedProductIndices(List<SubmodelElement> constraintElements) {
-        List<Integer> indices = new ArrayList<>();
+    private List<String> extractRelatedProductIndices(List<SubmodelElement> constraintElements) {
+        List<String> indices = new ArrayList<>();
 
         for (SubmodelElement el : constraintElements) {
             if (!IdShort.ConstraintPropertyRelations.name().equals(el.getIdShort())) {
@@ -255,11 +263,8 @@ private void extractOntologySemanticId(SubmodelElement element, CapabilityEntry 
                 }
                 List<Key> secondKeys = relation.getSecond().getKeys();
                 Key lastKey = secondKeys.get(secondKeys.size() - 1);
-                try {
-                    indices.add(Integer.parseInt(lastKey.getValue().trim()));
-                } catch (NumberFormatException e) {
-                    LOGGER.warn("Could not parse product index from '{}'", lastKey.getValue());
-                }
+
+                indices.add(lastKey.getValue().trim());
             }
         }
 
