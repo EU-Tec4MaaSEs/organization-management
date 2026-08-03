@@ -456,6 +456,15 @@ private String resolveId(JsonNode node) {
 
         Relation relation = mapper.convertValue(wrapperList.get(0).getValue().get(0), Relation.class);
 
+        if (relation.getFirst() == null) {
+            LOGGER.warn("Relation first is null {}", wrapperList.get(0).getValue().get(0));
+            return null;
+        }
+        if (relation.getSecond() == null) {
+            LOGGER.warn("Relation second is null {}", wrapperList.get(0).getValue().get(0));
+            return null;
+        }
+
         List<Key> firstKeys = relation.getFirst().getKeys();
         List<Key> secondKeys = relation.getSecond().getKeys();
 
