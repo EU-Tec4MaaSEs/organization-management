@@ -8,6 +8,9 @@ public enum IdShort {
     CapabilityRelations,
     AvailableCapacityContainer,
     AvailableCapacity,
-    CapacitySet;
+    CapacitySet,
+    ConstraintSet,
+    BasicConstraint,
+    ConstraintPropertyRelations;
 }
 

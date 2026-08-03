@@ -1,8 +1,10 @@
 package gr.atc.t4m.organization_management.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import gr.atc.t4m.organization_management.dto.ProductCompatibilityItemDTO;
 import gr.atc.t4m.organization_management.model.*;
 import gr.atc.t4m.organization_management.model.SubmodelWrapper.*;
 
@@ -75,44 +77,53 @@ public class CapabilityService {
         CapabilityEntry entry = new CapabilityEntry();
         entry.setName(container.getIdShort().replace(IdShort.Container.name(), ""));
 
-        List<SubmodelElement> elements = mapper.convertValue(container.getValue(), new TypeReference<>() {
-        });
+        List<SubmodelElement> elements = mapper.convertValue(container.getValue(), new TypeReference<>() {});
+
+        SubmodelElement capabilityRelationsElement = null;
 
         for (SubmodelElement element : elements) {
-            String type = element.getModelType();
-            String idShort = element.getIdShort();
+            SubmodelElement relationsElement = processCapabilityElement(element, entry);
 
-            // Extract qualifiers like type and offered and semanticId
-            if (Type.Capability.name().equals(type)) {
-                extractOntologySemanticId(element, entry);
-                extractQualifiers(element.getQualifiers(), entry);
-            }
-
-            // Extract top-level capability comment
-            if (Type.MultiLanguageProperty.name().equals(type) && IdShort.CapabilityComment.name().equals(idShort)) {
-                entry.setComment(extractComment(element));
-            }
-
-            // Extract the list of property sets
-            if (Type.SubmodelElementCollection.name().equals(type) && idShort.endsWith(IdShort.PropertySet.name())) {
-                List<Property> props = extractProperties(element);
-                entry.getProperties().addAll(props);
-            }
-
-            // Extract generalization relation (e.g., "is generalized by")
-            if (Type.SubmodelElementCollection.name().equals(type) && IdShort.CapabilityRelations.name().equals(idShort)) {
-                GeneralizationRelation relation = extractRelation(element);
-                entry.setGeneralizedBy(relation);
-            }
-
-            // Extract the CapacitySet
-            if (Type.SubmodelElementCollection.name().equals(type) && IdShort.CapacitySet.name().equals(idShort)) {
-                CapacitySet capacitySet = extractCapacitySet(element);
-                entry.setCapacitySet(capacitySet);
+            if (relationsElement != null) {
+                capabilityRelationsElement = relationsElement;
             }
         }
 
+        if (capabilityRelationsElement != null) {
+            extractProcessingTimes(capabilityRelationsElement, entry);
+        }
+
         return entry;
+    }
+
+    private SubmodelElement processCapabilityElement(SubmodelElement element, CapabilityEntry entry) {
+
+        String type = element.getModelType();
+        String idShort = element.getIdShort();
+
+        if (Type.Capability.name().equals(type)) {
+            extractOntologySemanticId(element, entry);
+            extractQualifiers(element.getQualifiers(), entry);
+        }
+
+        if (Type.MultiLanguageProperty.name().equals(type) && IdShort.CapabilityComment.name().equals(idShort)) {
+            entry.setComment(extractComment(element));
+        }
+
+        if (Type.SubmodelElementCollection.name().equals(type) && idShort.endsWith(IdShort.PropertySet.name())) {
+            entry.getProperties().addAll(extractProperties(element));
+        }
+
+        if (Type.SubmodelElementCollection.name().equals(type) && IdShort.CapabilityRelations.name().equals(idShort)) {
+            entry.setGeneralizedBy(extractRelation(element));
+            return element;
+        }
+
+        if (Type.SubmodelElementCollection.name().equals(type) && IdShort.CapacitySet.name().equals(idShort)) {
+            entry.setCapacitySet(extractCapacitySet(element));
+        }
+
+        return null;
     }
 
 /**
@@ -136,6 +147,133 @@ private void extractOntologySemanticId(SubmodelElement element, CapabilityEntry 
         entry.setSupplementalSemanticIds(conceptId);
     }
 }
+
+    /**
+     * Reads ConstraintSet/ProcessingTime_X entries under CapabilityRelations and attaches
+     * each processing time to the matching product(s) in the already-parsed
+     * ProductCompatability list (via the index carried on the ConstraintPropertyRelations
+     * reference).
+     */
+    private void extractProcessingTimes(SubmodelElement capabilityRelationsElement, CapabilityEntry entry) {
+        List<SubmodelElement> relationChildren = mapper.convertValue(
+                capabilityRelationsElement.getValue(), new TypeReference<>() {});
+
+        SubmodelElement constraintSet = relationChildren.stream()
+                .filter(c -> IdShort.ConstraintSet.name().equals(c.getIdShort()))
+                .findFirst()
+                .orElse(null);
+
+        if (constraintSet == null) {
+            return;
+        }
+
+        List<ProductCompatibilityItemDTO> products = resolveProductCompatibilityList(entry);
+        if (products == null || products.isEmpty()) {
+            LOGGER.warn("No ProductCompatability list found for '{}', skipping processing times", entry.getName());
+            return;
+        }
+
+        List<SubmodelElement> constraintChildren = mapper.convertValue(constraintSet.getValue(), new TypeReference<>() {});
+
+        for (SubmodelElement constraint : constraintChildren) {
+            processProcessingTimeConstraint(constraint, products);
+        }
+    }
+
+    private void processProcessingTimeConstraint(SubmodelElement constraint, List<ProductCompatibilityItemDTO> products) {
+
+        String idShort = constraint.getIdShort();
+
+        if (idShort == null || !idShort.startsWith("ProcessingTime")) {
+            return;
+        }
+
+        List<SubmodelElement> constraintElements = mapper.convertValue(constraint.getValue(), new TypeReference<>() {});
+
+        Double processingTime = extractBasicConstraintValue(constraintElements);
+        if (processingTime == null) {
+            return;
+        }
+
+        assignProcessingTime(
+                idShort,
+                processingTime,
+                extractRelatedProductIndices(constraintElements),
+                products);
+    }
+
+    private void assignProcessingTime(
+            String idShort,
+            Double processingTime,
+            List<Integer> indices,
+            List<ProductCompatibilityItemDTO> products) {
+
+        for (Integer index : indices) {
+            if (index == null || index < 0 || index >= products.size()) {
+                LOGGER.warn("'{}' references out-of-range product index {}", idShort, index);
+                continue;
+            }
+
+            products.get(index).setProcessingTime(processingTime);
+        }
+    }
+
+    /** Reads the BasicConstraint Property value from a ProcessingTime_X / RequiredResources container. */
+    private Double extractBasicConstraintValue(List<SubmodelElement> constraintElements) {
+        for (SubmodelElement el : constraintElements) {
+            if (IdShort.BasicConstraint.name().equals(el.getIdShort())) {
+                WrapperProperty property = mapper.convertValue(el, WrapperProperty.class);
+                try {
+                    return Double.parseDouble(String.valueOf(property.getPropertyValue()).trim());
+                } catch (NumberFormatException e) {
+                    LOGGER.warn("BasicConstraint value '{}' is not numeric", property.getPropertyValue());
+                    return null;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Reads ConstraintPropertyRelations and returns, for each RelationshipElement inside it,
+     * the index into the ProductCompatability list (last key of the "second" reference).
+     */
+    private List<Integer> extractRelatedProductIndices(List<SubmodelElement> constraintElements) {
+        List<Integer> indices = new ArrayList<>();
+
+        for (SubmodelElement el : constraintElements) {
+            if (!IdShort.ConstraintPropertyRelations.name().equals(el.getIdShort())) {
+                continue;
+            }
+
+            List<JsonNode> relationNodes = mapper.convertValue(el.getValue(), new TypeReference<>() {});
+            for (JsonNode relationNode : relationNodes) {
+                Relation relation = mapper.convertValue(relationNode, Relation.class);
+                if (relation.getSecond() == null || relation.getSecond().getKeys() == null
+                        || relation.getSecond().getKeys().isEmpty()) {
+                    continue;
+                }
+                List<Key> secondKeys = relation.getSecond().getKeys();
+                Key lastKey = secondKeys.get(secondKeys.size() - 1);
+                try {
+                    indices.add(Integer.parseInt(lastKey.getValue().trim()));
+                } catch (NumberFormatException e) {
+                    LOGGER.warn("Could not parse product index from '{}'", lastKey.getValue());
+                }
+            }
+        }
+
+        return indices;
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<ProductCompatibilityItemDTO> resolveProductCompatibilityList(CapabilityEntry entry) {
+        return entry.getProperties().stream()
+                .filter(p -> "ProductCompatability".equals(p.getName()))
+                .map(p -> (List<ProductCompatibilityItemDTO>) p.getValue())
+                .findFirst()
+                .orElse(null);
+    }
 
     /**
      * Parses a CapacitySet element and extracts the production calendar reference.
@@ -251,8 +389,19 @@ private List<Property> extractProperties(SubmodelElement element) {
                     prop.setValue(range);
                     prop.setValueType("xs:int (range)");
                 } else if (type == Type.SubmodelElementList) {
-                    prop.setValue(extractStringList(valueElement));
-                    prop.setValueType("xs:string[]");
+                    List<String> values = extractStringList(valueElement);
+
+                    if ("ProductCompatability".equals(prop.getName())) {
+                        List<ProductCompatibilityItemDTO> products = values.stream()
+                                .map(ProductCompatibilityItemDTO::new)
+                                .toList();
+
+                        prop.setValue(products);
+                        prop.setValueType("ProductCompatibility[]");
+                    } else {
+                        prop.setValue(values);
+                        prop.setValueType("xs:string[]");
+                    }
                 } else if (type == Type.MultiLanguageProperty && IdShort.PropertyComment.name().equals(valueElement.getIdShort())) {
                     prop.setComment(extractComment(valueElement));
                 }
@@ -270,13 +419,13 @@ private List<Property> extractProperties(SubmodelElement element) {
  */
 private String resolveId(JsonNode node) {
     if (node == null || node.isNull()) return null;
-    
+
     JsonNode target = node.isArray() ? node.get(0) : node;
-    
+
     if (target.isObject() && target.has("keys")) {
         return target.path("keys").path(0).path(VALUE).asText(null);
     }
-    
+
     String text = target.asText();
     return (text == null || text.isEmpty()) ? null : text;
 }
