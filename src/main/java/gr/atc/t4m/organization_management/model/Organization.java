@@ -4,6 +4,9 @@ import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import gr.atc.t4m.organization_management.dto.FileInformation;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
@@ -28,4 +31,5 @@ public class Organization {
 
      @DBRef
     private List<ManufacturingResource> manufacturingResources;
+    private List<FileInformation> attachments = new ArrayList<>();
 }

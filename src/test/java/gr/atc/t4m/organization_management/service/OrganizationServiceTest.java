@@ -39,7 +39,8 @@ import gr.atc.t4m.organization_management.model.Organization;
 import gr.atc.t4m.organization_management.model.OrganizationReview;
 import gr.atc.t4m.organization_management.repository.OrganizationRepository;
 import gr.atc.t4m.organization_management.repository.OrganizationReviewRepository;
-
+import gr.atc.t4m.organization_management.dto.VerifiableCredentialInputDTO;
+import gr.atc.t4m.organization_management.dto.FileInformation;
 import org.apache.kafka.clients.producer.RecordMetadata;
 
 import org.mockito.*;
@@ -48,7 +49,19 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.lang.reflect.Field;
+import java.util.Base64;
 
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.RestTemplate;
+import java.util.ArrayList;
+import java.util.Collections;
+
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 @ExtendWith(MockitoExtension.class) 
 class OrganizationServiceTest {
@@ -73,14 +86,29 @@ class OrganizationServiceTest {
 
     @Mock
     private OrganizationReviewRepository reviewRepository;
+    
+    @Mock
+    private RestTemplate restTemplate;
+
+    @Mock
+    private MinioService minioService;
 
     private static final String TOPIC = "dataspace-organization-onboarding";
+    private final String url = "https://idp.example.com/issue";
+    private final String user = "test-user";
+    private final String password = "test-password";
+    private static final String ORG_ID = "org-123";
+    private static final String ATTACHMENT_FILES_PARAM = "attachmentFiles";
+    private static final String FILE_ID = "file-abc";
 
     @BeforeEach
     void setUp() throws Exception {
         Field topicField = OrganizationService.class.getDeclaredField("organizationRegistrationTopic");
         topicField.setAccessible(true);
         topicField.set(organizationService, TOPIC);
+        ReflectionTestUtils.setField(organizationService, "identityProviderUrl", url);
+        ReflectionTestUtils.setField(organizationService, "identityProviderUser", user);
+        ReflectionTestUtils.setField(organizationService, "identityProviderPassword", password);
     }
     @Test
     void testCreateOrganization_Success() {
@@ -745,5 +773,200 @@ void testUpdateOrganization_WhenExists_ShouldUpdateAndReturnOrganization() {
 
     }
 
+
+    @Test
+    void testIssueVerifiableCredentialSuccess() {
+        VerifiableCredentialInputDTO inputDTO = new VerifiableCredentialInputDTO();
+        String expectedResponseBody = "mock-jwt-token-or-vc";
+
+        when(restTemplate.postForEntity(eq(url), any(HttpEntity.class), eq(String.class)))
+                .thenReturn(new ResponseEntity<>(expectedResponseBody, HttpStatus.OK));
+
+        String result = organizationService.issueVerifiableCredential(inputDTO);
+
+        assertEquals(expectedResponseBody, result);
+
+        // Verify headers, payload, and URL passed to RestTemplate
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<HttpEntity<VerifiableCredentialInputDTO>> requestCaptor = ArgumentCaptor.forClass(HttpEntity.class);
+        
+        verify(restTemplate).postForEntity(eq(url), requestCaptor.capture(), eq(String.class));
+
+        HttpEntity<VerifiableCredentialInputDTO> capturedRequest = requestCaptor.getValue();
+        HttpHeaders capturedHeaders = capturedRequest.getHeaders();
+
+        assertEquals(inputDTO, capturedRequest.getBody());
+        assertEquals(MediaType.APPLICATION_JSON, capturedHeaders.getContentType());
+        assertEquals(List.of(MediaType.APPLICATION_JSON), capturedHeaders.getAccept());
+
+        String expectedAuth = "Basic " + Base64.getEncoder().encodeToString((user + ":" + password).getBytes());
+        assertEquals(expectedAuth, capturedHeaders.getFirst("Authorization"));
+    }
+
+
+    @Test
+    void addAttachmentsSuccess() {
+        Organization organization = new Organization();
+        organization.setOrganizationID(ORG_ID);
+        organization.setAttachments(new ArrayList<>());
+
+        MockMultipartFile file1 = new MockMultipartFile(
+                ATTACHMENT_FILES_PARAM, "file1.pdf", MediaType.APPLICATION_PDF_VALUE, "Content 1".getBytes()
+        );
+        MockMultipartFile file2 = new MockMultipartFile(
+                ATTACHMENT_FILES_PARAM, "file2.png", MediaType.IMAGE_PNG_VALUE, "Content 2".getBytes()
+        );
+
+        List<MultipartFile> files = List.of(file1, file2);
+        List<String> titles = List.of("Custom Title 1", "Custom Title 2");
+        List<Boolean> isPublicList = List.of(true, false);
+
+        when(organizationRepository.findById(ORG_ID)).thenReturn(Optional.of(organization));
+        when(minioService.uploadFile(file1)).thenReturn("https://minio.url/file1.pdf");
+        when(minioService.uploadFile(file2)).thenReturn("https://minio.url/file2.png");
+        when(organizationRepository.save(any(Organization.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Organization result = organizationService.addAttachments(ORG_ID, files, titles, isPublicList);
+
+        assertNotNull(result);
+        assertEquals(2, result.getAttachments().size());
+
+        FileInformation firstAttachment = result.getAttachments().get(0);
+        assertEquals("Custom Title 1", firstAttachment.title());
+        assertEquals("https://minio.url/file1.pdf", firstAttachment.fileUrl());
+        assertTrue(firstAttachment.isPublic());
+
+        FileInformation secondAttachment = result.getAttachments().get(1);
+        assertEquals("Custom Title 2", secondAttachment.title());
+        assertEquals("https://minio.url/file2.png", secondAttachment.fileUrl());
+        assertFalse(secondAttachment.isPublic());
+
+        verify(organizationRepository).save(organization);
+    }
+@Test
+    void addAttachmentsOrganizationNotFoundThrowsException() {
+        when(organizationRepository.findById(ORG_ID)).thenReturn(Optional.empty());
+
+        MockMultipartFile file = new MockMultipartFile(
+                ATTACHMENT_FILES_PARAM, "file.pdf", MediaType.APPLICATION_PDF_VALUE, "Content".getBytes()
+        );
+        List<MultipartFile> files = List.of(file);
+        List<String> titles = List.of("Title");
+        List<Boolean> isPublicList = List.of(true);
+
+        assertThrows(OrganizationNotFoundException.class, () ->
+                organizationService.addAttachments(ORG_ID, files, titles, isPublicList)
+        );
+
+        verify(organizationRepository, never()).save(any());
+    }
+    @Test
+    void addAttachmentsNullOrEmptyFilesThrowsBadRequest() {
+        Organization organization = new Organization();
+        when(organizationRepository.findById(ORG_ID)).thenReturn(Optional.of(organization));
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () ->
+                organizationService.addAttachments(ORG_ID, Collections.emptyList(), null, null)
+        );
+
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+        assertEquals("No attachment files provided.", exception.getReason());
+        verify(organizationRepository, never()).save(any());
+    }
+@Test
+    void addAttachmentsAllFilesEmptyThrowsBadRequest() {
+        Organization organization = new Organization();
+        when(organizationRepository.findById(ORG_ID)).thenReturn(Optional.of(organization));
+
+        MockMultipartFile emptyFile = new MockMultipartFile(
+                ATTACHMENT_FILES_PARAM, "empty.pdf", MediaType.APPLICATION_PDF_VALUE, new byte[0]
+        );
+        List<MultipartFile> files = List.of(emptyFile);
+        List<String> titles = List.of("Title");
+        List<Boolean> isPublicList = List.of(true);
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () ->
+                organizationService.addAttachments(ORG_ID, files, titles, isPublicList)
+        );
+
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+        assertEquals("All provided attachment files were empty or invalid.", exception.getReason());
+        verify(minioService, never()).uploadFile(any());
+        verify(organizationRepository, never()).save(any());
+    }
+@Test
+void testDeleteAttachmentByIdSuccess() {
+    String orgId = "org-123";
+    String fileUrl = "https://minio.url/document.pdf";
+
+    FileInformation attachment = new FileInformation(FILE_ID, "Sample Title", fileUrl, true);
+    List<FileInformation> attachments = new ArrayList<>(List.of(attachment));
+
+    Organization org = new Organization();
+    org.setOrganizationID(orgId);
+    org.setAttachments(attachments);
+
+    when(organizationRepository.findById(orgId)).thenReturn(Optional.of(org));
+
+    organizationService.deleteAttachmentById(orgId, FILE_ID);
+
+    verify(minioService).deleteFile(fileUrl);
+    verify(organizationRepository).save(org);
+    assertTrue(org.getAttachments().isEmpty());
+}
+
+@Test
+void testDeleteAttachmentByIdOrganizationNotFoundThrowsException() {
+    String orgId = "non-existent-org";
+
+    when(organizationRepository.findById(orgId)).thenReturn(Optional.empty());
+
+    assertThrows(OrganizationNotFoundException.class, () ->
+            organizationService.deleteAttachmentById(orgId, FILE_ID)
+    );
+
+    verify(minioService, never()).deleteFile(any());
+    verify(organizationRepository, never()).save(any());
+}
+
+@Test
+void testDeleteAttachmentByIdAttachmentNotFoundThrowsResponseStatusException() {
+    String orgId = "org-123";
+    String targetFileId = "non-existent-file";
+
+    FileInformation otherAttachment = new FileInformation("different-file-id", "Title", "https://minio.url/other.pdf", true);
+    List<FileInformation> attachments = new ArrayList<>(List.of(otherAttachment));
+
+    Organization org = new Organization();
+    org.setOrganizationID(orgId);
+    org.setAttachments(attachments);
+
+    when(organizationRepository.findById(orgId)).thenReturn(Optional.of(org));
+
+    ResponseStatusException exception = assertThrows(ResponseStatusException.class, () ->
+            organizationService.deleteAttachmentById(orgId, targetFileId)
+    );
+
+    assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
+    assertEquals("Attachment with ID " + targetFileId + " not found", exception.getReason());
+    verify(minioService, never()).deleteFile(any());
+    verify(organizationRepository, never()).save(any());
+}
+
+@Test
+void testDeleteAttachmentByIdNullAttachmentsDoesNothing() {
+    String orgId = "org-123";
+
+    Organization org = new Organization();
+    org.setOrganizationID(orgId);
+    org.setAttachments(null);
+
+    when(organizationRepository.findById(orgId)).thenReturn(Optional.of(org));
+
+    assertDoesNotThrow(() -> organizationService.deleteAttachmentById(orgId, FILE_ID));
+
+    verify(minioService, never()).deleteFile(any());
+    verify(organizationRepository, never()).save(any());
+}
 }
 

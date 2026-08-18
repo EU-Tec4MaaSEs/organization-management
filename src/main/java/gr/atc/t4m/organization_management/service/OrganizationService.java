@@ -18,6 +18,7 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -52,6 +53,8 @@ public class OrganizationService {
     ManufacturingResourceService manufacturingResourceService;
     ManufacturingDomainService manufacturingDomainService;
     ModelMapper modelMapper;
+    MinioService minioService;
+
     private KafkaTemplate<String, EventDTO> kafkaTemplate;
 
     @Value("${kafka.topic.organization-registration}")
@@ -67,12 +70,14 @@ public class OrganizationService {
     private String identityProviderPassword;
 
     private final RestTemplate restTemplate;
+    private static final String ATTACHMENT_WITH_ID = "Attachment with ID ";
 
     public OrganizationService(OrganizationRepository organizationRepository,
                                ManufacturingResourceService manufacturingResourceService, ModelMapper modelMapper,
                                KafkaTemplate<String, EventDTO> kafkaTemplate,
                                OrganizationReviewRepository reviewRepository, RestTemplate restTemplate,
-                               ManufacturingDomainService manufacturingDomainService) {
+                               ManufacturingDomainService manufacturingDomainService,
+                               MinioService minioService) {
         this.organizationRepository = organizationRepository;
         this.manufacturingResourceService = manufacturingResourceService;
         this.modelMapper = modelMapper;
@@ -80,6 +85,7 @@ public class OrganizationService {
         this.reviewRepository = reviewRepository;
         this.restTemplate = restTemplate;
         this.manufacturingDomainService = manufacturingDomainService;
+        this.minioService = minioService;
     }
 
     public String issueVerifiableCredential(VerifiableCredentialInputDTO input) {
@@ -137,15 +143,17 @@ public class OrganizationService {
 
         return optOrganization.get();
     }
-
+    @Transactional
     public void deleteOrganizationById(String id) {
-        Optional<Organization> optOrganization = organizationRepository.findById(id);
-        if (optOrganization.isEmpty()) {
-            throw new OrganizationNotFoundException(ORGANIZATION_WITH_ID + id + NOT_FOUND);
-        }
+        Organization org = organizationRepository.findById(id)
+        .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_WITH_ID + id + NOT_FOUND));
+
+        deleteAllOrganizationFiles(org);
+
+
         //remove associated manufacturing resources
-        if (optOrganization.get().getManufacturingResources() != null) {
-            optOrganization.get().getManufacturingResources().forEach(mr -> {
+        if (org.getManufacturingResources() != null) {
+            org.getManufacturingResources().forEach(mr -> {
                 if (mr.getManufacturingResourceID() != null) {
                     Optional<ManufacturingResource> optManufacturingResource = manufacturingResourceService.findById(mr.getManufacturingResourceID());
                     optManufacturingResource.ifPresent(manufacturingResource ->
@@ -154,7 +162,7 @@ public class OrganizationService {
                 }
             });
         }
-        organizationRepository.delete(optOrganization.get());
+        organizationRepository.delete(org);
 
     }
 
@@ -539,5 +547,159 @@ private Organization findOrganizationById(String id) {
                     ORGANIZATION_WITH_ID + id + " not found. Update is aborted"));
 }
 
+@Transactional
+    public void deleteAttachmentById(String organizationId, String fileId) {
+        Organization org = organizationRepository.findById(organizationId)
+                .orElseThrow(() -> new OrganizationNotFoundException("Organization not found: " + organizationId));
+
+        if (org.getAttachments() != null) {
+            Optional<FileInformation> attachmentToDelete = org.getAttachments().stream()
+                    .filter(att -> fileId.equals(att.id()))
+                    .findFirst();
+
+            if (attachmentToDelete.isPresent()) {
+                String fileUrl = attachmentToDelete.get().fileUrl();
+
+                // Delete binary from MinIO
+                deleteFileFromMinio(fileUrl);
+
+                //Remove entry from DB collection
+                org.getAttachments().remove(attachmentToDelete.get());
+                organizationRepository.save(org);
+            } else {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, ATTACHMENT_WITH_ID + fileId + NOT_FOUND);
+            }
+        }
+    }
+
+    @Transactional
+    public Organization addAttachments( String organizationId, List<MultipartFile> attachmentFiles, List<String> attachmentTitles, List<Boolean> attachmentIsPublic) {
+
+        Organization org = organizationRepository.findById(organizationId)
+                .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_WITH_ID + organizationId + NOT_FOUND));
+
+        if (attachmentFiles == null || attachmentFiles.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No attachment files provided.");
+        }
+
+        List<FileInformation> newAttachments = processAttachments(attachmentFiles, attachmentTitles, attachmentIsPublic);
+
+        if (newAttachments.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "All provided attachment files were empty or invalid.");
+        }
+
+        // Append to existing list (initializing if currently null)
+        if (org.getAttachments() == null) {
+            org.setAttachments(new ArrayList<>());
+        }
+        org.getAttachments().addAll(newAttachments);
+
+        return organizationRepository.save(org);
+    }
+
+    private List<FileInformation> processAttachments(List<MultipartFile> files, List<String> titles, List<Boolean> isPublicList) {
+
+        List<FileInformation> attachments = new ArrayList<>();
+        for (int i = 0; i < files.size(); i++) {
+            MultipartFile file = files.get(i);
+            if (file != null && !file.isEmpty()) {
+                String title = getElementOrNull(titles, i);
+                Boolean isPublic = getElementOrNull(isPublicList, i);
+                attachments.add(processAttachment(file, title, isPublic));
+            }
+        }
+        return attachments;
+    }
+private FileInformation processAttachment(MultipartFile file, String title, Boolean isPublic) {
+        String fileUrl = minioService.uploadFile(file);
+        String resolvedTitle = resolveAttachmentTitle(file, title);
+        boolean publicFlag = Boolean.TRUE.equals(isPublic);
+
+        return new FileInformation(resolvedTitle, fileUrl, publicFlag);
+    }
+
+    private String resolveAttachmentTitle(MultipartFile file, String title) {
+        if (title != null && !title.isBlank()) {
+            return title.trim();
+        }
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename != null && !originalFilename.isBlank()) {
+            return originalFilename;
+        }
+        return "attachment";
+    }
+
+ 
+    private <T> T getElementOrNull(List<T> list, int index) {
+        if (list != null && index < list.size()) {
+            return list.get(index);
+        }
+        return null;
+    }
+    
+
+       public void deleteAllOrganizationFiles(Organization org) {
+        if (org == null) {
+            return;
+        }
+
+        // Delete Logo
+        deleteFileFromMinio(org.getLogoUrl());
+
+        // Delete Attachment Files from MinIO
+        if (org.getAttachments() != null) {
+            for (FileInformation attachment : org.getAttachments()) {
+                if (attachment != null) {
+                    deleteFileFromMinio(attachment.fileUrl());
+                }
+            }
+        }
+    }
+
+    private void deleteFileFromMinio(String fileUrl) {
+        if (fileUrl == null || fileUrl.isBlank()) {
+            return;
+        }
+        try {
+            minioService.deleteFile(fileUrl);
+        } catch (Exception e) {
+            LOGGER.error("Failed to delete file {} from MinIO: {}", fileUrl, e.getMessage());
+        }
+
+    }
+
+@Transactional
+public Organization updateAttachmentMetadata(String organizationId, String fileId, UpdateFileInformationDTO updateDto) {
+    Organization org = organizationRepository.findById(organizationId)
+            .orElseThrow(() -> new OrganizationNotFoundException("Organization not found: " + organizationId));
+
+    if (org.getAttachments() == null || org.getAttachments().isEmpty()) {
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, ATTACHMENT_WITH_ID + fileId + NOT_FOUND);
+    }
+
+    boolean found = false;
+    List<FileInformation> updatedList = new ArrayList<>();
+
+    for (FileInformation att : org.getAttachments()) {
+        if (fileId.equals(att.id())) {
+            updatedList.add(new FileInformation(
+                    att.id(),
+                    updateDto.title().trim(),
+                    att.fileUrl(),
+                    updateDto.isPublic()
+            ));
+            found = true;
+        } else { //keep al the other existing attachments  
+            updatedList.add(att);
+        }
+    }
+
+    if (!found) {
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, ATTACHMENT_WITH_ID + fileId + NOT_FOUND);
+    }
+
+    org.setAttachments(updatedList);
+    return organizationRepository.save(org);
+}
 
 }

@@ -3,6 +3,8 @@ package gr.atc.t4m.organization_management.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.nullable;
@@ -11,6 +13,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,11 +21,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gr.atc.t4m.organization_management.config.TestSecurityConfig;
 import gr.atc.t4m.organization_management.dto.CreateReviewDTO;
+import gr.atc.t4m.organization_management.dto.FileInformation;
 import gr.atc.t4m.organization_management.dto.OrganizationDTO;
 import gr.atc.t4m.organization_management.dto.OrganizationLogoResponse;
 import gr.atc.t4m.organization_management.dto.OrganizationReviewsResponseDTO;
 import gr.atc.t4m.organization_management.dto.ProviderSearchDTO;
 import gr.atc.t4m.organization_management.dto.ReviewAnalyticsDTO;
+import gr.atc.t4m.organization_management.dto.UpdateFileInformationDTO;
 import gr.atc.t4m.organization_management.exception.OrganizationNotFoundException;
 import gr.atc.t4m.organization_management.model.CapabilityEntry;
 import gr.atc.t4m.organization_management.model.MaasRole;
@@ -157,8 +162,17 @@ void setupSecurityContext() {
                 .andExpect(jsonPath("$.organizationName").value("TEST_ORGANIZATION"));
     }
 
-    @Test
+@Test
     void testDeleteOrganization() throws Exception {
+        Organization dummyOrg = new Organization();
+        dummyOrg.setOrganizationID("123");
+        dummyOrg.setLogoUrl("https://minio.url/bucket/logo.png");
+        dummyOrg.setAttachments(new ArrayList<>());
+
+        when(organizationService.getOrganization("123")).thenReturn(dummyOrg);
+
+        doNothing().when(minioService).deleteFile(anyString());
+
         doNothing().when(organizationService).deleteOrganizationById("123");
 
         mockMvc.perform(delete("/api/organization/deleteOrganization/123"))
@@ -400,7 +414,7 @@ void testGetOrganizationsByCapability_NoParams_ReturnsBadRequest() throws Except
 
         // Mock service responses
         when(organizationService.getOrganization(orgId)).thenReturn(org);
-        when(minioService.uploadLogo(any())).thenReturn(logoUrl);
+        when(minioService.uploadFile(any())).thenReturn(logoUrl);
         when(organizationService.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
         MockMultipartFile file = new MockMultipartFile(
@@ -446,7 +460,7 @@ void testGetOrganizationsByCapability_NoParams_ReturnsBadRequest() throws Except
     }
     
 @Test
-void testCreateReview_Success_Returns201() throws Exception {
+void testCreateReviewSuccessReturns201() throws Exception {
     String targetOrgId = "target-org-123";
     String mockUserId = "test-user-id";
     String reviewerOrgId = "test-org";
@@ -771,6 +785,111 @@ void testCreateReview_Success_Returns201() throws Exception {
                 .andExpect(status().isNotFound());
 
         verify(searchHistoryService).deleteHistoryEntry(nonExistentId, mockUserId);
+    }
+@Test
+void testAddAttachmentsToOrganizationSuccess() throws Exception {
+    String orgId = "org-123";
+
+    MockMultipartFile file1 = new MockMultipartFile(
+            "attachmentFiles", 
+            "document.pdf", 
+            MediaType.APPLICATION_PDF_VALUE, 
+            "PDF Content".getBytes()
+    );
+
+    Organization updatedOrganization = new Organization();
+    updatedOrganization.setOrganizationID(orgId);
+    updatedOrganization.setOrganizationName("Test Org");
+
+    when(organizationService.addAttachments(eq(orgId), anyList(), anyList(), anyList()))
+            .thenReturn(updatedOrganization);
+
+    mockMvc.perform(multipart("/api/organization/{organizationId}/attachments", orgId)
+                    .file(file1)
+                    .param("attachmentTitles", "My Custom Document Title")
+                    .param("attachmentIsPublic", "true")
+                    .with(jwt().jwt(jwt -> jwt
+                            .subject("user-sub-123")
+                            .claim("organization_id", orgId)))
+                    .contentType(MediaType.MULTIPART_FORM_DATA))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.organizationID").value(orgId))
+            .andExpect(jsonPath("$.organizationName").value("Test Org"));
+
+    verify(organizationService).addAttachments(
+            eq(orgId),
+            argThat(files -> files.size() == 1),
+            eq(List.of("My Custom Document Title")),
+            eq(List.of(true))
+    );
+}
+@Test
+    void testDeleteAttachmentSuccess() throws Exception {
+        String orgId = "org-123";
+        String fileId = "file-uuid-456";
+        doNothing().when(organizationService).deleteAttachmentById(orgId, fileId);
+
+        mockMvc.perform(delete("/api/organization/{organizationId}/attachments/{fileId}", orgId, fileId)
+                        .with(jwt().jwt(jwt -> jwt.subject("user-sub-123")))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Attachment deleted successfully."));
+
+        verify(organizationService).deleteAttachmentById(orgId, fileId);
+    }
+
+    @Test
+    void updateAttachment_Endpoint_Success() throws Exception {
+        String orgId = "org-100";
+        String fileId = "file-abc";
+        UpdateFileInformationDTO dto = new UpdateFileInformationDTO("New Doc Title", true);
+
+        Organization org = new Organization();
+        org.setOrganizationID(orgId);
+        org.setAttachments(List.of(new FileInformation(fileId, "New Doc Title", "https://minio/doc.pdf", true)));
+
+        when(organizationService.updateAttachmentMetadata(eq(orgId), eq(fileId), any(UpdateFileInformationDTO.class)))
+                .thenReturn(org);
+
+        mockMvc.perform(patch("/api/organization/{organizationId}/attachments/{fileId}", orgId, fileId)
+                        .with(jwt().jwt(builder -> builder.claim("organization_id", orgId)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.organizationID").value(orgId))
+                .andExpect(jsonPath("$.attachments[0].id").value(fileId))
+                .andExpect(jsonPath("$.attachments[0].title").value("New Doc Title"))
+                .andExpect(jsonPath("$.attachments[0].isPublic").value(true));
+    }
+
+    @Test
+    void updateAttachment_Endpoint_ReturnsBadRequest_WhenTitleIsBlank() throws Exception {
+        String orgId = "org-100";
+        String fileId = "file-abc";
+        
+        // Invalid payload: blank title violates @NotBlank
+        UpdateFileInformationDTO invalidDto = new UpdateFileInformationDTO("   ", true);
+
+        mockMvc.perform(patch("/api/organization/{organizationId}/attachments/{fileId}", orgId, fileId)
+                        .with(jwt().jwt(builder -> builder.claim("organization_id", orgId)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidDto)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void updateAttachment_Endpoint_ReturnsBadRequest_WhenIsPublicIsNull() throws Exception {
+        String orgId = "org-100";
+        String fileId = "file-abc";
+        
+        // Raw JSON with missing isPublic field violates @NotNull
+        String rawJson = "{\"title\": \"Valid Title\", \"isPublic\": null}";
+
+        mockMvc.perform(patch("/api/organization/{organizationId}/attachments/{fileId}", orgId, fileId)
+                        .with(jwt().jwt(builder -> builder.claim("organization_id", orgId)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(rawJson))
+                .andExpect(status().isBadRequest());
     }
 }
 
