@@ -10,10 +10,12 @@ public record FileInformation(
         String title,
 
         @NotBlank(message = "File URL is required")
-        String fileUrl
+        String fileUrl,
+
+        boolean isPublic
 ) {
-    public FileInformation(String title, String fileUrl) {
-        this(UUID.randomUUID().toString(), title, fileUrl);
+    public FileInformation(String title, String fileUrl, boolean isPublic) {
+        this(UUID.randomUUID().toString(), title, fileUrl, isPublic);
     }
 
     public FileInformation {
