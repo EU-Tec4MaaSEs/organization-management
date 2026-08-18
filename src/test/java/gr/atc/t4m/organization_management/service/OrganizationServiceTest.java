@@ -51,7 +51,6 @@ import org.springframework.web.server.ResponseStatusException;
 import java.lang.reflect.Field;
 import java.util.Base64;
 
-import org.mockito.ArgumentCaptor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -100,7 +99,7 @@ class OrganizationServiceTest {
     private final String password = "test-password";
     private static final String ORG_ID = "org-123";
     private static final String ATTACHMENT_FILES_PARAM = "attachmentFiles";
-    private static final String fileId = "file-abc";
+    private static final String FILE_ID = "file-abc";
 
     @BeforeEach
     void setUp() throws Exception {
@@ -844,22 +843,23 @@ void testUpdateOrganization_WhenExists_ShouldUpdateAndReturnOrganization() {
 
         verify(organizationRepository).save(organization);
     }
-
-    @Test
+@Test
     void addAttachmentsOrganizationNotFoundThrowsException() {
         when(organizationRepository.findById(ORG_ID)).thenReturn(Optional.empty());
 
         MockMultipartFile file = new MockMultipartFile(
                 ATTACHMENT_FILES_PARAM, "file.pdf", MediaType.APPLICATION_PDF_VALUE, "Content".getBytes()
         );
+        List<MultipartFile> files = List.of(file);
+        List<String> titles = List.of("Title");
+        List<Boolean> isPublicList = List.of(true);
 
         assertThrows(OrganizationNotFoundException.class, () ->
-                organizationService.addAttachments(ORG_ID, List.of(file), List.of("Title"), List.of(true))
+                organizationService.addAttachments(ORG_ID, files, titles, isPublicList)
         );
 
         verify(organizationRepository, never()).save(any());
     }
-
     @Test
     void addAttachmentsNullOrEmptyFilesThrowsBadRequest() {
         Organization organization = new Organization();
@@ -873,8 +873,7 @@ void testUpdateOrganization_WhenExists_ShouldUpdateAndReturnOrganization() {
         assertEquals("No attachment files provided.", exception.getReason());
         verify(organizationRepository, never()).save(any());
     }
-
-    @Test
+@Test
     void addAttachmentsAllFilesEmptyThrowsBadRequest() {
         Organization organization = new Organization();
         when(organizationRepository.findById(ORG_ID)).thenReturn(Optional.of(organization));
@@ -882,9 +881,12 @@ void testUpdateOrganization_WhenExists_ShouldUpdateAndReturnOrganization() {
         MockMultipartFile emptyFile = new MockMultipartFile(
                 ATTACHMENT_FILES_PARAM, "empty.pdf", MediaType.APPLICATION_PDF_VALUE, new byte[0]
         );
+        List<MultipartFile> files = List.of(emptyFile);
+        List<String> titles = List.of("Title");
+        List<Boolean> isPublicList = List.of(true);
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () ->
-                organizationService.addAttachments(ORG_ID, List.of(emptyFile), List.of("Title"), List.of(true))
+                organizationService.addAttachments(ORG_ID, files, titles, isPublicList)
         );
 
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
@@ -897,7 +899,7 @@ void testDeleteAttachmentByIdSuccess() {
     String orgId = "org-123";
     String fileUrl = "https://minio.url/document.pdf";
 
-    FileInformation attachment = new FileInformation(fileId, "Sample Title", fileUrl, true);
+    FileInformation attachment = new FileInformation(FILE_ID, "Sample Title", fileUrl, true);
     List<FileInformation> attachments = new ArrayList<>(List.of(attachment));
 
     Organization org = new Organization();
@@ -906,7 +908,7 @@ void testDeleteAttachmentByIdSuccess() {
 
     when(organizationRepository.findById(orgId)).thenReturn(Optional.of(org));
 
-    organizationService.deleteAttachmentById(orgId, fileId);
+    organizationService.deleteAttachmentById(orgId, FILE_ID);
 
     verify(minioService).deleteFile(fileUrl);
     verify(organizationRepository).save(org);
@@ -920,7 +922,7 @@ void testDeleteAttachmentByIdOrganizationNotFoundThrowsException() {
     when(organizationRepository.findById(orgId)).thenReturn(Optional.empty());
 
     assertThrows(OrganizationNotFoundException.class, () ->
-            organizationService.deleteAttachmentById(orgId, fileId)
+            organizationService.deleteAttachmentById(orgId, FILE_ID)
     );
 
     verify(minioService, never()).deleteFile(any());
@@ -946,7 +948,7 @@ void testDeleteAttachmentByIdAttachmentNotFoundThrowsResponseStatusException() {
     );
 
     assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
-    assertEquals("Attachment with ID " + targetFileId + " not found.", exception.getReason());
+    assertEquals("Attachment with ID " + targetFileId + " not found", exception.getReason());
     verify(minioService, never()).deleteFile(any());
     verify(organizationRepository, never()).save(any());
 }
@@ -961,7 +963,7 @@ void testDeleteAttachmentByIdNullAttachmentsDoesNothing() {
 
     when(organizationRepository.findById(orgId)).thenReturn(Optional.of(org));
 
-    assertDoesNotThrow(() -> organizationService.deleteAttachmentById(orgId, fileId));
+    assertDoesNotThrow(() -> organizationService.deleteAttachmentById(orgId, FILE_ID));
 
     verify(minioService, never()).deleteFile(any());
     verify(organizationRepository, never()).save(any());

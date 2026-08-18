@@ -70,6 +70,7 @@ public class OrganizationService {
     private String identityProviderPassword;
 
     private final RestTemplate restTemplate;
+    private static final String ATTACHMENT_WITH_ID = "Attachment with ID ";
 
     public OrganizationService(OrganizationRepository organizationRepository,
                                ManufacturingResourceService manufacturingResourceService, ModelMapper modelMapper,
@@ -566,7 +567,7 @@ private Organization findOrganizationById(String id) {
                 org.getAttachments().remove(attachmentToDelete.get());
                 organizationRepository.save(org);
             } else {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Attachment with ID " + fileId + " not found.");
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, ATTACHMENT_WITH_ID + fileId + NOT_FOUND);
             }
         }
     }
@@ -673,7 +674,7 @@ public Organization updateAttachmentMetadata(String organizationId, String fileI
             .orElseThrow(() -> new OrganizationNotFoundException("Organization not found: " + organizationId));
 
     if (org.getAttachments() == null || org.getAttachments().isEmpty()) {
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Attachment with ID " + fileId + " not found.");
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, ATTACHMENT_WITH_ID + fileId + NOT_FOUND);
     }
 
     boolean found = false;
@@ -694,7 +695,7 @@ public Organization updateAttachmentMetadata(String organizationId, String fileI
     }
 
     if (!found) {
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Attachment with ID " + fileId + " not found.");
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, ATTACHMENT_WITH_ID + fileId + NOT_FOUND);
     }
 
     org.setAttachments(updatedList);

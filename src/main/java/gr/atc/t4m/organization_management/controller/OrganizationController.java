@@ -60,6 +60,7 @@ public class OrganizationController {
     private final OrganizationService organizationService;
     private final ManualSearchHistoryService searchHistoryService;
     private final MinioService minioService;
+    private static final String ORGANIZATION_ID = "organization_id";
     
 
     public OrganizationController(OrganizationService organizationService,
@@ -184,7 +185,7 @@ public class OrganizationController {
 
         JwtAuthenticationToken jwtToken = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         String userId = jwtToken.getToken().getClaim("sub"); // or any custom claim
-        String userOrgId = jwtToken.getToken().getClaim("organization_id");
+        String userOrgId = jwtToken.getToken().getClaim(ORGANIZATION_ID);
 
         if (organizationDTO.getValueNetwork() == null || organizationDTO.getValueNetwork().trim().isEmpty()) {
             organizationDTO.setValueNetwork(defaultValueNetwork); //SET DEFAULT VALUE NETWORK
@@ -240,7 +241,7 @@ public class OrganizationController {
             @PathVariable String id,
             JwtAuthenticationToken jwtToken) throws OrganizationNotFoundException {
 
-        String userOrgId = (jwtToken != null) ? jwtToken.getToken().getClaim("organization_id") : null;
+        String userOrgId = (jwtToken != null) ? jwtToken.getToken().getClaim(ORGANIZATION_ID) : null;
         Organization organization = organizationService.getOrganization(id);
         Organization responseOrg = maskPrivateAttachmentUrls(organization, userOrgId);
 
@@ -264,7 +265,7 @@ public class OrganizationController {
 
     @GetMapping("/getOrganizationByName/{name}")
     public ResponseEntity<Organization> getOrganizationByName(@PathVariable String name,JwtAuthenticationToken jwtToken) throws OrganizationNotFoundException {
-        String userOrgId = (jwtToken != null) ? jwtToken.getToken().getClaim("organization_id") : null;
+        String userOrgId = (jwtToken != null) ? jwtToken.getToken().getClaim(ORGANIZATION_ID) : null;
         Organization organization = organizationService.getOrganizationByName(name);
         Organization responseOrg = maskPrivateAttachmentUrls(organization, userOrgId);
         return ResponseEntity.ok(responseOrg);
@@ -296,7 +297,7 @@ public class OrganizationController {
             final HttpServletRequest request) {
 
         String userOrgId = (jwtToken != null && jwtToken.getToken() != null)
-                ? jwtToken.getToken().getClaimAsString("organization_id"): null;
+                ? jwtToken.getToken().getClaimAsString(ORGANIZATION_ID): null;
         Sort.Direction direction = sortDir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
@@ -323,7 +324,7 @@ public class OrganizationController {
             JwtAuthenticationToken jwtToken,
             final HttpServletRequest request) {
         String userOrgId = (jwtToken != null && jwtToken.getToken() != null)
-                ? jwtToken.getToken().getClaimAsString("organization_id"): null;
+                ? jwtToken.getToken().getClaimAsString(ORGANIZATION_ID): null;
 
         List<Organization> providers = organizationService.getAllProviders();
         providers.forEach(prov -> maskPrivateAttachmentUrls(prov, userOrgId));
@@ -350,7 +351,7 @@ public class OrganizationController {
             List<Organization> providers = organizationService.searchProviders(filter);
             String userId = jwtToken.getToken().getClaim("sub");
             String userOrgId = (jwtToken != null && jwtToken.getToken() != null)
-                ? jwtToken.getToken().getClaimAsString("organization_id"): null;
+                ? jwtToken.getToken().getClaimAsString(ORGANIZATION_ID): null;
             searchHistoryService.recordSearch(userId, filter.getCountryCodes(), filter.getManufacturingServices());
             providers.forEach(prov -> maskPrivateAttachmentUrls(prov, userOrgId));
 
@@ -519,7 +520,7 @@ public class OrganizationController {
             @RequestPart(value = "logoFile", required = false) MultipartFile logoFile,
             JwtAuthenticationToken jwtToken) {
             String userOrgId = (jwtToken != null && jwtToken.getToken() != null)
-                ? jwtToken.getToken().getClaimAsString("organization_id"): null;
+                ? jwtToken.getToken().getClaimAsString(ORGANIZATION_ID): null;
         // Validate file
         if (logoFile == null || logoFile.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Logo file is required");
@@ -590,7 +591,7 @@ public class OrganizationController {
         JwtAuthenticationToken jwtToken = (JwtAuthenticationToken) SecurityContextHolder.getContext()
                 .getAuthentication();
         String userId = jwtToken.getToken().getClaim("sub");
-        String reviewerOrgId = jwtToken.getToken().getClaim("organization_id");
+        String reviewerOrgId = jwtToken.getToken().getClaim(ORGANIZATION_ID);
 
         if (orgId.equals(reviewerOrgId)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "An organization cannot review itself.");
@@ -678,7 +679,7 @@ public class OrganizationController {
 
         JwtAuthenticationToken jwtToken = (JwtAuthenticationToken) SecurityContextHolder.getContext()
                 .getAuthentication();
-        String reviewerOrgId = jwtToken.getToken().getClaim("organization_id");
+        String reviewerOrgId = jwtToken.getToken().getClaim(ORGANIZATION_ID);
 
         Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
 
@@ -744,7 +745,7 @@ public class OrganizationController {
             @RequestParam(value = "attachmentIsPublic", required = false) List<Boolean> attachmentIsPublic,
             JwtAuthenticationToken jwtToken, final HttpServletRequest request) {
 
-            String userOrgId = (jwtToken != null) ? jwtToken.getToken().getClaimAsString("organization_id") : null;
+            String userOrgId = (jwtToken != null) ? jwtToken.getToken().getClaimAsString(ORGANIZATION_ID) : null;
 
             if (userOrgId == null || !userOrgId.equals(organizationId)) {
                throw new ResponseStatusException(HttpStatus.FORBIDDEN, 
@@ -778,7 +779,7 @@ public class OrganizationController {
             JwtAuthenticationToken jwtToken) {
 
         String userOrgId = (jwtToken != null)
-                ? jwtToken.getToken().getClaimAsString("organization_id")
+                ? jwtToken.getToken().getClaimAsString(ORGANIZATION_ID)
                 : null;
 
         if (userOrgId == null || !userOrgId.equals(organizationId)) {
