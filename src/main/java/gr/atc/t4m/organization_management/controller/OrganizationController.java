@@ -1,5 +1,6 @@
 package gr.atc.t4m.organization_management.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -58,7 +60,8 @@ public class OrganizationController {
     private final OrganizationService organizationService;
     private final ManualSearchHistoryService searchHistoryService;
     private final MinioService minioService;
-
+    private static final String ORGANIZATION_ID = "organization_id";
+    
 
     public OrganizationController(OrganizationService organizationService,
                                   MinioService minioService,
@@ -95,6 +98,9 @@ public class OrganizationController {
     public ResponseEntity<Organization> createOrganization(
             @RequestPart("organization") @Valid OrganizationDTO organizationDTO,
             @RequestPart(value = "logoFile", required = false) MultipartFile logoFile,
+            @RequestParam(value = "attachmentFiles", required = false) List<MultipartFile> attachmentFiles,
+            @RequestParam(value = "attachmentTitles", required = false) List<String> attachmentTitles,
+            @RequestParam(value = "attachmentIsPublic", required = false) List<Boolean> attachmentIsPublic,
             final HttpServletRequest request)
             throws OrganizationAlreadyExistsException {
 
@@ -108,19 +114,48 @@ public class OrganizationController {
         if (organizationDTO.getValueNetwork() == null || organizationDTO.getValueNetwork().trim().isEmpty()) {
             organizationDTO.setValueNetwork(defaultValueNetwork); //SET DEFAULT VALUE NETWORK
         }
-
         // Upload file (if present)
         String logoUrl = null;
 
         if (logoFile != null && !logoFile.isEmpty()) {
-            logoUrl = minioService.uploadLogo(logoFile); // Store and return URL
+            logoUrl = minioService.uploadFile(logoFile); // Store and return URL
+        }
+
+        List<FileInformation> processedAttachments = new ArrayList<>();
+        if (attachmentFiles != null && !attachmentFiles.isEmpty()) {
+                for (int i = 0; i < attachmentFiles.size(); i++) {
+                        MultipartFile file = attachmentFiles.get(i);
+
+                        if (!file.isEmpty()) {
+                                String fileUrl = minioService.uploadFile(file);
+
+                                // Fetch title by index or fallback to original filename
+                                String fileTitle;
+                                if (attachmentTitles != null && i < attachmentTitles.size()
+                                                && !attachmentTitles.get(i).isBlank()) {
+                                        fileTitle = attachmentTitles.get(i).trim();
+                                } else if (file.getOriginalFilename() != null
+                                                && !file.getOriginalFilename().isBlank()) {
+                                        fileTitle = file.getOriginalFilename();
+                                } else {
+                                        fileTitle = "attachment-" + (i + 1);
+                                }
+                                  // Extract isPublic flag by index (defaults to false / private if omitted)
+                                boolean isPublic = false;
+                               if (attachmentIsPublic != null && i < attachmentIsPublic.size() 
+                                  && attachmentIsPublic.get(i) != null) {
+                                  isPublic = attachmentIsPublic.get(i);
+                                }
+                               processedAttachments.add(new FileInformation(fileTitle, fileUrl,isPublic));
+                        }
+                }
         }
 
         // Copy data
         Organization organization = new Organization();
         BeanUtils.copyProperties(organizationDTO, organization);
         organization.setLogoUrl(logoUrl); // Save logo location
-
+        organization.setAttachments(processedAttachments);
         Organization savedOrganization = organizationService.createOrganization(organization);
 
         // Trigger Kafka event for organization registration
@@ -150,13 +185,17 @@ public class OrganizationController {
 
         JwtAuthenticationToken jwtToken = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         String userId = jwtToken.getToken().getClaim("sub"); // or any custom claim
+        String userOrgId = jwtToken.getToken().getClaim(ORGANIZATION_ID);
+
         if (organizationDTO.getValueNetwork() == null || organizationDTO.getValueNetwork().trim().isEmpty()) {
             organizationDTO.setValueNetwork(defaultValueNetwork); //SET DEFAULT VALUE NETWORK
         }
         Organization updatedOrganization = organizationService.updateOrganization(id, organizationDTO);
         // Trigger Kafka event for organization update
         organizationService.createKafkaMessage(updatedOrganization, userId, EventType.UPDATE, organizationDTO.getVerifiableCredential());
-        return ResponseEntity.ok(updatedOrganization);
+        
+        Organization responseOrg = maskPrivateAttachmentUrls(updatedOrganization, userOrgId);
+        return ResponseEntity.ok(responseOrg);
     }
 
     /**
@@ -198,9 +237,15 @@ public class OrganizationController {
     })
 
     @GetMapping("/getOrganization/{id}")
-    public ResponseEntity<Organization> getOrganization(@PathVariable String id) throws OrganizationNotFoundException {
+    public ResponseEntity<Organization> getOrganization(
+            @PathVariable String id,
+            JwtAuthenticationToken jwtToken) throws OrganizationNotFoundException {
+
+        String userOrgId = (jwtToken != null) ? jwtToken.getToken().getClaim(ORGANIZATION_ID) : null;
         Organization organization = organizationService.getOrganization(id);
-        return ResponseEntity.ok(organization);
+        Organization responseOrg = maskPrivateAttachmentUrls(organization, userOrgId);
+
+        return ResponseEntity.ok(responseOrg);
     }
 
     /**
@@ -219,9 +264,11 @@ public class OrganizationController {
     })
 
     @GetMapping("/getOrganizationByName/{name}")
-    public ResponseEntity<Organization> getOrganizationByName(@PathVariable String name) throws OrganizationNotFoundException {
+    public ResponseEntity<Organization> getOrganizationByName(@PathVariable String name,JwtAuthenticationToken jwtToken) throws OrganizationNotFoundException {
+        String userOrgId = (jwtToken != null) ? jwtToken.getToken().getClaim(ORGANIZATION_ID) : null;
         Organization organization = organizationService.getOrganizationByName(name);
-        return ResponseEntity.ok(organization);
+        Organization responseOrg = maskPrivateAttachmentUrls(organization, userOrgId);
+        return ResponseEntity.ok(responseOrg);
     }
 
     /**
@@ -246,12 +293,16 @@ public class OrganizationController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "organizationName") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir,
+            JwtAuthenticationToken jwtToken,
             final HttpServletRequest request) {
 
+        String userOrgId = (jwtToken != null && jwtToken.getToken() != null)
+                ? jwtToken.getToken().getClaimAsString(ORGANIZATION_ID): null;
         Sort.Direction direction = sortDir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
         Page<Organization> organizations = organizationService.getAllOrganizations(pageable);
+        organizations.forEach(org -> maskPrivateAttachmentUrls(org, userOrgId));
 
         return ResponseEntity.ok(organizations);
     }
@@ -270,9 +321,14 @@ public class OrganizationController {
     })
     @GetMapping("/getAllProviders")
     public ResponseEntity<List<Organization>> getAllProviders(
+            JwtAuthenticationToken jwtToken,
             final HttpServletRequest request) {
+        String userOrgId = (jwtToken != null && jwtToken.getToken() != null)
+                ? jwtToken.getToken().getClaimAsString(ORGANIZATION_ID): null;
 
         List<Organization> providers = organizationService.getAllProviders();
+        providers.forEach(prov -> maskPrivateAttachmentUrls(prov, userOrgId));
+
 
         return ResponseEntity.ok(providers);
     }
@@ -294,7 +350,11 @@ public class OrganizationController {
                     JwtAuthenticationToken jwtToken) {
             List<Organization> providers = organizationService.searchProviders(filter);
             String userId = jwtToken.getToken().getClaim("sub");
+            String userOrgId = (jwtToken != null && jwtToken.getToken() != null)
+                ? jwtToken.getToken().getClaimAsString(ORGANIZATION_ID): null;
             searchHistoryService.recordSearch(userId, filter.getCountryCodes(), filter.getManufacturingServices());
+            providers.forEach(prov -> maskPrivateAttachmentUrls(prov, userOrgId));
+
             return ResponseEntity.ok(providers);
     }
 
@@ -373,7 +433,7 @@ public class OrganizationController {
     @DeleteMapping(value = "/deleteOrganization/{id}", produces = "application/json;charset=UTF-8")
     public ResponseEntity<InformationMessage> deleteOrganization(@PathVariable String id, final HttpServletRequest request) {
         JwtAuthenticationToken jwtToken = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-        String userId = jwtToken.getToken().getClaim("sub"); // or any custom claim
+        String userId = jwtToken.getToken().getClaim("sub");
 
         Organization organizationToBeDeleted = organizationService.getOrganization(id);
 
@@ -457,7 +517,10 @@ public class OrganizationController {
     @PutMapping(value = "/{organizationId}/update-logo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Organization> updateOrganizationLogo(
             @PathVariable String organizationId,
-            @RequestPart(value = "logoFile", required = false) MultipartFile logoFile) {
+            @RequestPart(value = "logoFile", required = false) MultipartFile logoFile,
+            JwtAuthenticationToken jwtToken) {
+            String userOrgId = (jwtToken != null && jwtToken.getToken() != null)
+                ? jwtToken.getToken().getClaimAsString(ORGANIZATION_ID): null;
         // Validate file
         if (logoFile == null || logoFile.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Logo file is required");
@@ -469,12 +532,45 @@ public class OrganizationController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Organization not found");
         }
 
-        String logoUrl = minioService.uploadLogo(logoFile);
+        String logoUrl = minioService.uploadFile(logoFile);
         organization.setLogoUrl(logoUrl);
 
         Organization updated = organizationService.save(organization);
 
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(maskPrivateAttachmentUrls(updated, userOrgId));
+    }
+
+
+    @Operation(
+        summary = "Delete an attachment from an organization",
+        description = "Deletes a specific attachment file from MinIO storage and removes its record from the organization."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200", 
+            description = "Attachment deleted successfully",
+            content = @Content(schema = @Schema(implementation = InformationMessage.class))
+        ),
+        @ApiResponse(
+            responseCode = "401", 
+            description = "Unauthorized - Missing or invalid JWT token"
+        ),
+        @ApiResponse(
+            responseCode = "404", 
+            description = "Organization or Attachment ID not found"
+        )
+    })
+     @DeleteMapping(value = "/{organizationId}/attachments/{fileId}", produces = "application/json;charset=UTF-8")
+      public ResponseEntity<InformationMessage> deleteAttachment(
+            @PathVariable String organizationId,
+            @PathVariable String fileId,
+            final HttpServletRequest request) {
+
+        organizationService.deleteAttachmentById(organizationId, fileId);
+
+        InformationMessage message = new InformationMessage();
+        message.setMessage("Attachment deleted successfully.");
+        return ResponseEntity.ok(message);
     }
 
     /**
@@ -495,7 +591,7 @@ public class OrganizationController {
         JwtAuthenticationToken jwtToken = (JwtAuthenticationToken) SecurityContextHolder.getContext()
                 .getAuthentication();
         String userId = jwtToken.getToken().getClaim("sub");
-        String reviewerOrgId = jwtToken.getToken().getClaim("organization_id");
+        String reviewerOrgId = jwtToken.getToken().getClaim(ORGANIZATION_ID);
 
         if (orgId.equals(reviewerOrgId)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "An organization cannot review itself.");
@@ -583,7 +679,7 @@ public class OrganizationController {
 
         JwtAuthenticationToken jwtToken = (JwtAuthenticationToken) SecurityContextHolder.getContext()
                 .getAuthentication();
-        String reviewerOrgId = jwtToken.getToken().getClaim("organization_id");
+        String reviewerOrgId = jwtToken.getToken().getClaim(ORGANIZATION_ID);
 
         Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
 
@@ -621,4 +717,103 @@ public class OrganizationController {
             return ResponseEntity.ok(response);
     }
 
+
+    @Operation(
+        summary = "Add attachments to an organization",
+        description = "Uploads and appends one or more new attachment files to an existing organization without overwriting existing ones."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200", 
+            description = "Attachments added successfully",
+            content = @Content(schema = @Schema(implementation = Organization.class))
+        ),
+        @ApiResponse(
+            responseCode = "400", 
+            description = "Bad Request - No valid files provided"
+        ),
+        @ApiResponse(
+            responseCode = "404", 
+            description = "Organization not found"
+        )
+    })
+    @PostMapping(value = "/{organizationId}/attachments", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Organization> addAttachmentsToOrganization(
+            @PathVariable String organizationId,
+            @RequestParam("attachmentFiles") List<MultipartFile> attachmentFiles,
+            @RequestParam(value = "attachmentTitles", required = false) List<String> attachmentTitles,
+            @RequestParam(value = "attachmentIsPublic", required = false) List<Boolean> attachmentIsPublic,
+            JwtAuthenticationToken jwtToken, final HttpServletRequest request) {
+
+            String userOrgId = (jwtToken != null) ? jwtToken.getToken().getClaimAsString(ORGANIZATION_ID) : null;
+
+            if (userOrgId == null || !userOrgId.equals(organizationId)) {
+               throw new ResponseStatusException(HttpStatus.FORBIDDEN, 
+                "You do not have permission to modify attachments for this organization.");
+            }
+            Organization updatedOrg = organizationService.addAttachments(organizationId, attachmentFiles, attachmentTitles, attachmentIsPublic);
+
+            return ResponseEntity.ok(updatedOrg);
+    }
+
+
+    @Operation(
+            summary = "Update attachment metadata",
+            description = "Updates the title and visibility (isPublic) status of a specific attachment.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Attachment updated successfully",
+                    content = @Content(schema = @Schema(implementation = Organization.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid request payload"),
+            @ApiResponse(responseCode = "401", description = "Authentication failed"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Caller does not belong to this organization"),
+            @ApiResponse(responseCode = "404", description = "Organization or Attachment ID not found")
+    })
+
+    @PatchMapping(value = "/{organizationId}/attachments/{fileId}", produces = "application/json;charset=UTF-8")
+    public ResponseEntity<Organization> updateAttachment(
+            @PathVariable String organizationId,
+            @PathVariable String fileId,
+            @RequestBody @Valid UpdateFileInformationDTO updateDto,
+            JwtAuthenticationToken jwtToken) {
+
+        String userOrgId = (jwtToken != null)
+                ? jwtToken.getToken().getClaimAsString(ORGANIZATION_ID)
+                : null;
+
+        if (userOrgId == null || !userOrgId.equals(organizationId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "You do not have permission to update attachments for this organization.");
+        }
+
+        Organization updatedOrg = organizationService.updateAttachmentMetadata(
+                organizationId,
+                fileId,
+                updateDto
+        );
+
+        return ResponseEntity.ok(updatedOrg);
+    }
+
+
+    private Organization maskPrivateAttachmentUrls(Organization org, String userOrgId) {
+    if (org == null || org.getAttachments() == null || org.getAttachments().isEmpty()) {
+        return org;
+    }
+
+    // If the authenticated user belongs to the same organization, keep URLs intact
+    boolean isMember = userOrgId != null && userOrgId.equals(org.getOrganizationID());
+    if (isMember) {
+        return org;
+    }
+
+    // Mask the file info for non-public attachments
+    List<FileInformation> filteredAttachments = org.getAttachments().stream()
+        .filter(att -> Boolean.TRUE.equals(att.isPublic()))
+        .toList();
+
+    org.setAttachments(new ArrayList<>(filteredAttachments));
+    return org;
+}
 }
