@@ -543,7 +543,8 @@ public class OrganizationController {
 
     @Operation(
         summary = "Delete an attachment from an organization",
-        description = "Deletes a specific attachment file from MinIO storage and removes its record from the organization."
+        description = "Deletes a specific attachment file from MinIO storage and removes its record from the organization.",
+        security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponses(value = {
         @ApiResponse(
@@ -720,7 +721,8 @@ public class OrganizationController {
 
     @Operation(
         summary = "Add attachments to an organization",
-        description = "Uploads and appends one or more new attachment files to an existing organization without overwriting existing ones."
+        description = "Uploads and appends one or more new attachment files to an existing organization without overwriting existing ones.",
+        security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponses(value = {
         @ApiResponse(
