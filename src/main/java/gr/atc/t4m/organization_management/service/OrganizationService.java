@@ -47,6 +47,7 @@ public class OrganizationService {
     private static final Logger LOGGER = LoggerFactory.getLogger(OrganizationService.class);
     private static final String ORGANIZATION_WITH_ID = "Organization with id ";
     private static final String NOT_FOUND = " not found";
+    private static final String ORGANIZATION_NOT_FOUND = "Organization not found: ";
 
     OrganizationRepository organizationRepository;
     OrganizationReviewRepository reviewRepository;
@@ -557,7 +558,7 @@ private Organization findOrganizationById(String id) {
 @Transactional
     public void deleteAttachmentById(String organizationId, String fileId) {
         Organization org = organizationRepository.findById(organizationId)
-                .orElseThrow(() -> new OrganizationNotFoundException("Organization not found: " + organizationId));
+                .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND + organizationId));
 
         if (org.getAttachments() != null) {
             Optional<FileInformation> attachmentToDelete = org.getAttachments().stream()
@@ -678,7 +679,7 @@ private FileInformation processAttachment(MultipartFile file, String title, Bool
 @Transactional
 public Organization updateAttachmentMetadata(String organizationId, String fileId, UpdateFileInformationDTO updateDto) {
     Organization org = organizationRepository.findById(organizationId)
-            .orElseThrow(() -> new OrganizationNotFoundException("Organization not found: " + organizationId));
+            .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND + organizationId));
 
     if (org.getAttachments() == null || org.getAttachments().isEmpty()) {
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, ATTACHMENT_WITH_ID + fileId + NOT_FOUND);
@@ -711,7 +712,7 @@ public Organization updateAttachmentMetadata(String organizationId, String fileI
 
 public void triggerKafkaMessageForReview(String orgId, String userId) {
         Organization org = organizationRepository.findById(orgId)
-            .orElseThrow(() -> new OrganizationNotFoundException("Organization not found: " + orgId));
+            .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND + orgId));
      createKafkaMessage(org, userId, EventType.UPDATE_REVIEW, null);
 }
 
