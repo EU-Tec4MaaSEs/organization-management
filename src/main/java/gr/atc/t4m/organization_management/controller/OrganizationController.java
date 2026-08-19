@@ -606,6 +606,7 @@ public class OrganizationController {
         } else if (MaasRole.CONSUMER == reviewDto.getTargetRole()) {
                 organizationService.updateOrganizationsConsumerRating(orgId, reviewAnalytics.getAverageRating());
         }
+        organizationService.triggerKafkaMessageForReview(orgId, userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedReview);
 }
 
@@ -662,6 +663,7 @@ public class OrganizationController {
                     organizationService.updateOrganizationsConsumerRating(updatedReview.getTargetOrganizationId(),
                                     reviewAnalytics.getAverageRating());
             }
+            organizationService.triggerKafkaMessageForReview(updatedReview.getTargetOrganizationId(), currentUserId);
 
             return ResponseEntity.ok(updatedReview);
     }

@@ -213,11 +213,14 @@ public class OrganizationService {
         data.setUserId(userId);
         data.setName(organization.getOrganizationName());
         if (eventType != EventType.DELETE) {
-            if (verifiableCredential != null && !verifiableCredential.isBlank()) {
-                data.setVerifiableCredential(verifiableCredential);
-            } else {
-                data.setVerifiableCredential("Invalid Verifiable Credential");
-            }
+            if (eventType != EventType.UPDATE_REVIEW) {
+
+              if (verifiableCredential != null && !verifiableCredential.isBlank()) {
+                  data.setVerifiableCredential(verifiableCredential);
+              } else {
+                  data.setVerifiableCredential("Invalid Verifiable Credential");
+              }
+           }
             data.setContact(organization.getContact());
             data.setRole(organization.getMaasRole());
             data.setDataSpaceConnectorUrl(organization.getDsConnectorURL());
@@ -252,6 +255,10 @@ public class OrganizationService {
             case UPDATE:
                 event.setType("Organization_Updated");
                 event.setDescription("Organization update event for " + organization.getOrganizationName());
+                break;
+            case UPDATE_REVIEW:
+                event.setType("Organization_Review_Updated");
+                event.setDescription("Organization review update event for " + organization.getOrganizationName());
                 break;
             case DELETE:
                 event.setType("Organization_Deleted");
@@ -700,6 +707,12 @@ public Organization updateAttachmentMetadata(String organizationId, String fileI
 
     org.setAttachments(updatedList);
     return organizationRepository.save(org);
+}
+
+public void triggerKafkaMessageForReview(String orgId, String userId) {
+        Organization org = organizationRepository.findById(orgId)
+            .orElseThrow(() -> new OrganizationNotFoundException("Organization not found: " + orgId));
+     createKafkaMessage(org, userId, EventType.UPDATE_REVIEW, null);
 }
 
 }
