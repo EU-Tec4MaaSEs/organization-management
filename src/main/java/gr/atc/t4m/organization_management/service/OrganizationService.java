@@ -47,6 +47,7 @@ public class OrganizationService {
     private static final Logger LOGGER = LoggerFactory.getLogger(OrganizationService.class);
     private static final String ORGANIZATION_WITH_ID = "Organization with id ";
     private static final String NOT_FOUND = " not found";
+    private static final String ORGANIZATION_NOT_FOUND = "Organization not found: ";
 
     OrganizationRepository organizationRepository;
     OrganizationReviewRepository reviewRepository;
@@ -205,42 +206,18 @@ public class OrganizationService {
                 .orElseThrow(() -> new OrganizationNotFoundException("Organization with name " + name + NOT_FOUND));
     }
 
-
+    //This procedure is called for event types CREATE,UPDATE,DELETE
+    //FOr that reason the reviwerOrganizationName is null 
     public void createKafkaMessage(Organization organization, String userId, EventType eventType, String verifiableCredential) {
 
-        OrganizationRegistrationEvent data = new OrganizationRegistrationEvent();
-        data.setId(organization.getOrganizationID());
-        data.setUserId(userId);
-        data.setName(organization.getOrganizationName());
-        if (eventType != EventType.DELETE) {
-            if (verifiableCredential != null && !verifiableCredential.isBlank()) {
-                data.setVerifiableCredential(verifiableCredential);
-            } else {
-                data.setVerifiableCredential("Invalid Verifiable Credential");
-            }
-            data.setContact(organization.getContact());
-            data.setRole(organization.getMaasRole());
-            data.setDataSpaceConnectorUrl(organization.getDsConnectorURL());
-            data.setValueNetwork(organization.getValueNetwork());
-        }
-
-        EventDTO event = setEventInformation(eventType, organization, data);
-
-        try {
-            SendResult<String, EventDTO> result = kafkaTemplate.send(organizationRegistrationTopic, event)
-                    .get();
-            RecordMetadata metadata = result.getRecordMetadata();
-            LOGGER.info("Message sent to partition {} with offset {}", metadata.partition(), metadata.offset());
-        } catch (Exception e) {
-            LOGGER.error("Failed to send message: {}", e.getMessage());
-            Thread.currentThread().interrupt();
-
-        }
+        OrganizationRegistrationEvent data = buildKafkaEventData(organization, userId, eventType, verifiableCredential);
+        EventDTO event = setEventInformation(eventType, organization, data, null);
+        sendKafkaEvent(event); 
 
     }
 
 
-    private EventDTO setEventInformation(EventType eventType, Organization organization, OrganizationRegistrationEvent data) {
+    private EventDTO setEventInformation(EventType eventType, Organization organization, OrganizationRegistrationEvent data, String reviewerOrganizationName) {
         EventDTO event = new EventDTO();
 
         switch (eventType) {
@@ -252,6 +229,10 @@ public class OrganizationService {
             case UPDATE:
                 event.setType("Organization_Updated");
                 event.setDescription("Organization update event for " + organization.getOrganizationName());
+                break;
+            case UPDATE_REVIEW:
+                event.setType("Organization_Review_Updated");
+                event.setDescription(" You have received a new review from " + reviewerOrganizationName +". You can view all the reviews you have received in your Organization Profile.");
                 break;
             case DELETE:
                 event.setType("Organization_Deleted");
@@ -550,7 +531,7 @@ private Organization findOrganizationById(String id) {
 @Transactional
     public void deleteAttachmentById(String organizationId, String fileId) {
         Organization org = organizationRepository.findById(organizationId)
-                .orElseThrow(() -> new OrganizationNotFoundException("Organization not found: " + organizationId));
+                .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND + organizationId));
 
         if (org.getAttachments() != null) {
             Optional<FileInformation> attachmentToDelete = org.getAttachments().stream()
@@ -671,7 +652,7 @@ private FileInformation processAttachment(MultipartFile file, String title, Bool
 @Transactional
 public Organization updateAttachmentMetadata(String organizationId, String fileId, UpdateFileInformationDTO updateDto) {
     Organization org = organizationRepository.findById(organizationId)
-            .orElseThrow(() -> new OrganizationNotFoundException("Organization not found: " + organizationId));
+            .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND + organizationId));
 
     if (org.getAttachments() == null || org.getAttachments().isEmpty()) {
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, ATTACHMENT_WITH_ID + fileId + NOT_FOUND);
@@ -702,4 +683,52 @@ public Organization updateAttachmentMetadata(String organizationId, String fileI
     return organizationRepository.save(org);
 }
 
+public void triggerKafkaMessageForReview(String orgId, String userId, String reviewerOrgId) {
+        Organization org = organizationRepository.findById(orgId)
+            .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND + orgId));
+        Organization reviewerOrg = organizationRepository.findById(reviewerOrgId)
+            .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND + reviewerOrgId));
+        createKafkaMessageForReview(org, userId, reviewerOrg.getOrganizationName());
+}
+
+private void createKafkaMessageForReview(Organization org, String userId, String reviewerOrganizationName) {
+          OrganizationRegistrationEvent data = buildKafkaEventData(org, userId, EventType.UPDATE_REVIEW, null);
+          EventDTO event = setEventInformation(EventType.UPDATE_REVIEW, org, data, reviewerOrganizationName);
+          sendKafkaEvent(event);    
+}
+
+private OrganizationRegistrationEvent buildKafkaEventData(Organization organization, String userId, EventType eventType,
+        String verifiableCredential) {
+    OrganizationRegistrationEvent data = new OrganizationRegistrationEvent();
+    data.setId(organization.getOrganizationID());
+    data.setUserId(userId);
+    data.setName(organization.getOrganizationName());
+
+    if (eventType != EventType.DELETE) {
+        if (eventType != EventType.UPDATE_REVIEW) {
+            if (verifiableCredential != null && !verifiableCredential.isBlank()) {
+                data.setVerifiableCredential(verifiableCredential);
+            } else {
+                data.setVerifiableCredential("Invalid Verifiable Credential");
+            }
+        }
+        data.setContact(organization.getContact());
+        data.setRole(organization.getMaasRole());
+        data.setDataSpaceConnectorUrl(organization.getDsConnectorURL());
+        data.setValueNetwork(organization.getValueNetwork());
+    }
+
+    return data;
+}
+private void sendKafkaEvent(EventDTO event) {
+        try {
+            SendResult<String, EventDTO> result = kafkaTemplate.send(organizationRegistrationTopic, event).get();
+            RecordMetadata metadata = result.getRecordMetadata();
+            LOGGER.info("Kafka event {} sent to partition {} with offset {}", 
+                    event.getType(), metadata.partition(), metadata.offset());
+        } catch (Exception e) {
+           LOGGER.error("Failed to send message: {}", e.getMessage());
+           Thread.currentThread().interrupt();
+        }
+    }
 }

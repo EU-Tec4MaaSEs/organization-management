@@ -606,6 +606,7 @@ public class OrganizationController {
         } else if (MaasRole.CONSUMER == reviewDto.getTargetRole()) {
                 organizationService.updateOrganizationsConsumerRating(orgId, reviewAnalytics.getAverageRating());
         }
+        organizationService.triggerKafkaMessageForReview(orgId, userId, reviewerOrgId);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedReview);
 }
 
@@ -651,6 +652,7 @@ public class OrganizationController {
             JwtAuthenticationToken jwtToken = (JwtAuthenticationToken) SecurityContextHolder.getContext()
                             .getAuthentication();
             String currentUserId = jwtToken.getToken().getClaim("sub");
+            String reviewerOrgId = jwtToken.getToken().getClaim(ORGANIZATION_ID);
 
             OrganizationReview updatedReview = organizationService.updateReview(reviewId, currentUserId, editDto);
             ReviewAnalyticsDTO reviewAnalytics = organizationService.calculateRoleAnalytics(
@@ -662,6 +664,7 @@ public class OrganizationController {
                     organizationService.updateOrganizationsConsumerRating(updatedReview.getTargetOrganizationId(),
                                     reviewAnalytics.getAverageRating());
             }
+            organizationService.triggerKafkaMessageForReview(updatedReview.getTargetOrganizationId(), currentUserId, reviewerOrgId);
 
             return ResponseEntity.ok(updatedReview);
     }
