@@ -11,4 +11,6 @@ import java.util.List;
 public class ProviderSearchDTO {
     private List<String> countryCodes;
     private List<String> manufacturingServices;
+    private List<String> capabilities;
+
 }

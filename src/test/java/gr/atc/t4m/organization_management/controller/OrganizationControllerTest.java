@@ -261,6 +261,7 @@ void testFilterProviders_ReturnsFilteredOrganizations() throws Exception {
     ProviderSearchDTO filter = new ProviderSearchDTO();
     filter.setCountryCodes(List.of("GR", "DE"));
     filter.setManufacturingServices(List.of("AM"));
+    filter.setCapabilities(List.of("Milling"));
 
     Organization org1 = new Organization();
     org1.setOrganizationName("ATC Provider");
@@ -275,7 +276,7 @@ void testFilterProviders_ReturnsFilteredOrganizations() throws Exception {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].organizationName").value("ATC Provider"));
 
-    verify(searchHistoryService).recordSearch("1234567890", List.of("GR", "DE"), List.of("AM"));
+    verify(searchHistoryService).recordSearch("1234567890", List.of("GR", "DE"), List.of("AM"),List.of("Milling"));
 }
 
     @Test
