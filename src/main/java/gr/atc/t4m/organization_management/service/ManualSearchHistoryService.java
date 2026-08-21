@@ -21,11 +21,12 @@ public class ManualSearchHistoryService {
 
     private final ManualSearchHistoryRepository historyRepository;
 
-    public void recordSearch(String userId, List<String> countries, List<String> services) {
+    public void recordSearch(String userId, List<String> countries, List<String> services, List<String> capabilities) {
         ManualSearchHistory history = ManualSearchHistory.builder()
                 .userId(userId)
                 .countryCodes(countries)
                 .manufacturingServices(services)
+                .capabilities(capabilities)
                 .searchedAt(LocalDateTime.now(ZoneOffset.UTC)) 
                 .build();
 

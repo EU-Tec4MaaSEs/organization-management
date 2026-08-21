@@ -352,7 +352,7 @@ public class OrganizationController {
             String userId = jwtToken.getToken().getClaim("sub");
             String userOrgId = (jwtToken != null && jwtToken.getToken() != null)
                 ? jwtToken.getToken().getClaimAsString(ORGANIZATION_ID): null;
-            searchHistoryService.recordSearch(userId, filter.getCountryCodes(), filter.getManufacturingServices());
+            searchHistoryService.recordSearch(userId, filter.getCountryCodes(), filter.getManufacturingServices(), filter.getCapabilities());
             providers.forEach(prov -> maskPrivateAttachmentUrls(prov, userOrgId));
 
             return ResponseEntity.ok(providers);
