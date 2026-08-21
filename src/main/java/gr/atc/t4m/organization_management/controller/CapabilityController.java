@@ -50,6 +50,14 @@ public class CapabilityController {
         return ResponseEntity.ok(capabilities);
     }
 
+    @Operation(summary = "Get All capabilities Names", description = "Retrieve all capabilities Names", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful retrieval of capabilities names."),
+            @ApiResponse(responseCode = "401", description = "Authentication process failed!"),
+            @ApiResponse(responseCode = "404", description = "No capabilities found."),
+
+    })
+
        @GetMapping("/allCapabilityNames")
     public ResponseEntity<List<String>> getAllCapabilitiesNames() throws OrganizationNotFoundException {
 
