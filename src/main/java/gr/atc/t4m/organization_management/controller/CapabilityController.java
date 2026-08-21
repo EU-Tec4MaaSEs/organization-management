@@ -50,6 +50,19 @@ public class CapabilityController {
         return ResponseEntity.ok(capabilities);
     }
 
+       @GetMapping("/allCapabilityNames")
+    public ResponseEntity<List<String>> getAllCapabilitiesNames() throws OrganizationNotFoundException {
+
+        List<String> capabilitiesNames = manufacturingResourceService.getAllCapabilitiesNames();
+
+        if (capabilitiesNames == null || capabilitiesNames.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "No stored capabilities found");
+        }
+
+        return ResponseEntity.ok(capabilitiesNames);
+    }
+
     @Operation(summary = "Get All Manufacturing Resources", description = "Retrieve all manufacturing resources", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful retrieval of manufacturing resources."),

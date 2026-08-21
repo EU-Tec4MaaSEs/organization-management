@@ -22,5 +22,6 @@ public class ManualSearchHistory {
     private String userId;
     private List<String> countryCodes;
     private List<String> manufacturingServices;
+    private List<String> capabilities;
     private LocalDateTime searchedAt;
 }

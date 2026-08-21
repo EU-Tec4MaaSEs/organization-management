@@ -93,4 +93,16 @@ public class ManufacturingResourceService {
     }
 }
 
+public List<String> getAllCapabilitiesNames() {
+    List<ManufacturingResource> resources = manufacturingResourceRepo.findAll();
+
+
+     return resources.stream()
+        .filter(mr -> mr != null && mr.getCapabilities() != null && !mr.getCapabilities().isEmpty())
+        .flatMap(mr -> mr.getCapabilities().stream())
+        .map(entry -> entry != null ? entry.getName() : null)
+        .filter(name -> name != null && !name.isBlank())
+        .distinct()
+        .toList();
+}
 }
