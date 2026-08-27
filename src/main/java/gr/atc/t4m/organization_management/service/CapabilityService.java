@@ -202,29 +202,56 @@ private void extractOntologySemanticId(SubmodelElement element, CapabilityEntry 
                 products);
     }
 
-    private void assignProcessingTime(
-            String idShort,
-            Double processingTime,
-            List<String> indices,
-            List<ProductCompatibilityItemDTO> products) {
 
-        for (String index : indices) {
-            if (index == null) {
-                LOGGER.warn("'{}' references out-of-range product index is null", idShort);
-                continue;
+  private void assignProcessingTime(
+        String idShort,
+        Double processingTime,
+        List<String> indices,
+        List<ProductCompatibilityItemDTO> products) {
+
+    if (indices == null || products == null || products.isEmpty()) {
+        return;
+    }
+
+    for (String indexStr : indices) {
+        if (indexStr == null) {
+            LOGGER.warn("'{}' references a null product identifier", idShort);
+            continue;
+        }
+
+        ProductCompatibilityItemDTO targetProduct = null;
+
+        // Try resolving as a numeric array index (e.g., "0", "1", "2")
+        try {
+            int idx = Integer.parseInt(indexStr.trim());
+            if (idx >= 0 && idx < products.size()) {
+                targetProduct = products.get(idx);
+            } else {
+                LOGGER.warn("'{}' references out-of-bounds index: {} (products list size: {})", 
+                        idShort, idx, products.size());
             }
+        } catch (NumberFormatException e) {
+            // Not a numeric index; will attempt exact product name match below
+        }
 
-            products.stream()
-                    .filter(p -> p.getProduct().equals(index))
+        // Fallback: Try matching by product name/id if it wasn't a valid index
+        if (targetProduct == null) {
+            targetProduct = products.stream()
+                    .filter(p -> p.getProduct() != null && p.getProduct().equals(indexStr))
                     .findFirst()
-                    .ifPresentOrElse(
-                            p -> p.setProcessingTime(processingTime),
-                            () -> {
-                                throw new IllegalArgumentException("Product not found: " + index);
-                            }
-                    );
+                    .orElse(null);
+        }
+
+        //  Assign processing time or log warning without throwing an exception
+        if (targetProduct != null) {
+            targetProduct.setProcessingTime(processingTime);
+        } else {
+            LOGGER.warn("'{}' could not resolve product for reference key '{}'. Total products available: {}", 
+                    idShort, indexStr, products.size());
         }
     }
+}
+
 
     /** Reads the BasicConstraint Property value from a ProcessingTime_X / RequiredResources container. */
     private Double extractBasicConstraintValue(List<SubmodelElement> constraintElements) {
