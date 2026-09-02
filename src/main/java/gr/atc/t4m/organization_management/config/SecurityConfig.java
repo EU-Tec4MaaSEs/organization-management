@@ -18,6 +18,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.beans.factory.annotation.Value;
 
 import gr.atc.t4m.organization_management.security.JwtAuthConverter;
+import org.springframework.http.HttpMethod;
 
 @Configuration
 @EnableWebSecurity
@@ -47,8 +48,11 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(AbstractHttpConfigurer::disable)
-            .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
-            .oauth2ResourceServer(oauth2 -> oauth2
+            .authorizeHttpRequests(auth -> auth
+                // Allow unauthenticated preflight CORS checks
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .anyRequest().authenticated()
+            )            .oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthConverter)))
             .build();
     }
@@ -62,7 +66,8 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(corsDomains);
         configuration.setAllowedHeaders(Arrays.asList("*"));
 
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"));
+        configuration.setExposedHeaders(Arrays.asList("Content-Disposition", "Content-Type", "Accept-Ranges", "Content-Length"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(86400L);
 
