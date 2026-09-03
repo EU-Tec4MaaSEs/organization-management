@@ -308,7 +308,6 @@ public class OrganizationService {
         return organization;
     }
 
-    @Transactional
     public OrganizationReview saveReview(String targetOrgId, String reviewerUserId, String reviewerOrgId, CreateReviewDTO dto) {
         LOGGER.info("Validating and saving flat review for organization: {}", targetOrgId);
 
@@ -392,7 +391,6 @@ public class OrganizationService {
         return new ReviewAnalyticsDTO(averageRating, totalCount, t1, t2, t3, t4, t5);
     }
 
-    @Transactional
     public OrganizationReview updateReview(String reviewId, String currentUserId, CreateReviewDTO editDto) {
         OrganizationReview review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new IllegalArgumentException("Review not found with ID: " + reviewId));
@@ -528,7 +526,6 @@ private Organization findOrganizationById(String id) {
                     ORGANIZATION_WITH_ID + id + " not found. Update is aborted"));
 }
 
-@Transactional
     public void deleteAttachmentById(String organizationId, String fileId) {
         Organization org = organizationRepository.findById(organizationId)
                 .orElseThrow(() -> new OrganizationNotFoundException(ORGANIZATION_NOT_FOUND + organizationId));
@@ -553,7 +550,6 @@ private Organization findOrganizationById(String id) {
         }
     }
 
-    @Transactional
     public Organization addAttachments( String organizationId, List<MultipartFile> attachmentFiles, List<String> attachmentTitles, List<Boolean> attachmentIsPublic) {
 
         Organization org = organizationRepository.findById(organizationId)
