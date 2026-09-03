@@ -751,9 +751,12 @@ public class OrganizationController {
             JwtAuthenticationToken jwtToken, final HttpServletRequest request) {
 
             String userOrgId = (jwtToken != null) ? jwtToken.getToken().getClaimAsString(ORGANIZATION_ID) : null;
+            List<String> roles = (jwtToken != null) ? jwtToken.getToken().getClaimAsStringList("pilot_role") : null;
+            boolean isAdmin = roles != null && (roles.contains("ADMIN") || roles.contains("SUPER_ADMIN"));
+            boolean isInOrg = userOrgId != null && userOrgId.equals(organizationId);
 
-            if (userOrgId == null || !userOrgId.equals(organizationId)) {
-               throw new ResponseStatusException(HttpStatus.FORBIDDEN, 
+            if (!isAdmin && !isInOrg) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, 
                 "You do not have permission to modify attachments for this organization.");
             }
             Organization updatedOrg = organizationService.addAttachments(organizationId, attachmentFiles, attachmentTitles, attachmentIsPublic);
@@ -783,11 +786,12 @@ public class OrganizationController {
             @RequestBody @Valid UpdateFileInformationDTO updateDto,
             JwtAuthenticationToken jwtToken) {
 
-        String userOrgId = (jwtToken != null)
-                ? jwtToken.getToken().getClaimAsString(ORGANIZATION_ID)
-                : null;
+            String userOrgId = (jwtToken != null) ? jwtToken.getToken().getClaimAsString(ORGANIZATION_ID) : null;
+            List<String> roles = (jwtToken != null) ? jwtToken.getToken().getClaimAsStringList("pilot_role") : null;
+            boolean isAdmin = roles != null && (roles.contains("ADMIN") || roles.contains("SUPER_ADMIN"));
+            boolean isInOrg = userOrgId != null && userOrgId.equals(organizationId);
 
-        if (userOrgId == null || !userOrgId.equals(organizationId)) {
+            if (!isAdmin && !isInOrg) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                     "You do not have permission to update attachments for this organization.");
         }
