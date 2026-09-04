@@ -16,15 +16,20 @@ COPY --from=build /app/target/*.jar app.jar
 
 USER root
 
+# Install ca-certificates utilities
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
+
+# Copy the full-chain certificate bundle
 COPY tekniker.crt /usr/local/share/ca-certificates/tekniker.crt
 
-RUN keytool -importcert -trustcacerts \
-    -file /usr/local/share/ca-certificates/tekniker.crt \
-    -alias tekniker-chain \
-    -keystore $JAVA_HOME/lib/security/cacerts \
-    -storepass changeit \
-    -noprompt
-
+# Update OS store AND explicitly load into Java's cacerts keystore
+RUN update-ca-certificates && \
+    keytool -importcert -trustcacerts \
+      -file /usr/local/share/ca-certificates/tekniker.crt \
+      -alias tekniker-chain-2026 \
+      -cacerts \
+      -storepass changeit \
+      -noprompt
 
 EXPOSE 8090
 
