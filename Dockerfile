@@ -8,7 +8,7 @@ COPY src ./src
 RUN ls /app/src/main/resources
 RUN mvn clean package -DskipTests
 
-FROM eclipse-temurin:17-jdk-bookworm
+FROM eclipse-temurin:17-jdk
 
 WORKDIR /app
 
